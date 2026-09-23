@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLiveStore } from '@/stores/live'
 import { useThemeStore } from '@/stores/theme'
+import { navegando } from '@/lib/progreso'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,6 +23,31 @@ const router = useRouter()
 const auth = useAuthStore()
 const live = useLiveStore()
 const theme = useThemeStore()
+
+// Barra de progreso tipo nprogress: crece mientras se resuelve la navegación
+// (incluye la descarga del chunk de la vista) y remata a 100% al terminar.
+const progresoAncho = ref(0)
+const progresoVisible = ref(false)
+let progresoTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(navegando, (activo) => {
+  clearTimeout(progresoTimer)
+  if (activo) {
+    progresoVisible.value = true
+    progresoAncho.value = 0
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        progresoAncho.value = 75
+      })
+    })
+  } else {
+    progresoAncho.value = 100
+    progresoTimer = setTimeout(() => {
+      progresoVisible.value = false
+      progresoAncho.value = 0
+    }, 200)
+  }
+})
 
 function salir() {
   auth.cerrarSesion()
@@ -56,6 +82,18 @@ function iniciales(nombre: string | null): string {
 
 <template>
   <div class="min-h-screen bg-background">
+    <div
+      v-if="progresoVisible"
+      class="fixed inset-x-0 top-0 z-50 h-0.5 bg-primary/20"
+      role="progressbar"
+      aria-label="Cargando"
+    >
+      <div
+        class="h-full bg-primary shadow-[0_0_8px_var(--color-primary)] transition-[width] duration-300 ease-out"
+        :style="{ width: `${progresoAncho}%` }"
+      />
+    </div>
+
     <header v-if="!route.meta.publica" class="glass sticky top-0 z-20 border-b border-border">
       <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-6">
         <div class="flex shrink-0 items-center gap-2">
@@ -120,7 +158,15 @@ function iniciales(nombre: string | null): string {
     <main class="mx-auto max-w-6xl px-4 py-6">
       <RouterView v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component" />
+          <Suspense timeout="0">
+            <component :is="Component" />
+            <template #fallback>
+              <div class="flex flex-col gap-6">
+                <div class="h-32 animate-pulse rounded-lg bg-muted" />
+                <div class="h-48 animate-pulse rounded-lg bg-muted" />
+              </div>
+            </template>
+          </Suspense>
         </transition>
       </RouterView>
     </main>

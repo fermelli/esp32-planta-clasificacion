@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { navegando } from '@/lib/progreso'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,9 +19,18 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
+  navegando.value = true
   const auth = useAuthStore()
   if (!to.meta.publica && !auth.token) return { name: 'login', query: { next: to.fullPath } }
   if (to.name === 'login' && auth.token) return { name: 'produccion' }
+})
+
+router.afterEach(() => {
+  navegando.value = false
+})
+
+router.onError(() => {
+  navegando.value = false
 })
 
 export default router

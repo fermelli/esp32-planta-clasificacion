@@ -232,6 +232,11 @@ async function enviarComando(cmd: string, arg = 0) {
             </TableRow>
           </TableHeader>
           <TableBody>
+            <template v-if="cargando">
+              <TableRow v-for="i in 4" :key="i">
+                <TableCell colspan="5"><div class="h-4 w-full animate-pulse rounded bg-muted" /></TableCell>
+              </TableRow>
+            </template>
             <TableRow v-for="(fila, i) in filasTabla" :key="i">
               <TableCell class="capitalize">
                 <span class="flex items-center gap-2">
