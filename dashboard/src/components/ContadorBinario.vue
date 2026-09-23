@@ -8,11 +8,7 @@ const props = defineProps<{
 }>()
 
 // Mismo orden que mostrarContador() en el firmware del sorter: bit2 (MSB) a bit0 (LSB).
-const bits = computed(() => [
-  (props.valor >> 2) & 1,
-  (props.valor >> 1) & 1,
-  props.valor & 1,
-])
+const bits = computed(() => [(props.valor >> 2) & 1, (props.valor >> 1) & 1, props.valor & 1])
 </script>
 
 <template>
@@ -23,7 +19,9 @@ const bits = computed(() => [
         :key="i"
         class="h-3.5 w-3.5 rounded-full border transition-all duration-300"
         :class="bit ? 'border-transparent' : 'border-border'"
-        :style="bit ? { backgroundColor: colorEncendido, boxShadow: `0 0 8px ${colorEncendido}` } : {}"
+        :style="
+          bit ? { backgroundColor: colorEncendido, boxShadow: `0 0 8px ${colorEncendido}` } : {}
+        "
       />
     </div>
     <span class="text-xs text-muted-foreground">{{ label }}</span>

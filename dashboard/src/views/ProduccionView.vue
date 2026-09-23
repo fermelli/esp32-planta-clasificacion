@@ -6,7 +6,14 @@ import type { ConteoColor, EventoCaja } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table'
 import ContadorBinario from '@/components/ContadorBinario.vue'
 
 const live = useLiveStore()
@@ -90,8 +97,18 @@ async function enviarComando(cmd: string, arg = 0) {
             label="LEDs"
           />
           <div class="text-right text-sm text-muted-foreground">
-            <p>Total: <span class="font-medium tabular-nums text-foreground">{{ conteos[color.id]?.total_historico ?? 0 }}</span></p>
-            <p>Lotes: <span class="font-medium tabular-nums text-foreground">{{ conteos[color.id]?.lotes_completados ?? 0 }}</span></p>
+            <p>
+              Total:
+              <span class="font-medium tabular-nums text-foreground">{{
+                conteos[color.id]?.total_historico ?? 0
+              }}</span>
+            </p>
+            <p>
+              Lotes:
+              <span class="font-medium tabular-nums text-foreground">{{
+                conteos[color.id]?.lotes_completados ?? 0
+              }}</span>
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -102,19 +119,68 @@ async function enviarComando(cmd: string, arg = 0) {
         <CardTitle>Cinta y puerta</CardTitle>
       </CardHeader>
       <CardContent class="flex flex-wrap items-center gap-3">
-        <Badge :variant="live.sorterEstado.cinta_estado && live.sorterEstado.cinta_estado !== 'off' ? 'success' : 'outline'">
+        <Badge
+          :variant="
+            live.sorterEstado.cinta_estado && live.sorterEstado.cinta_estado !== 'off'
+              ? 'success'
+              : 'outline'
+          "
+        >
           Cinta: {{ live.sorterEstado.cinta_estado ?? 'sin datos' }}
         </Badge>
         <Badge :variant="live.sorterEstado.puerta_abierta ? 'warning' : 'outline'">
-          Puerta: {{ live.sorterEstado.puerta_abierta === undefined ? 'sin datos' : (live.sorterEstado.puerta_abierta ? 'abierta' : 'cerrada') }}
+          Puerta:
+          {{
+            live.sorterEstado.puerta_abierta === undefined
+              ? 'sin datos'
+              : live.sorterEstado.puerta_abierta
+                ? 'abierta'
+                : 'cerrada'
+          }}
         </Badge>
         <div class="ml-auto flex flex-wrap gap-2">
-          <Button size="sm" variant="secondary" :disabled="!!enviandoComando" @click="enviarComando('motor', 0)">Apagar cinta</Button>
-          <Button size="sm" variant="secondary" :disabled="!!enviandoComando" @click="enviarComando('motor', 1)">Cinta low</Button>
-          <Button size="sm" variant="secondary" :disabled="!!enviandoComando" @click="enviarComando('motor', 2)">Cinta full</Button>
-          <Button size="sm" variant="outline" :disabled="!!enviandoComando" @click="enviarComando('puerta', 1)">Abrir puerta</Button>
-          <Button size="sm" variant="outline" :disabled="!!enviandoComando" @click="enviarComando('puerta', 0)">Cerrar puerta</Button>
-          <Button size="sm" variant="destructive" :disabled="!!enviandoComando" @click="enviarComando('reset_counts')">Reset contadores</Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('motor', 0)"
+            >Apagar cinta</Button
+          >
+          <Button
+            size="sm"
+            variant="secondary"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('motor', 1)"
+            >Cinta low</Button
+          >
+          <Button
+            size="sm"
+            variant="secondary"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('motor', 2)"
+            >Cinta full</Button
+          >
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('puerta', 1)"
+            >Abrir puerta</Button
+          >
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('puerta', 0)"
+            >Cerrar puerta</Button
+          >
+          <Button
+            size="sm"
+            variant="destructive"
+            :disabled="!!enviandoComando"
+            @click="enviarComando('reset_counts')"
+            >Reset contadores</Button
+          >
         </div>
       </CardContent>
     </Card>
@@ -140,7 +206,9 @@ async function enviarComando(cmd: string, arg = 0) {
                 <span class="flex items-center gap-2">
                   <span
                     class="h-2 w-2 rounded-full"
-                    :style="{ backgroundColor: COLORES.find((c) => c.id === fila.color)?.hex ?? '#999' }"
+                    :style="{
+                      backgroundColor: COLORES.find((c) => c.id === fila.color)?.hex ?? '#999',
+                    }"
                   />
                   {{ fila.color }}
                 </span>
@@ -149,11 +217,17 @@ async function enviarComando(cmd: string, arg = 0) {
               <TableCell>
                 <Badge v-if="fila.lote_completo" variant="success">completo</Badge>
               </TableCell>
-              <TableCell class="text-xs text-muted-foreground tabular-nums">{{ fila.r }}/{{ fila.g }}/{{ fila.b }} · {{ fila.c }}</TableCell>
-              <TableCell class="text-xs text-muted-foreground">{{ new Date(fila.creado_en).toLocaleTimeString() }}</TableCell>
+              <TableCell class="text-xs text-muted-foreground tabular-nums"
+                >{{ fila.r }}/{{ fila.g }}/{{ fila.b }} · {{ fila.c }}</TableCell
+              >
+              <TableCell class="text-xs text-muted-foreground">{{
+                new Date(fila.creado_en).toLocaleTimeString()
+              }}</TableCell>
             </TableRow>
             <TableRow v-if="filasTabla.length === 0">
-              <TableCell colspan="5" class="text-center text-muted-foreground">Todavía no pasó ninguna caja</TableCell>
+              <TableCell colspan="5" class="text-center text-muted-foreground"
+                >Todavía no pasó ninguna caja</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>

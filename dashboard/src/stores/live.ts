@@ -16,7 +16,11 @@ export const useLiveStore = defineStore('live', () => {
   let reintentoMs = 1000
 
   function conectar() {
-    if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) return
+    if (
+      socket &&
+      (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)
+    )
+      return
 
     socket = new WebSocket(WS_URL)
 

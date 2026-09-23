@@ -5,7 +5,14 @@ import { useLiveStore } from '@/stores/live'
 import type { IntentoLogin } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table'
 
 const live = useLiveStore()
 const iniciales = ref<IntentoLogin[]>([])
@@ -49,10 +56,14 @@ const filas = computed(() => {
               </Badge>
             </TableCell>
             <TableCell class="capitalize">{{ fila.origen }}</TableCell>
-            <TableCell class="text-xs text-muted-foreground">{{ new Date(fila.creado_en).toLocaleString() }}</TableCell>
+            <TableCell class="text-xs text-muted-foreground">{{
+              new Date(fila.creado_en).toLocaleString()
+            }}</TableCell>
           </TableRow>
           <TableRow v-if="filas.length === 0">
-            <TableCell colspan="4" class="text-center text-muted-foreground">Sin intentos registrados</TableCell>
+            <TableCell colspan="4" class="text-center text-muted-foreground"
+              >Sin intentos registrados</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>

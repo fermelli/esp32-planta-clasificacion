@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -94,10 +94,18 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at 12% 0%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 45%),
-      radial-gradient(circle at 100% 0%, color-mix(in oklch, var(--primary) 6%, transparent), transparent 40%);
+      radial-gradient(
+        circle at 12% 0%,
+        color-mix(in oklch, var(--primary) 10%, transparent),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 100% 0%,
+        color-mix(in oklch, var(--primary) 6%, transparent),
+        transparent 40%
+      );
     background-attachment: fixed;
-    font-feature-settings: "cv11", "ss01";
+    font-feature-settings: 'cv11', 'ss01';
   }
 
   ::selection {

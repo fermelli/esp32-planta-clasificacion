@@ -19,7 +19,11 @@ const TIPO_VARIANT: Record<string, 'success' | 'destructive' | 'warning'> = {
 }
 
 const alertas = computed(() => {
-  const vivas = live.ultimasAlertas.map((a) => ({ tipo: a.tipo, mensaje: a.mensaje, creado_en: new Date().toISOString() }))
+  const vivas = live.ultimasAlertas.map((a) => ({
+    tipo: a.tipo,
+    mensaje: a.mensaje,
+    creado_en: new Date().toISOString(),
+  }))
   return [...vivas, ...iniciales.value].slice(0, 30)
 })
 </script>
@@ -38,7 +42,9 @@ const alertas = computed(() => {
         >
           <Badge :variant="TIPO_VARIANT[a.tipo] ?? 'outline'">{{ a.tipo }}</Badge>
           <span class="flex-1">{{ a.mensaje }}</span>
-          <span class="text-xs text-muted-foreground">{{ new Date(a.creado_en).toLocaleString() }}</span>
+          <span class="text-xs text-muted-foreground">{{
+            new Date(a.creado_en).toLocaleString()
+          }}</span>
         </li>
         <li v-if="alertas.length === 0" class="py-6 text-center text-muted-foreground">
           Sin alertas

@@ -43,10 +43,12 @@ function formatoHora(iso: string): string {
 }
 
 // Líneas guía horizontales: 0, mitad y máximo.
-const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
-  y: altoGrafico - f * altoGrafico,
-  valor: Math.round(maxCantidad.value * f),
-})))
+const lineasGuia = computed(() =>
+  [0, 0.5, 1].map((f) => ({
+    y: altoGrafico - f * altoGrafico,
+    valor: Math.round(maxCantidad.value * f),
+  })),
+)
 </script>
 
 <template>
@@ -60,7 +62,12 @@ const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
         Todavía no hay eventos registrados.
       </div>
       <figure v-else class="overflow-x-auto">
-        <svg :viewBox="`0 0 ${ANCHO} ${ALTO}`" role="img" aria-label="Cajas clasificadas por hora, una barra por color" class="w-full min-w-[600px]">
+        <svg
+          :viewBox="`0 0 ${ANCHO} ${ALTO}`"
+          role="img"
+          aria-label="Cajas clasificadas por hora, una barra por color"
+          class="w-full min-w-[600px]"
+        >
           <g :transform="`translate(${MARGEN.left},${MARGEN.top})`">
             <g v-for="linea in lineasGuia" :key="linea.y">
               <line
@@ -71,12 +78,24 @@ const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
                 stroke="currentColor"
                 class="text-border"
               />
-              <text x="-8" :y="linea.y" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" class="text-muted-foreground tabular-nums">
+              <text
+                x="-8"
+                :y="linea.y"
+                text-anchor="end"
+                dominant-baseline="middle"
+                font-size="10"
+                fill="currentColor"
+                class="text-muted-foreground tabular-nums"
+              >
                 {{ linea.valor }}
               </text>
             </g>
 
-            <g v-for="(hora, hi) in horas" :key="hora" :transform="`translate(${hi * grupoAncho},0)`">
+            <g
+              v-for="(hora, hi) in horas"
+              :key="hora"
+              :transform="`translate(${hi * grupoAncho},0)`"
+            >
               <rect
                 v-for="(color, ci) in COLORES"
                 :key="color.id"
@@ -88,7 +107,9 @@ const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
                 :fill="color.hex"
                 rx="3"
               >
-                <title>{{ color.id }} · {{ formatoHora(hora) }} · {{ cantidad(hora, color.id) }} cajas</title>
+                <title>
+                  {{ color.id }} · {{ formatoHora(hora) }} · {{ cantidad(hora, color.id) }} cajas
+                </title>
               </rect>
               <text
                 :x="grupoAncho / 2"
@@ -104,7 +125,11 @@ const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
           </g>
         </svg>
         <figcaption class="mt-2 flex justify-center gap-4 text-xs text-muted-foreground">
-          <span v-for="color in COLORES" :key="color.id" class="flex items-center gap-1.5 capitalize">
+          <span
+            v-for="color in COLORES"
+            :key="color.id"
+            class="flex items-center gap-1.5 capitalize"
+          >
             <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: color.hex }" />
             {{ color.id }}
           </span>

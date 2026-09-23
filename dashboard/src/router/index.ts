@@ -4,7 +4,12 @@ import { useAuthStore } from '@/stores/auth'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue'), meta: { publica: true } },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+      meta: { publica: true },
+    },
     { path: '/', name: 'produccion', component: () => import('@/views/ProduccionView.vue') },
     { path: '/historico', name: 'historico', component: () => import('@/views/HistoricoView.vue') },
     { path: '/intentos', name: 'intentos', component: () => import('@/views/IntentosView.vue') },
