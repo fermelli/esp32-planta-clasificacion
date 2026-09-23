@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -10,8 +11,10 @@ def hash_secret(secret: str) -> str:
     return bcrypt.hashpw(secret.encode(), bcrypt.gensalt()).decode()
 
 
-def verify_secret(secret: str, hashed: str) -> bool:
-    return bcrypt.checkpw(secret.encode(), hashed.encode())
+async def verify_secret(secret: str, hashed: str) -> bool:
+    # CPU-bound: en un hilo aparte para no bloquear el event loop compartido
+    # con MQTT y WebSocket mientras se verifica la contraseña.
+    return await asyncio.to_thread(bcrypt.checkpw, secret.encode(), hashed.encode())
 
 
 def create_access_token(usuario_id: int, nombre: str) -> str:

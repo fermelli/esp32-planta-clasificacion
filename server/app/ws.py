@@ -17,7 +17,10 @@ class ConnectionManager:
     async def broadcast(self, payload: dict) -> None:
         muertos = []
         data = json.dumps(payload)
-        for ws in self._clients:
+        # Copia de la lista: connect()/disconnect() pueden mutar self._clients
+        # mientras este bucle está en un await (send_text), y set() no tolera
+        # cambiar de tamaño durante la iteración.
+        for ws in list(self._clients):
             try:
                 await ws.send_text(data)
             except Exception:

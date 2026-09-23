@@ -13,7 +13,7 @@ async def login(body: LoginRequest) -> LoginResponse:
         "SELECT id, nombre, password_hash FROM usuarios WHERE nombre = $1", body.nombre
     )
 
-    exito = fila is not None and verify_secret(body.password, fila["password_hash"])
+    exito = fila is not None and await verify_secret(body.password, fila["password_hash"])
 
     await pool().execute(
         "INSERT INTO intentos_login (usuario_id, exito, origen) VALUES ($1, $2, 'web')",

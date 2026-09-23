@@ -34,7 +34,10 @@ async def _manejar_login_intento(payload: dict) -> None:
 
     filas = await pool().fetch("SELECT id, nombre, pin_hash FROM usuarios")
     for f in filas:
-        if bcrypt.checkpw(pin.encode(), f["pin_hash"].encode()):
+        # bcrypt es CPU-bound y tarda ~100-300ms: en un hilo aparte para no
+        # congelar el event loop (MQTT y WebSocket) mientras se valida el PIN.
+        coincide = await asyncio.to_thread(bcrypt.checkpw, pin.encode(), f["pin_hash"].encode())
+        if coincide:
             usuario_id, nombre, exito = f["id"], f["nombre"], True
             break
 
