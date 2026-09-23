@@ -48,3 +48,9 @@ npm run dev
 Detalle completo de cada pieza (endpoints, variables de entorno, por qué
 está armado así) en [`docs/servidor.md`](./docs/servidor.md) y
 [`docs/dashboard.md`](./docs/dashboard.md).
+
+## Formato y lint
+
+`npm install` en la raíz deja activo un pre-commit (husky + lint-staged) que
+corre Prettier y ESLint sobre los archivos staged; si algo queda sin poder
+arreglarse solo, el commit se aborta.
