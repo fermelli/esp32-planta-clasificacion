@@ -258,10 +258,18 @@ void setup() {
 }
 
 void loop() {
+#ifdef MODO_STANDALONE
+  // Sin gateway al lado no hay con quién sincronizar canal — se salta la
+  // espera para poder probar botones/motor/sensor/LEDs de esta placa sola.
+  leerBotonPuerta();
+  leerBotonCinta();
+  leerSensorYClasificar();
+#else
   barrerCanalSiHaceFalta();
   if (canalEncontrado) {
     leerBotonPuerta();
     leerBotonCinta();
     leerSensorYClasificar();
   }
+#endif
 }
