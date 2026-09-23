@@ -12,7 +12,7 @@ npm install
 npm run dev
 ```
 
-Requiere el backend (`server/`) corriendo — ver la raíz del repo.
+Requiere el backend (`server/`) corriendo — ver [`../README.md`](../README.md).
 
 ## Páginas
 
