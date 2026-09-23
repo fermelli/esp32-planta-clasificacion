@@ -64,14 +64,20 @@ async function enviar() {
             <div class="flex flex-col gap-1.5">
               <Label for="usuario">Usuario</Label>
               <div class="relative">
-                <User class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" stroke-width="1.8" />
+                <User
+                  class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  stroke-width="1.8"
+                />
                 <Input id="usuario" v-model="usuario" class="pl-9" autocomplete="username" />
               </div>
             </div>
             <div class="flex flex-col gap-1.5">
               <Label for="password">Contraseña</Label>
               <div class="relative">
-                <Lock class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" stroke-width="1.8" />
+                <Lock
+                  class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  stroke-width="1.8"
+                />
                 <Input
                   id="password"
                   v-model="password"

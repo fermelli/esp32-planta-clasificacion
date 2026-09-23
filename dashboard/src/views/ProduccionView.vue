@@ -113,7 +113,9 @@ async function enviarComando(cmd: string, arg = 0) {
         :style="{ borderTopColor: color.hex }"
       >
         <CardHeader class="pb-1">
-          <CardTitle class="flex items-center justify-between text-sm font-medium text-muted-foreground">
+          <CardTitle
+            class="flex items-center justify-between text-sm font-medium text-muted-foreground"
+          >
             <span class="flex items-center gap-2">
               <span
                 class="flex h-6 w-6 items-center justify-center rounded-md"
@@ -123,8 +125,14 @@ async function enviarComando(cmd: string, arg = 0) {
               </span>
               {{ color.label }}
             </span>
-            <Badge v-if="conteos[color.id]?.lotes_completados" variant="outline" class="text-[11px]">
-              {{ conteos[color.id]?.lotes_completados }} lote{{ conteos[color.id]!.lotes_completados === 1 ? '' : 's' }}
+            <Badge
+              v-if="conteos[color.id]?.lotes_completados"
+              variant="outline"
+              class="text-[11px]"
+            >
+              {{ conteos[color.id]?.lotes_completados }} lote{{
+                conteos[color.id]!.lotes_completados === 1 ? '' : 's'
+              }}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -176,7 +184,11 @@ async function enviarComando(cmd: string, arg = 0) {
               size="sm"
               variant="ghost"
               class="gap-1.5"
-              :class="live.sorterEstado.puerta_abierta === true ? '!bg-card !text-foreground shadow-sm' : ''"
+              :class="
+                live.sorterEstado.puerta_abierta === true
+                  ? '!bg-card !text-foreground shadow-sm'
+                  : ''
+              "
               :disabled="!!enviandoComando"
               @click="enviarComando('puerta', 1)"
             >
@@ -187,7 +199,11 @@ async function enviarComando(cmd: string, arg = 0) {
               size="sm"
               variant="ghost"
               class="gap-1.5"
-              :class="live.sorterEstado.puerta_abierta === false ? '!bg-card !text-foreground shadow-sm' : ''"
+              :class="
+                live.sorterEstado.puerta_abierta === false
+                  ? '!bg-card !text-foreground shadow-sm'
+                  : ''
+              "
               :disabled="!!enviandoComando"
               @click="enviarComando('puerta', 0)"
             >
@@ -217,7 +233,9 @@ async function enviarComando(cmd: string, arg = 0) {
             <ListOrdered class="h-4 w-4 text-muted-foreground" stroke-width="2" />
             Últimas cajas
           </span>
-          <span class="text-xs font-normal text-muted-foreground">{{ totalProcesado }} en total</span>
+          <span class="text-xs font-normal text-muted-foreground"
+            >{{ totalProcesado }} en total</span
+          >
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -234,7 +252,9 @@ async function enviarComando(cmd: string, arg = 0) {
           <TableBody>
             <template v-if="cargando">
               <TableRow v-for="i in 4" :key="i">
-                <TableCell colspan="5"><div class="h-4 w-full animate-pulse rounded bg-muted" /></TableCell>
+                <TableCell colspan="5"
+                  ><div class="h-4 w-full animate-pulse rounded bg-muted"
+                /></TableCell>
               </TableRow>
             </template>
             <TableRow v-for="(fila, i) in filasTabla" :key="i">

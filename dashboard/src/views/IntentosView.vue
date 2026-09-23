@@ -59,7 +59,9 @@ const filas = computed(() => {
         <TableBody>
           <template v-if="cargando">
             <TableRow v-for="i in 4" :key="i">
-              <TableCell colspan="4"><div class="h-4 w-full animate-pulse rounded bg-muted" /></TableCell>
+              <TableCell colspan="4"
+                ><div class="h-4 w-full animate-pulse rounded bg-muted"
+              /></TableCell>
             </TableRow>
           </template>
           <TableRow v-for="(fila, i) in filas" :key="i">

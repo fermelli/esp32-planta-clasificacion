@@ -7,16 +7,7 @@ import { useThemeStore } from '@/stores/theme'
 import { navegando } from '@/lib/progreso'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Boxes,
-  Gauge,
-  History,
-  KeyRound,
-  BellRing,
-  Sun,
-  Moon,
-  LogOut,
-} from 'lucide-vue-next'
+import { Boxes, Gauge, History, KeyRound, BellRing, Sun, Moon, LogOut } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()

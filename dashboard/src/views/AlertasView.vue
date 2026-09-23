@@ -19,7 +19,10 @@ onMounted(async () => {
   }
 })
 
-const TIPO_INFO: Record<string, { variant: 'success' | 'destructive' | 'warning'; icon: typeof PackageCheck }> = {
+const TIPO_INFO: Record<
+  string,
+  { variant: 'success' | 'destructive' | 'warning'; icon: typeof PackageCheck }
+> = {
   lote_completo: { variant: 'success', icon: PackageCheck },
   login_bloqueado: { variant: 'destructive', icon: ShieldAlert },
 }
@@ -65,7 +68,10 @@ const alertas = computed(() => {
             new Date(a.creado_en).toLocaleString()
           }}</span>
         </li>
-        <li v-if="alertas.length === 0" class="flex flex-col items-center gap-2 py-8 text-muted-foreground">
+        <li
+          v-if="alertas.length === 0"
+          class="flex flex-col items-center gap-2 py-8 text-muted-foreground"
+        >
           <BellOff class="h-8 w-8" stroke-width="1.5" />
           <span>Sin alertas</span>
         </li>
