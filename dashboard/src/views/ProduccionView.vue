@@ -13,7 +13,7 @@ const live = useLiveStore()
 
 const COLORES = [
   { id: 'rojo', label: 'Rojo', hex: '#ef4444' },
-  { id: 'verde', label: 'Verde', hex: '#22c55e' },
+  { id: 'verde', label: 'Verde', hex: '#059669' },
   { id: 'azul', label: 'Azul', hex: '#3b82f6' },
 ] as const
 
@@ -71,9 +71,17 @@ async function enviarComando(cmd: string, arg = 0) {
 <template>
   <div class="flex flex-col gap-6">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <Card v-for="color in COLORES" :key="color.id">
+      <Card
+        v-for="color in COLORES"
+        :key="color.id"
+        class="overflow-hidden border-t-2"
+        :style="{ borderTopColor: color.hex }"
+      >
         <CardHeader class="pb-2">
-          <CardTitle>{{ color.label }}</CardTitle>
+          <CardTitle class="flex items-center gap-2">
+            <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: color.hex }" />
+            {{ color.label }}
+          </CardTitle>
         </CardHeader>
         <CardContent class="flex items-center justify-between">
           <ContadorBinario
@@ -82,8 +90,8 @@ async function enviarComando(cmd: string, arg = 0) {
             label="LEDs"
           />
           <div class="text-right text-sm text-muted-foreground">
-            <p>Total: <span class="font-medium text-foreground">{{ conteos[color.id]?.total_historico ?? 0 }}</span></p>
-            <p>Lotes: <span class="font-medium text-foreground">{{ conteos[color.id]?.lotes_completados ?? 0 }}</span></p>
+            <p>Total: <span class="font-medium tabular-nums text-foreground">{{ conteos[color.id]?.total_historico ?? 0 }}</span></p>
+            <p>Lotes: <span class="font-medium tabular-nums text-foreground">{{ conteos[color.id]?.lotes_completados ?? 0 }}</span></p>
           </div>
         </CardContent>
       </Card>
@@ -94,10 +102,10 @@ async function enviarComando(cmd: string, arg = 0) {
         <CardTitle>Cinta y puerta</CardTitle>
       </CardHeader>
       <CardContent class="flex flex-wrap items-center gap-3">
-        <Badge variant="outline">
+        <Badge :variant="live.sorterEstado.cinta_estado && live.sorterEstado.cinta_estado !== 'off' ? 'success' : 'outline'">
           Cinta: {{ live.sorterEstado.cinta_estado ?? 'sin datos' }}
         </Badge>
-        <Badge variant="outline">
+        <Badge :variant="live.sorterEstado.puerta_abierta ? 'warning' : 'outline'">
           Puerta: {{ live.sorterEstado.puerta_abierta === undefined ? 'sin datos' : (live.sorterEstado.puerta_abierta ? 'abierta' : 'cerrada') }}
         </Badge>
         <div class="ml-auto flex flex-wrap gap-2">
@@ -128,7 +136,15 @@ async function enviarComando(cmd: string, arg = 0) {
           </TableHeader>
           <TableBody>
             <TableRow v-for="(fila, i) in filasTabla" :key="i">
-              <TableCell class="capitalize">{{ fila.color }}</TableCell>
+              <TableCell class="capitalize">
+                <span class="flex items-center gap-2">
+                  <span
+                    class="h-2 w-2 rounded-full"
+                    :style="{ backgroundColor: COLORES.find((c) => c.id === fila.color)?.hex ?? '#999' }"
+                  />
+                  {{ fila.color }}
+                </span>
+              </TableCell>
               <TableCell class="tabular-nums">{{ fila.conteo }}</TableCell>
               <TableCell>
                 <Badge v-if="fila.lote_completo" variant="success">completo</Badge>

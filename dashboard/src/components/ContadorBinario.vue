@@ -21,8 +21,9 @@ const bits = computed(() => [
       <span
         v-for="(bit, i) in bits"
         :key="i"
-        class="h-3.5 w-3.5 rounded-full border border-border transition-colors"
-        :style="{ backgroundColor: bit ? colorEncendido : 'transparent' }"
+        class="h-3.5 w-3.5 rounded-full border transition-all duration-300"
+        :class="bit ? 'border-transparent' : 'border-border'"
+        :style="bit ? { backgroundColor: colorEncendido, boxShadow: `0 0 8px ${colorEncendido}` } : {}"
       />
     </div>
     <span class="text-xs text-muted-foreground">{{ label }}</span>

@@ -34,7 +34,7 @@ const alertas = computed(() => {
         <li
           v-for="(a, i) in alertas"
           :key="i"
-          class="flex items-center gap-3 rounded-md border border-border p-3 text-sm"
+          class="flex items-center gap-3 rounded-md border border-border p-3 text-sm transition-colors hover:bg-muted/50"
         >
           <Badge :variant="TIPO_VARIANT[a.tipo] ?? 'outline'">{{ a.tipo }}</Badge>
           <span class="flex-1">{{ a.mensaje }}</span>

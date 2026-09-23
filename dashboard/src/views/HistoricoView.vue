@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 
 const COLORES = [
   { id: 'rojo', hex: '#ef4444' },
-  { id: 'verde', hex: '#22c55e' },
+  { id: 'verde', hex: '#059669' },
   { id: 'azul', hex: '#3b82f6' },
 ] as const
 
@@ -41,6 +41,12 @@ function alturaBarra(valor: number): number {
 function formatoHora(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
+
+// Líneas guía horizontales: 0, mitad y máximo.
+const lineasGuia = computed(() => [0, 0.5, 1].map((f) => ({
+  y: altoGrafico - f * altoGrafico,
+  valor: Math.round(maxCantidad.value * f),
+})))
 </script>
 
 <template>
@@ -56,19 +62,34 @@ function formatoHora(iso: string): string {
       <figure v-else class="overflow-x-auto">
         <svg :viewBox="`0 0 ${ANCHO} ${ALTO}`" role="img" aria-label="Cajas clasificadas por hora, una barra por color" class="w-full min-w-[600px]">
           <g :transform="`translate(${MARGEN.left},${MARGEN.top})`">
-            <line x1="0" :y1="altoGrafico" :x2="anchoGrafico" :y2="altoGrafico" stroke="currentColor" class="text-border" />
+            <g v-for="linea in lineasGuia" :key="linea.y">
+              <line
+                x1="0"
+                :y1="linea.y"
+                :x2="anchoGrafico"
+                :y2="linea.y"
+                stroke="currentColor"
+                class="text-border"
+              />
+              <text x="-8" :y="linea.y" text-anchor="end" dominant-baseline="middle" font-size="10" fill="currentColor" class="text-muted-foreground tabular-nums">
+                {{ linea.valor }}
+              </text>
+            </g>
 
             <g v-for="(hora, hi) in horas" :key="hora" :transform="`translate(${hi * grupoAncho},0)`">
               <rect
                 v-for="(color, ci) in COLORES"
                 :key="color.id"
+                class="transition-opacity hover:opacity-80"
                 :x="ci * barraAncho + barraAncho / 2"
                 :y="altoGrafico - alturaBarra(cantidad(hora, color.id))"
                 :width="barraAncho"
                 :height="alturaBarra(cantidad(hora, color.id))"
                 :fill="color.hex"
-                rx="2"
-              />
+                rx="3"
+              >
+                <title>{{ color.id }} · {{ formatoHora(hora) }} · {{ cantidad(hora, color.id) }} cajas</title>
+              </rect>
               <text
                 :x="grupoAncho / 2"
                 :y="altoGrafico + 18"
@@ -83,8 +104,8 @@ function formatoHora(iso: string): string {
           </g>
         </svg>
         <figcaption class="mt-2 flex justify-center gap-4 text-xs text-muted-foreground">
-          <span v-for="color in COLORES" :key="color.id" class="flex items-center gap-1.5">
-            <span class="h-2.5 w-2.5 rounded-sm" :style="{ backgroundColor: color.hex }" />
+          <span v-for="color in COLORES" :key="color.id" class="flex items-center gap-1.5 capitalize">
+            <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: color.hex }" />
             {{ color.id }}
           </span>
         </figcaption>
