@@ -1,5 +1,8 @@
 """Siembra los 2 usuarios del proyecto. Se puede correr varias veces: si el
-usuario ya existe, solo actualiza sus hashes en vez de duplicarlo."""
+usuario ya existe, solo actualiza su hash en vez de duplicarlo.
+
+Un solo secreto por usuario (numérico): se teclea igual en el ESP32 y se
+escribe igual en el formulario web — así lo pidió el docente."""
 
 import asyncio
 
@@ -13,20 +16,20 @@ async def main() -> None:
     conn = await asyncpg.connect(settings.database_url)
     try:
         usuarios = [
-            (settings.seed_usuario_1_nombre, settings.seed_usuario_1_pin, settings.seed_usuario_1_password),
-            (settings.seed_usuario_2_nombre, settings.seed_usuario_2_pin, settings.seed_usuario_2_password),
+            (settings.seed_usuario_1_nombre, settings.seed_usuario_1_secreto),
+            (settings.seed_usuario_2_nombre, settings.seed_usuario_2_secreto),
         ]
-        for nombre, pin, password in usuarios:
+        for nombre, secreto in usuarios:
             await conn.execute(
                 """
-                INSERT INTO usuarios (nombre, pin_hash, password_hash)
-                VALUES ($1, $2, $3)
+                INSERT INTO usuarios (nombre, password_hash)
+                VALUES ($1, $2)
                 ON CONFLICT (nombre) DO UPDATE
-                SET pin_hash = EXCLUDED.pin_hash, password_hash = EXCLUDED.password_hash
+                SET password_hash = EXCLUDED.password_hash
                 """,
-                nombre, hash_secret(pin), hash_secret(password),
+                nombre, hash_secret(secreto),
             )
-            print(f"usuario '{nombre}' listo (PIN={pin})")
+            print(f"usuario '{nombre}' listo (clave={secreto})")
     finally:
         await conn.close()
 

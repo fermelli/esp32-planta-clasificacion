@@ -33,7 +33,7 @@ server/
 
 ```bash
 cd server
-cp .env.example .env          # editar JWT_SECRET y los PIN/password de siembra
+cp .env.example .env          # editar JWT_SECRET y el secreto de siembra de cada usuario
 docker compose up -d          # Postgres + Mosquitto
 python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
 .venv/Scripts/python seed.py  # siembra los 2 usuarios
@@ -61,6 +61,12 @@ Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <t
 
 El WebSocket es de solo lectura desde el dashboard: el servidor nunca
 espera un mensaje entrante, solo transmite.
+
+**Un solo secreto por usuario.** `usuarios` tiene una sola columna
+`password_hash` — pedido del docente: la misma contraseña sirve para
+entrar por el teclado 4x4 del ESP32 y por el formulario web. Como el
+teclado solo escribe dígitos, el secreto es numérico (un PIN), y esa misma
+cadena se escribe en el campo de contraseña de la web.
 
 ## Por qué está separado de Docker
 

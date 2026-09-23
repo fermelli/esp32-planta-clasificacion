@@ -2,11 +2,12 @@
 -- viven en server/migrations/ y se aplican cuando toca ese bloque, no antes.
 
 -- QUIÉN PUEDE ENTRAR. Solo 2 filas (los 2 usuarios de la pizarra).
--- pin_hash es para el teclado 4x4; password_hash para entrar al dashboard web.
+-- Un solo secreto por usuario (pedido del docente: misma contraseña para
+-- teclado y web) — numérico, porque el teclado 4x4 solo escribe dígitos.
+-- Se teclea igual en el ESP32 y se escribe igual en el formulario web.
 CREATE TABLE usuarios (
   id            SERIAL PRIMARY KEY,
   nombre        TEXT NOT NULL UNIQUE,
-  pin_hash      TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   creado_en     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
