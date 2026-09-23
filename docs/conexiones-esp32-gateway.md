@@ -9,20 +9,20 @@ por el USB de programación, nada aquí necesita fuente externa.
 
 ## Tabla de pines
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| Teclado — Fila 1 | 13 | `OUTPUT` |
-| Teclado — Fila 2 | 14 | `OUTPUT` |
-| Teclado — Fila 3 | 27 | `OUTPUT` |
-| Teclado — Fila 4 | 26 | `OUTPUT` |
-| Teclado — Columna 1 | 25 | `INPUT_PULLUP` |
-| Teclado — Columna 2 | 33 | `INPUT_PULLUP` |
-| Teclado — Columna 3 | 32 | `INPUT_PULLUP` |
-| Teclado — Columna 4 | 15 | `INPUT_PULLUP` |
-| LCD — SDA | 21 | I2C, mismo bus que usará el TCS3472 en el otro ESP32 (Bloque 2) |
-| LCD — SCL | 22 | I2C |
-| LCD — VCC | `VIN` | El pin de 5V del devkit (serigrafiado `VIN`), no `3V3` |
-| LCD — GND | GND | |
+| Señal               | GPIO  | Notas                                                           |
+| ------------------- | ----- | --------------------------------------------------------------- |
+| Teclado — Fila 1    | 13    | `OUTPUT`                                                        |
+| Teclado — Fila 2    | 14    | `OUTPUT`                                                        |
+| Teclado — Fila 3    | 27    | `OUTPUT`                                                        |
+| Teclado — Fila 4    | 26    | `OUTPUT`                                                        |
+| Teclado — Columna 1 | 25    | `INPUT_PULLUP`                                                  |
+| Teclado — Columna 2 | 33    | `INPUT_PULLUP`                                                  |
+| Teclado — Columna 3 | 32    | `INPUT_PULLUP`                                                  |
+| Teclado — Columna 4 | 15    | `INPUT_PULLUP`                                                  |
+| LCD — SDA           | 21    | I2C, mismo bus que usará el TCS3472 en el otro ESP32 (Bloque 2) |
+| LCD — SCL           | 22    | I2C                                                             |
+| LCD — VCC           | `VIN` | El pin de 5V del devkit (serigrafiado `VIN`), no `3V3`          |
+| LCD — GND           | GND   |                                                                 |
 
 Coincide exactamente con `pinesFilas`/`pinesColumnas` y `LiquidCrystal_I2C lcd(0x27, 16, 2)`
 en [`firmware/esp32-gateway/src/main.cpp`](../firmware/esp32-gateway/src/main.cpp).

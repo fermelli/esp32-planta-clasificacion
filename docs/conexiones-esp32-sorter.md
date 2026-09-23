@@ -12,12 +12,12 @@ servo, botón, fuente externa y ESP32 comparten un único GND. Sin ese cable
 de tierra común, el ESP32 se reinicia apenas el servo empieza a moverse —
 ver "Por qué la fuente externa" más abajo.
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| Servo — Señal | 13 | PWM, `Servo.attach(13)` (librería ESP32Servo) |
-| Servo — V+ | — | Fuente externa 5-12V, **no** el pin 5V del ESP32 |
-| Servo — GND | — | Al GND común |
-| Botón puerta | 4 | `INPUT_PULLUP`, antirrebote 40ms en firmware — no lleva resistencia externa |
+| Señal         | GPIO | Notas                                                                       |
+| ------------- | ---- | --------------------------------------------------------------------------- |
+| Servo — Señal | 13   | PWM, `Servo.attach(13)` (librería ESP32Servo)                               |
+| Servo — V+    | —    | Fuente externa 5-12V, **no** el pin 5V del ESP32                            |
+| Servo — GND   | —    | Al GND común                                                                |
+| Botón puerta  | 4    | `INPUT_PULLUP`, antirrebote 40ms en firmware — no lleva resistencia externa |
 
 Coincide con `PIN_SERVO_PUERTA` y `PIN_BOTON_PUERTA` en
 [`firmware/esp32-sorter/src/main.cpp`](../firmware/esp32-sorter/src/main.cpp).
@@ -37,19 +37,19 @@ interprete bien.
 
 ![Motor L298N y sensor TCS3472](img/esp32-sorter-motor-sensor.svg)
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| L298N — ENA | 25 | PWM (`ledcAttachPin`), controla la velocidad |
-| L298N — IN1 | 26 | Dirección, fija en `HIGH` en el firmware (un solo sentido de giro) |
-| L298N — IN2 | 27 | Dirección, fija en `LOW` |
-| L298N — VMS / 12V | — | Fuente externa 6-12V (la del motor), **no** el ESP32 |
-| L298N — GND | — | Al GND común (ESP32 + fuente + L298N) |
-| Motor — OUT1 / OUT2 | — | A los dos bornes del motor, no importa cuál va a cuál (si gira al revés, se invierten) |
-| TCS3472 — SDA | 21 | I2C, mismo bus que usa el LCD del gateway (son placas distintas, no hay conflicto) |
-| TCS3472 — SCL | 22 | I2C |
-| TCS3472 — VIN | 3V3 | El sensor sí se alimenta del propio ESP32 — a diferencia del motor, consume poquísimo |
-| TCS3472 — GND | — | Al mismo GND común |
-| Botón inicio/stop cinta | 14 | `INPUT_PULLUP`, alterna off↔low; "full" solo por comando remoto |
+| Señal                   | GPIO | Notas                                                                                  |
+| ----------------------- | ---- | -------------------------------------------------------------------------------------- |
+| L298N — ENA             | 25   | PWM (`ledcAttachPin`), controla la velocidad                                           |
+| L298N — IN1             | 26   | Dirección, fija en `HIGH` en el firmware (un solo sentido de giro)                     |
+| L298N — IN2             | 27   | Dirección, fija en `LOW`                                                               |
+| L298N — VMS / 12V       | —    | Fuente externa 6-12V (la del motor), **no** el ESP32                                   |
+| L298N — GND             | —    | Al GND común (ESP32 + fuente + L298N)                                                  |
+| Motor — OUT1 / OUT2     | —    | A los dos bornes del motor, no importa cuál va a cuál (si gira al revés, se invierten) |
+| TCS3472 — SDA           | 21   | I2C, mismo bus que usa el LCD del gateway (son placas distintas, no hay conflicto)     |
+| TCS3472 — SCL           | 22   | I2C                                                                                    |
+| TCS3472 — VIN           | 3V3  | El sensor sí se alimenta del propio ESP32 — a diferencia del motor, consume poquísimo  |
+| TCS3472 — GND           | —    | Al mismo GND común                                                                     |
+| Botón inicio/stop cinta | 14   | `INPUT_PULLUP`, alterna off↔low; "full" solo por comando remoto                        |
 
 Coincide con `PIN_MOTOR_ENA/IN1/IN2`, `PIN_BOTON_CINTA` y la inicialización
 de `Adafruit_TCS34725` en
@@ -65,10 +65,10 @@ así que su `VIN` va directo al `3V3` del ESP32 sin problema.
 ![9 LEDs y resistencias](img/esp32-sorter-leds.svg)
 
 | Color | GPIO (peso 4 / 2 / 1) |
-|---|---|
-| Rojo | 16, 17, 5 |
-| Verde | 18, 19, 23 |
-| Azul | 32, 33, 12 |
+| ----- | --------------------- |
+| Rojo  | 16, 17, 5             |
+| Verde | 18, 19, 23            |
+| Azul  | 32, 33, 12            |
 
 Cada LED lleva su propia resistencia de **220Ω en serie**, entre el GPIO y
 el ánodo (pata larga) del LED — nunca el LED solo. El cátodo (pata corta,

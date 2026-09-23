@@ -47,17 +47,17 @@ la red) le llegue por la IP de esta PC, no solo `localhost`.
 
 Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <token>`.
 
-| Método | Ruta | Qué hace |
-|---|---|---|
-| `POST` | `/api/auth/login` | `{nombre, password}` → JWT. Registra el intento (origen `web`) |
-| `GET` | `/api/intentos?limite=50` | Historial de login (`keypad` + `web`) |
-| `GET` | `/api/alertas?limite=50` | Alertas (`login_bloqueado`, `lote_completo`) |
-| `POST` | `/api/comandos` | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts` |
-| `GET` | `/api/eventos?limite=50` | Últimas cajas, con lectura cruda del sensor |
-| `GET` | `/api/conteos` | Conteo actual + total histórico + lotes por color |
-| `GET` | `/api/produccion/historico?horas=24` | Cajas por hora, agrupadas por color |
-| `GET` | `/api/salud` | Sin auth. Para confirmar que el proceso está vivo |
-| `WS` | `/ws` | Sin auth. Reenvía `intento_login`, `sorter_estado`, `evento_caja`, `alerta` en vivo |
+| Método | Ruta                                 | Qué hace                                                                            |
+| ------ | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `POST` | `/api/auth/login`                    | `{nombre, password}` → JWT. Registra el intento (origen `web`)                      |
+| `GET`  | `/api/intentos?limite=50`            | Historial de login (`keypad` + `web`)                                               |
+| `GET`  | `/api/alertas?limite=50`             | Alertas (`login_bloqueado`, `lote_completo`)                                        |
+| `POST` | `/api/comandos`                      | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts`    |
+| `GET`  | `/api/eventos?limite=50`             | Últimas cajas, con lectura cruda del sensor                                         |
+| `GET`  | `/api/conteos`                       | Conteo actual + total histórico + lotes por color                                   |
+| `GET`  | `/api/produccion/historico?horas=24` | Cajas por hora, agrupadas por color                                                 |
+| `GET`  | `/api/salud`                         | Sin auth. Para confirmar que el proceso está vivo                                   |
+| `WS`   | `/ws`                                | Sin auth. Reenvía `intento_login`, `sorter_estado`, `evento_caja`, `alerta` en vivo |
 
 El WebSocket es de solo lectura desde el dashboard: el servidor nunca
 espera un mensaje entrante, solo transmite.

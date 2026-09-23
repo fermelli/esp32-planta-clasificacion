@@ -22,11 +22,11 @@ gateway sin conocerlo de antemano** — ver la sección de riesgos en
 
 ## Dónde corre cada cosa
 
-| Pieza | Dónde | Por qué |
-|---|---|---|
-| Mosquitto, FastAPI, Postgres | PC de escritorio (Docker) | Es la máquina rápida; el ESP32 le llega por IP local en la misma red WiFi |
-| Firmware de los 2 ESP32 | Se compilan/flashean desde la laptop | Solo hace falta el puerto USB al flashear, no potencia de cómputo |
-| Dashboard | Navegador, apuntando a la PC de escritorio | Es una SPA que solo necesita HTTP/WebSocket |
+| Pieza                        | Dónde                                      | Por qué                                                                   |
+| ---------------------------- | ------------------------------------------ | ------------------------------------------------------------------------- |
+| Mosquitto, FastAPI, Postgres | PC de escritorio (Docker)                  | Es la máquina rápida; el ESP32 le llega por IP local en la misma red WiFi |
+| Firmware de los 2 ESP32      | Se compilan/flashean desde la laptop       | Solo hace falta el puerto USB al flashear, no potencia de cómputo         |
+| Dashboard                    | Navegador, apuntando a la PC de escritorio | Es una SPA que solo necesita HTTP/WebSocket                               |
 
 Los túneles de VS Code **no sirven para el MQTT** (son proxies HTTP, no TCP
 crudo); si hiciera falta exponer algo hacia afuera, es el dashboard/API, no

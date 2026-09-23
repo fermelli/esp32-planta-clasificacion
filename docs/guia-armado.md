@@ -17,7 +17,7 @@ versión "todo junto" para armar de corrido sin saltar entre páginas.
   - Pueden ser la misma fuente si da el voltaje para ambas, pero **nunca**
     el pin `5V`/`VIN` del ESP32 — no aguanta la corriente.
 - **GND común obligatorio** en cada placa: ESP32 + su(s) fuente(s) externa(s)
-  + todo lo que alimenten esas fuentes comparten un mismo GND.
+  - todo lo que alimenten esas fuentes comparten un mismo GND.
 
 ---
 
@@ -27,20 +27,20 @@ versión "todo junto" para armar de corrido sin saltar entre páginas.
 
 ![Esquemático del ESP32 gateway](img/esp32-gateway-esquematico.svg)
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| Teclado — Fila 1 | 13 | `OUTPUT` |
-| Teclado — Fila 2 | 14 | `OUTPUT` |
-| Teclado — Fila 3 | 27 | `OUTPUT` |
-| Teclado — Fila 4 | 26 | `OUTPUT` |
-| Teclado — Columna 1 | 25 | `INPUT_PULLUP` |
-| Teclado — Columna 2 | 33 | `INPUT_PULLUP` |
-| Teclado — Columna 3 | 32 | `INPUT_PULLUP` |
-| Teclado — Columna 4 | 15 | `INPUT_PULLUP` |
-| LCD — SDA | 21 | I2C |
-| LCD — SCL | 22 | I2C |
-| LCD — VCC | `VIN` | 5V del devkit, no `3V3` |
-| LCD — GND | GND | |
+| Señal               | GPIO  | Notas                   |
+| ------------------- | ----- | ----------------------- |
+| Teclado — Fila 1    | 13    | `OUTPUT`                |
+| Teclado — Fila 2    | 14    | `OUTPUT`                |
+| Teclado — Fila 3    | 27    | `OUTPUT`                |
+| Teclado — Fila 4    | 26    | `OUTPUT`                |
+| Teclado — Columna 1 | 25    | `INPUT_PULLUP`          |
+| Teclado — Columna 2 | 33    | `INPUT_PULLUP`          |
+| Teclado — Columna 3 | 32    | `INPUT_PULLUP`          |
+| Teclado — Columna 4 | 15    | `INPUT_PULLUP`          |
+| LCD — SDA           | 21    | I2C                     |
+| LCD — SCL           | 22    | I2C                     |
+| LCD — VCC           | `VIN` | 5V del devkit, no `3V3` |
+| LCD — GND           | GND   |                         |
 
 Sin resistencias externas (el teclado usa pull-up interno). El LCD sí
 necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
@@ -57,40 +57,40 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 
 ![Esquemático del ESP32 sorter](img/esp32-sorter-esquematico.svg)
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| Servo — Señal | 13 | PWM |
-| Servo — V+ | — | Fuente externa 5-12V |
-| Servo — GND | — | GND común |
-| Botón puerta | 4 | `INPUT_PULLUP`, sin resistencia externa |
+| Señal         | GPIO | Notas                                   |
+| ------------- | ---- | --------------------------------------- |
+| Servo — Señal | 13   | PWM                                     |
+| Servo — V+    | —    | Fuente externa 5-12V                    |
+| Servo — GND   | —    | GND común                               |
+| Botón puerta  | 4    | `INPUT_PULLUP`, sin resistencia externa |
 
 ### Cinta: motor + L298N, y sensor de color
 
 ![Motor L298N y sensor TCS3472](img/esp32-sorter-motor-sensor.svg)
 
-| Señal | GPIO | Notas |
-|---|---|---|
-| L298N — ENA | 25 | PWM, velocidad |
-| L298N — IN1 | 26 | Dirección (fija en el firmware) |
-| L298N — IN2 | 27 | Dirección |
-| L298N — VMS/12V | — | Fuente externa 6-12V |
-| L298N — GND | — | GND común |
-| Motor — OUT1/OUT2 | — | A los bornes del motor, cualquier orden |
-| TCS3472 — SDA | 21 | I2C |
-| TCS3472 — SCL | 22 | I2C |
-| TCS3472 — VIN | `3V3` | Sí sale del ESP32 (consume poco) |
-| TCS3472 — GND | — | GND común |
-| Botón inicio/stop cinta | 14 | `INPUT_PULLUP`, alterna off↔low |
+| Señal                   | GPIO  | Notas                                   |
+| ----------------------- | ----- | --------------------------------------- |
+| L298N — ENA             | 25    | PWM, velocidad                          |
+| L298N — IN1             | 26    | Dirección (fija en el firmware)         |
+| L298N — IN2             | 27    | Dirección                               |
+| L298N — VMS/12V         | —     | Fuente externa 6-12V                    |
+| L298N — GND             | —     | GND común                               |
+| Motor — OUT1/OUT2       | —     | A los bornes del motor, cualquier orden |
+| TCS3472 — SDA           | 21    | I2C                                     |
+| TCS3472 — SCL           | 22    | I2C                                     |
+| TCS3472 — VIN           | `3V3` | Sí sale del ESP32 (consume poco)        |
+| TCS3472 — GND           | —     | GND común                               |
+| Botón inicio/stop cinta | 14    | `INPUT_PULLUP`, alterna off↔low         |
 
 ### Los 9 LEDs — contador binario
 
 ![9 LEDs y resistencias](img/esp32-sorter-leds.svg)
 
 | Color | GPIO (peso 4 / 2 / 1) |
-|---|---|
-| Rojo | 16, 17, 5 |
-| Verde | 18, 19, 23 |
-| Azul | 32, 33, 12 |
+| ----- | --------------------- |
+| Rojo  | 16, 17, 5             |
+| Verde | 18, 19, 23            |
+| Azul  | 32, 33, 12            |
 
 Cada LED con su resistencia de **220Ω** entre el GPIO y el ánodo (pata
 larga); el cátodo (pata corta) al GND común. 9 LEDs, 9 resistencias.

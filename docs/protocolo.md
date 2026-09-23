@@ -24,8 +24,7 @@ struct __attribute__((packed)) SorterMsg {
 };
 ```
 
-El struct se definió completo desde el Bloque 1 (motor, color, conteos en
-0) para no tener que tocarlo ni recompilar las dos placas a mitad de
+El struct se definió completo desde el Bloque 1 (motor, color, conteos en 0) para no tener que tocarlo ni recompilar las dos placas a mitad de
 camino; el Bloque 2 solo empezó a llenar esos campos de verdad. El único
 campo que se agregó recién en el Bloque 2 fue `lote_completo` — no estaba
 previsto en el diseño original, hizo falta cuando el gateway necesitó
@@ -47,14 +46,14 @@ cada segundo y que el sorter usa para el barrido de canal (ver
 
 ## MQTT — topics
 
-| Topic | Dirección | Payload | Quién lo usa |
-|---|---|---|---|
-| `planta/login/intento` | ESP32 #1 → servidor | `{"pin": "1234", "intento": 1}` | Gateway publica al presionar `#` en el teclado |
-| `planta/login/resultado` | servidor → ESP32 #1 | `{"exito": true, "nombre": "operador1", "bloqueado": false, "intento": 1}` | Servidor responde tras validar contra `usuarios` |
-| `planta/sorter/estado` | ESP32 #1 → servidor | `{"puerta_abierta": true, "cinta_estado": "low"}` | Gateway reenvía lo que le llega por ESP-NOW; el servidor solo lo relay-ea por WebSocket, no lo persiste |
-| `planta/sorter/evento` | ESP32 #1 → servidor | `{"color": "rojo", "conteo": 3, "lote_completo": false, "r": 900, "g": 200, "b": 180, "c": 1300}` | Cada caja que pasa por el sensor. `conteo` ya viene calculado por el ESP32 (Bloque 2) |
-| `planta/sorter/alerta` | ESP32 #1 → servidor | `{"tipo": "...", "mensaje": "..."}` | Alertas del sorter fuera de `lote_completo` (que se deriva del evento). Sin uso todavía |
-| `planta/cmd` | servidor → ESP32 #1 | `{"cmd": "puerta", "arg": 1}` · `{"cmd": "motor", "arg": 0\|1\|2}` · `{"cmd": "reset_counts"}` | Dashboard controla puerta/cinta o resetea los contadores (`POST /api/comandos`) |
+| Topic                    | Dirección           | Payload                                                                                           | Quién lo usa                                                                                            |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `planta/login/intento`   | ESP32 #1 → servidor | `{"pin": "1234", "intento": 1}`                                                                   | Gateway publica al presionar `#` en el teclado                                                          |
+| `planta/login/resultado` | servidor → ESP32 #1 | `{"exito": true, "nombre": "operador1", "bloqueado": false, "intento": 1}`                        | Servidor responde tras validar contra `usuarios`                                                        |
+| `planta/sorter/estado`   | ESP32 #1 → servidor | `{"puerta_abierta": true, "cinta_estado": "low"}`                                                 | Gateway reenvía lo que le llega por ESP-NOW; el servidor solo lo relay-ea por WebSocket, no lo persiste |
+| `planta/sorter/evento`   | ESP32 #1 → servidor | `{"color": "rojo", "conteo": 3, "lote_completo": false, "r": 900, "g": 200, "b": 180, "c": 1300}` | Cada caja que pasa por el sensor. `conteo` ya viene calculado por el ESP32 (Bloque 2)                   |
+| `planta/sorter/alerta`   | ESP32 #1 → servidor | `{"tipo": "...", "mensaje": "..."}`                                                               | Alertas del sorter fuera de `lote_completo` (que se deriva del evento). Sin uso todavía                 |
+| `planta/cmd`             | servidor → ESP32 #1 | `{"cmd": "puerta", "arg": 1}` · `{"cmd": "motor", "arg": 0\|1\|2}` · `{"cmd": "reset_counts"}`    | Dashboard controla puerta/cinta o resetea los contadores (`POST /api/comandos`)                         |
 
 `nombre` viene `null` cuando el PIN no corresponde a nadie; `bloqueado` es
 `true` cuando el intento fallido es el número 2 — ahí el servidor también
