@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Arquitectura del sistema — Bloque 1</title>
+  <rect x="0" y="0" width="980" height="470" fill="#ffffff"/>
+  <text x="490.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Arquitectura del sistema — Bloque 1</text>
+  <text x="490.0" y="52" text-anchor="middle" font-size="13" fill="#555">Solo el ESP32 #1 tiene WiFi; Mosquitto, FastAPI y Postgres corren juntos en la PC de escritorio</text>
+  <g transform="translate(0,70)">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0L10,5L0,10z" fill="#334155"/>
+    </marker>
+  </defs>
+
+  <!-- Grupo: PC de escritorio -->
+  <rect x="378" y="18" width="410" height="330" rx="10" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="398" y="42" font-size="13" fill="#64748b" font-family="sans-serif">PC de escritorio (Docker)</text>
+
+  <!-- ESP32 sorter -->
+  <rect x="20" y="150" width="150" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="95" y="180" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="600">ESP32 #2</text>
+  <text x="95" y="198" text-anchor="middle" font-size="12" font-family="sans-serif">sorter</text>
+  <text x="95" y="238" text-anchor="middle" font-size="11" fill="#64748b" font-family="sans-serif">sin WiFi — solo ESP-NOW</text>
+
+  <!-- ESP32 gateway -->
+  <rect x="230" y="150" width="150" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="305" y="176" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="600">ESP32 #1</text>
+  <text x="305" y="194" text-anchor="middle" font-size="12" font-family="sans-serif">gateway</text>
+  <!-- antena wifi -->
+  <path d="M295,150 q10,-14 20,0" fill="none" stroke="#334155" stroke-width="1.5"/>
+  <path d="M300,150 q5,-7 10,0" fill="none" stroke="#334155" stroke-width="1.5"/>
+  <circle cx="305" cy="151" r="1.6" fill="#334155"/>
+
+  <!-- Mosquitto -->
+  <rect x="410" y="60" width="140" height="60" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="480" y="86" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Mosquitto</text>
+  <text x="480" y="103" text-anchor="middle" font-size="11" fill="#4338ca" font-family="sans-serif">broker MQTT :1883</text>
+
+  <!-- FastAPI -->
+  <rect x="410" y="160" width="140" height="60" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="480" y="186" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">FastAPI</text>
+  <text x="480" y="203" text-anchor="middle" font-size="11" fill="#4338ca" font-family="sans-serif">:8000</text>
+
+  <!-- Postgres -->
+  <rect x="410" y="260" width="140" height="60" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="480" y="286" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Postgres</text>
+  <text x="480" y="303" text-anchor="middle" font-size="11" fill="#4338ca" font-family="sans-serif">:5432</text>
+
+  <!-- Dashboard -->
+  <rect x="800" y="160" width="150" height="60" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="1.5"/>
+  <text x="875" y="186" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Dashboard</text>
+  <text x="875" y="203" text-anchor="middle" font-size="11" fill="#047857" font-family="sans-serif">Vue (navegador)</text>
+
+  <!-- Flechas -->
+  <line x1="170" y1="185" x2="228" y2="185" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="199" y="175" text-anchor="middle" font-size="11" font-family="sans-serif">ESP-NOW</text>
+
+  <path d="M305,150 C305,120 400,105 408,90" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M408,100 C400,115 305,130 305,150" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="345" y="118" text-anchor="middle" font-size="11" font-family="sans-serif">WiFi + MQTT</text>
+
+  <line x1="480" y1="120" x2="480" y2="158" stroke="#4338ca" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="530" y="143" text-anchor="middle" font-size="10.5" fill="#4338ca" font-family="sans-serif">paho-mqtt</text>
+
+  <line x1="480" y1="220" x2="480" y2="258" stroke="#4338ca" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="524" y="243" text-anchor="middle" font-size="10.5" fill="#4338ca" font-family="sans-serif">asyncpg</text>
+
+  <line x1="550" y1="190" x2="798" y2="190" stroke="#047857" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="674" y="180" text-anchor="middle" font-size="11" fill="#047857" font-family="sans-serif">WebSocket /ws + REST (JWT)</text>
+</g>
+</svg>

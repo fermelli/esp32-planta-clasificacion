@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 270" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Protocolo: de ESP-NOW a MQTT</title>
+  <rect x="0" y="0" width="900" height="270" fill="#ffffff"/>
+  <text x="450.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Protocolo: de ESP-NOW a MQTT</text>
+  <text x="450.0" y="52" text-anchor="middle" font-size="13" fill="#555">El gateway traduce structs binarios hacia el sorter y JSON hacia el servidor</text>
+  <g transform="translate(0,70)">
+  <defs>
+    <marker id="arrow3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0L10,5L0,10z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect x="20" y="60" width="150" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="95" y="90" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">sorter</text>
+  <text x="95" y="108" text-anchor="middle" font-size="11" fill="#64748b" font-family="sans-serif">ESP32 #2</text>
+
+  <rect x="360" y="60" width="150" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="435" y="90" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">gateway</text>
+  <text x="435" y="108" text-anchor="middle" font-size="11" fill="#64748b" font-family="sans-serif">ESP32 #1</text>
+
+  <rect x="710" y="60" width="150" height="70" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="785" y="90" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">servidor</text>
+  <text x="785" y="108" text-anchor="middle" font-size="11" fill="#4338ca" font-family="sans-serif">FastAPI</text>
+
+  <line x1="170" y1="82" x2="358" y2="82" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#arrow3)"/>
+  <text x="264" y="72" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="sans-serif">SorterMsg (binario, ESP-NOW)</text>
+
+  <line x1="358" y1="108" x2="170" y2="108" stroke="#b45309" stroke-width="1.5" marker-end="url(#arrow3)"/>
+  <text x="264" y="126" text-anchor="middle" font-size="11" fill="#b45309" font-family="sans-serif">CommandMsg (binario, ESP-NOW)</text>
+
+  <line x1="510" y1="82" x2="708" y2="82" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#arrow3)"/>
+  <text x="610" y="72" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="sans-serif">JSON (MQTT)</text>
+
+  <line x1="708" y1="108" x2="510" y2="108" stroke="#b45309" stroke-width="1.5" marker-end="url(#arrow3)"/>
+  <text x="610" y="126" text-anchor="middle" font-size="11" fill="#b45309" font-family="sans-serif">JSON (MQTT)</text>
+</g>
+</svg>
