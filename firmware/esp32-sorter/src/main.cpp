@@ -32,12 +32,17 @@ Servo servoPuerta;
 bool puertaAbierta = false;
 
 // --- Botón puerta, antirrebote ---
+// lectura*Ant = última lectura cruda (para detectar el flanco y reiniciar el
+// timer); estado*Estable = valor ya confirmado tras DEBOUNCE_MS, es contra
+// esto que se dispara la acción una sola vez por pulsación.
 constexpr unsigned long DEBOUNCE_MS = 40;
-int estadoBotonPuertaAnt = HIGH;
+int lecturaBotonPuertaAnt = HIGH;
+int estadoBotonPuertaEstable = HIGH;
 unsigned long ultimoCambioBotonPuerta = 0;
 
 // --- Botón cinta, antirrebote (toggle simple off/low; "full" es solo remoto) ---
-int estadoBotonCintaAnt = HIGH;
+int lecturaBotonCintaAnt = HIGH;
+int estadoBotonCintaEstable = HIGH;
 unsigned long ultimoCambioBotonCinta = 0;
 
 // --- Motor / cinta ---
@@ -97,12 +102,17 @@ void enviarEstado() {
   esp_now_send(ESPNOW_BROADCAST_ADDR, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
 }
 
-void enviarEventoCaja(uint8_t colorId, uint16_t r, uint16_t g, uint16_t b, uint16_t c, bool loteCompleto) {
+void enviarEventoCaja(uint8_t colorId, uint16_t r, uint16_t g, uint16_t b, uint16_t c,
+                       uint8_t conteoDeEstaCaja, bool loteCompleto) {
   SorterMsg msg{};
   msg.msg_type = MSG_EVENTO_CAJA;
   msg.color_id = colorId;
   msg.r = r; msg.g = g; msg.b = b; msg.c = c;
-  msg.count_r = countRojo; msg.count_g = countVerde; msg.count_b = countAzul;
+  // El conteo de la caja que disparó este evento (1-5), no el contador ya
+  // reseteado — si esta caja cerró el lote, count_* ya volvió a 0.
+  msg.count_r = colorId == COLOR_ROJO ? conteoDeEstaCaja : countRojo;
+  msg.count_g = colorId == COLOR_VERDE ? conteoDeEstaCaja : countVerde;
+  msg.count_b = colorId == COLOR_AZUL ? conteoDeEstaCaja : countAzul;
   msg.lote_completo = loteCompleto ? 1 : 0;
   msg.motor_state = motorState;
   msg.door_open = puertaAbierta ? 1 : 0;
@@ -121,22 +131,28 @@ uint8_t clasificarColor(uint16_t r, uint16_t g, uint16_t b, uint16_t c) {
   return COLOR_DESCONOCIDO;
 }
 
-bool procesarConteo(uint8_t colorId) {
+// Devuelve el conteo de ESTA caja (1-5) para reportar al servidor, y deja en
+// loteCompleto si fue la que cerró el lote. Los LEDs sí se resetean a 000 de
+// inmediato al cerrar el lote (así lo especifica la pizarra); el valor
+// reportado en el evento no, para que el dashboard vea "conteo 5, lote
+// completo" en vez de "conteo 0, lote completo" (contradictorio).
+uint8_t procesarConteo(uint8_t colorId, bool &loteCompleto) {
+  loteCompleto = false;
   uint8_t *contador = nullptr;
   const int *pinesLed = nullptr;
   if (colorId == COLOR_ROJO) { contador = &countRojo; pinesLed = LED_ROJO; }
   else if (colorId == COLOR_VERDE) { contador = &countVerde; pinesLed = LED_VERDE; }
   else if (colorId == COLOR_AZUL) { contador = &countAzul; pinesLed = LED_AZUL; }
-  else return false;  // desconocido: no cuenta, no resetea
+  else return 0;  // desconocido: no cuenta, no resetea
 
   (*contador)++;
-  bool loteCompleto = false;
+  uint8_t conteoDeEstaCaja = *contador;
   if (*contador >= 5) {
     loteCompleto = true;
     *contador = 0;
   }
   mostrarContador(pinesLed, *contador);
-  return loteCompleto;
+  return conteoDeEstaCaja;
 }
 
 void leerSensorYClasificar() {
@@ -147,8 +163,9 @@ void leerSensorYClasificar() {
   if (!cajaEnCurso && c > UMBRAL_PRESENCIA) {
     cajaEnCurso = true;
     uint8_t colorId = clasificarColor(r, g, b, c);
-    bool loteCompleto = procesarConteo(colorId);
-    enviarEventoCaja(colorId, r, g, b, c, loteCompleto);
+    bool loteCompleto = false;
+    uint8_t conteoDeEstaCaja = procesarConteo(colorId, loteCompleto);
+    enviarEventoCaja(colorId, r, g, b, c, conteoDeEstaCaja, loteCompleto);
   } else if (cajaEnCurso && c <= UMBRAL_PRESENCIA) {
     cajaEnCurso = false;  // la caja ya pasó, listo para la próxima
   }
@@ -214,22 +231,30 @@ void barrerCanalSiHaceFalta() {
 
 void leerBotonPuerta() {
   int lectura = digitalRead(PIN_BOTON_PUERTA);
-  if (lectura != estadoBotonPuertaAnt) ultimoCambioBotonPuerta = millis();
-  if ((millis() - ultimoCambioBotonPuerta) > DEBOUNCE_MS && lectura == LOW && estadoBotonPuertaAnt == HIGH) {
-    aplicarPuerta(!puertaAbierta);
-    enviarEstado();
+  if (lectura != lecturaBotonPuertaAnt) ultimoCambioBotonPuerta = millis();
+
+  if ((millis() - ultimoCambioBotonPuerta) > DEBOUNCE_MS && lectura != estadoBotonPuertaEstable) {
+    estadoBotonPuertaEstable = lectura;
+    if (estadoBotonPuertaEstable == LOW) {
+      aplicarPuerta(!puertaAbierta);
+      enviarEstado();
+    }
   }
-  estadoBotonPuertaAnt = lectura;
+  lecturaBotonPuertaAnt = lectura;
 }
 
 void leerBotonCinta() {
   int lectura = digitalRead(PIN_BOTON_CINTA);
-  if (lectura != estadoBotonCintaAnt) ultimoCambioBotonCinta = millis();
-  if ((millis() - ultimoCambioBotonCinta) > DEBOUNCE_MS && lectura == LOW && estadoBotonCintaAnt == HIGH) {
-    aplicarMotor(motorState == MOTOR_OFF ? MOTOR_LOW : MOTOR_OFF);
-    enviarEstado();
+  if (lectura != lecturaBotonCintaAnt) ultimoCambioBotonCinta = millis();
+
+  if ((millis() - ultimoCambioBotonCinta) > DEBOUNCE_MS && lectura != estadoBotonCintaEstable) {
+    estadoBotonCintaEstable = lectura;
+    if (estadoBotonCintaEstable == LOW) {
+      aplicarMotor(motorState == MOTOR_OFF ? MOTOR_LOW : MOTOR_OFF);
+      enviarEstado();
+    }
   }
-  estadoBotonCintaAnt = lectura;
+  lecturaBotonCintaAnt = lectura;
 }
 
 void setup() {
