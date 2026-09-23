@@ -3,7 +3,7 @@
 Teclado matricial 4x4 + LCD I2C. Es la única placa con WiFi; se alimenta
 por el USB de programación, nada aquí necesita fuente externa.
 
-![Conexiones del ESP32 gateway](img/esp32-gateway-conexiones.svg)
+![Esquemático del ESP32 gateway](img/esp32-gateway-esquematico.svg)
 
 8 GPIO para el teclado (4 filas + 4 columnas, sin resistencias externas: las columnas usan pull-up interno) y 4 para el LCD por I2C. Ningún componente de esta placa necesita fuente externa.
 
@@ -39,9 +39,16 @@ Si tu módulo LCD no responde, probá la dirección `0x3F` (la otra dirección c
   ESP32 #2 lo necesita para sincronizar ESP-NOW — ver
   [`conexiones-esp32-sorter.md`](./conexiones-esp32-sorter.md).
 
-El diagrama de arriba marca la posición real de cada pin sobre el layout
-físico de una DOIT ESP32 DEVKIT V1 (30 pines) — el mismo modelo y la misma
-plantilla que `esp32-potenciometro-led/docs/img/esp32-pinout-fisico.svg`.
-Referencia completa, sin resaltar nada:
+## Dónde está cada pin en la placa física real
+
+El esquemático de arriba es lógico (qué componente va a qué GPIO); para
+encontrar cada pin sobre la placa real, este otro diagrama marca la
+posición física exacta en una DOIT ESP32 DEVKIT V1 (30 pines) — el mismo
+modelo y la misma plantilla que
+`esp32-potenciometro-led/docs/img/esp32-pinout-fisico.svg`:
+
+![Conexiones del ESP32 gateway sobre el pinout físico](img/esp32-gateway-conexiones.svg)
+
+Referencia completa sin resaltar nada:
 
 ![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)

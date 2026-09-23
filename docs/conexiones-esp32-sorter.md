@@ -1,10 +1,8 @@
 # Conexiones — ESP32 #2 (sorter)
 
-Bloque 1: servo de la puerta + botón. Sin WiFi — solo ESP-NOW. El diagrama
-marca dónde está cada pin sobre la placa física real (no una caja
-inventada), para que lo encuentres directo al armar.
+Bloque 1: servo de la puerta + botón. Sin WiFi — solo ESP-NOW.
 
-![Conexiones del ESP32 sorter](img/esp32-sorter-conexiones.svg)
+![Esquemático del ESP32 sorter](img/esp32-sorter-esquematico.svg)
 
 La señal del servo (GPIO13) y el botón (GPIO4) van directo al ESP32, pero
 servo, botón, fuente externa y ESP32 comparten un único GND. Sin ese cable
@@ -36,9 +34,8 @@ interprete bien.
 
 ## Pines reservados para el Bloque 2 — no los uses para otra cosa
 
-Todavía no se arman, pero ya están apartados (marcados en gris punteado en
-el diagrama de arriba, sobre su posición física real) para no chocar
-cables mientras conectás el Bloque 1:
+Todavía no se arman, pero ya están apartados para no chocar cables mientras
+conectás el Bloque 1:
 
 | Módulo | GPIO |
 |---|---|
@@ -49,9 +46,17 @@ cables mientras conectás el Bloque 1:
 | LEDs azul | 32, 33, 12 |
 | Botón inicio/stop cinta | 14 |
 
+## Dónde está cada pin en la placa física real
+
 Entre el Bloque 1 y el Bloque 2 este ESP32 usa 17 de sus 30 pines físicos —
-por eso vale la pena el diagrama de posición real en vez de una lista: al
-armar a mano es fácil confundir un pin cercano en la placa por otro.
+por eso, además del esquemático lógico de arriba, vale la pena ver la
+posición real en la placa: al armar a mano es fácil confundir un pin
+cercano por otro. Bloque 1 en color sólido, Bloque 2 en gris punteado
+(reservado, aún sin armar), sobre el layout real de una DOIT ESP32 DEVKIT
+V1 (30 pines):
+
+![Conexiones del ESP32 sorter sobre el pinout físico](img/esp32-sorter-conexiones.svg)
+
 Referencia completa (sin resaltar nada):
 
 ![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)
