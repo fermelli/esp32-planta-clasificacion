@@ -57,6 +57,31 @@ void lcdMensaje(const String &linea1, const String &linea2, unsigned long duraci
   mensajeExpiraEn = millis() + duracionMs;
 }
 
+// Igual que lcdMensaje, pero no interrumpe si el usuario está tecleando un
+// PIN o esperando la respuesta del login — un evento de producción no debe
+// robarle la siguiente tecla a alguien a mitad de su clave.
+void lcdMensajeSiLibre(const String &linea1, const String &linea2, unsigned long duracionMs) {
+  if (pinBuffer.length() > 0 || esperandoRespuesta) return;
+  lcdMensaje(linea1, linea2, duracionMs);
+}
+
+const char *nombreColor(uint8_t colorId) {
+  switch (colorId) {
+    case COLOR_ROJO: return "rojo";
+    case COLOR_VERDE: return "verde";
+    case COLOR_AZUL: return "azul";
+    default: return "desconocido";
+  }
+}
+
+const char *nombreMotor(uint8_t estado) {
+  switch (estado) {
+    case MOTOR_LOW: return "low";
+    case MOTOR_FULL: return "full";
+    default: return "off";
+  }
+}
+
 void enviarComandoAlSorter(uint8_t cmd, uint8_t arg) {
   CommandMsg msg{cmd, arg};
   esp_now_send(ESPNOW_BROADCAST_ADDR, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
@@ -70,9 +95,31 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
   if (msg.msg_type == MSG_ESTADO) {
     JsonDocument doc;
     doc["puerta_abierta"] = msg.door_open == 1;
-    char buf[64];
+    doc["cinta_estado"] = nombreMotor(msg.motor_state);
+    char buf[96];
     size_t n = serializeJson(doc, buf);
     mqtt.publish("planta/sorter/estado", buf, n);
+
+  } else if (msg.msg_type == MSG_EVENTO_CAJA) {
+    const char *color = nombreColor(msg.color_id);
+    uint8_t conteo = msg.color_id == COLOR_ROJO ? msg.count_r
+                    : msg.color_id == COLOR_VERDE ? msg.count_g
+                    : msg.color_id == COLOR_AZUL ? msg.count_b : 0;
+
+    JsonDocument doc;
+    doc["color"] = color;
+    doc["conteo"] = conteo;
+    doc["lote_completo"] = msg.lote_completo == 1;
+    doc["r"] = msg.r; doc["g"] = msg.g; doc["b"] = msg.b; doc["c"] = msg.c;
+    char buf[160];
+    size_t n = serializeJson(doc, buf);
+    mqtt.publish("planta/sorter/evento", buf, n);
+
+    if (msg.lote_completo) {
+      lcdMensajeSiLibre("Lote completo!", String(color) + " x5", 3000);
+    } else {
+      lcdMensajeSiLibre("Caja: " + String(color), "Conteo: " + String(conteo), 1200);
+    }
   }
 }
 
@@ -114,6 +161,10 @@ void onMqttMessage(char *topic, byte *payload, unsigned int length) {
     int arg = doc["arg"] | 0;
     if (strcmp(cmd, "puerta") == 0) {
       enviarComandoAlSorter(CMD_DOOR, arg);
+    } else if (strcmp(cmd, "motor") == 0) {
+      enviarComandoAlSorter(CMD_MOTOR_SPEED, arg);
+    } else if (strcmp(cmd, "reset_counts") == 0) {
+      enviarComandoAlSorter(CMD_RESET_COUNTS, 0);
     }
   }
 }
