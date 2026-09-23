@@ -14,6 +14,8 @@ logger = logging.getLogger("mqtt")
 TOPIC_LOGIN_INTENTO = "planta/login/intento"
 TOPIC_LOGIN_RESULTADO = "planta/login/resultado"
 TOPIC_SORTER_ESTADO = "planta/sorter/estado"
+TOPIC_SORTER_EVENTO = "planta/sorter/evento"
+TOPIC_SORTER_ALERTA = "planta/sorter/alerta"
 TOPIC_CMD = "planta/cmd"
 
 _client: mqtt.Client | None = None
@@ -65,9 +67,52 @@ async def _manejar_sorter_estado(payload: dict) -> None:
     await manager.broadcast({"type": "sorter_estado", **payload})
 
 
+async def _manejar_sorter_evento(payload: dict) -> None:
+    """Cada caja que pasa por el sensor. 'conteo' y 'lote_completo' ya vienen
+    calculados por el ESP32 (es quien enciende los LEDs binarios); el
+    servidor solo los guarda junto con la lectura cruda del sensor."""
+    color = str(payload.get("color", "desconocido"))
+    conteo = int(payload.get("conteo", 0))
+    lote_completo = bool(payload.get("lote_completo", False))
+    r, g, b, c = (int(payload.get(k, 0)) for k in ("r", "g", "b", "c"))
+
+    await pool().execute(
+        """
+        INSERT INTO eventos_caja (color, conteo, lote_completo, r, g, b, c)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        """,
+        color, conteo, lote_completo, r, g, b, c,
+    )
+
+    evento = {
+        "color": color, "conteo": conteo, "lote_completo": lote_completo,
+        "r": r, "g": g, "b": b, "c": c,
+    }
+    await manager.broadcast({"type": "evento_caja", **evento})
+
+    if lote_completo:
+        mensaje = f"Lote de 5 cajas {color} completado"
+        await pool().execute(
+            "INSERT INTO alertas (tipo, mensaje) VALUES ('lote_completo', $1)", mensaje,
+        )
+        await manager.broadcast({"type": "alerta", "tipo": "lote_completo", "mensaje": mensaje})
+
+
+async def _manejar_sorter_alerta(payload: dict) -> None:
+    """Alertas explícitas que manda el sorter (fuera de lote_completo, que se
+    deriva del evento). Por ahora no hay ninguna en el Bloque 2, pero el
+    topic ya queda listo para futuras alertas de hardware (atasco, etc.)."""
+    tipo = str(payload.get("tipo", "sorter"))
+    mensaje = str(payload.get("mensaje", ""))
+    await pool().execute("INSERT INTO alertas (tipo, mensaje) VALUES ($1, $2)", tipo, mensaje)
+    await manager.broadcast({"type": "alerta", "tipo": tipo, "mensaje": mensaje})
+
+
 _HANDLERS = {
     TOPIC_LOGIN_INTENTO: _manejar_login_intento,
     TOPIC_SORTER_ESTADO: _manejar_sorter_estado,
+    TOPIC_SORTER_EVENTO: _manejar_sorter_evento,
+    TOPIC_SORTER_ALERTA: _manejar_sorter_alerta,
 }
 
 

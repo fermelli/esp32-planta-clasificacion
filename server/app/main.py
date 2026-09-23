@@ -5,7 +5,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import db, mqtt_client
-from app.routers import auth, comandos, intentos
+from app.routers import auth, comandos, intentos, produccion
 from app.ws import manager
 
 
@@ -30,6 +30,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(intentos.router)
 app.include_router(comandos.router)
+app.include_router(produccion.router)
 
 
 @app.websocket("/ws")

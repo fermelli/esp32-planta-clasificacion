@@ -32,3 +32,28 @@ class AlertaOut(BaseModel):
 class ComandoRequest(BaseModel):
     cmd: str
     arg: int = 0
+
+
+class EventoCajaOut(BaseModel):
+    id: int
+    color: str
+    conteo: int
+    lote_completo: bool
+    r: int
+    g: int
+    b: int
+    c: int
+    creado_en: datetime
+
+
+class ConteoColorOut(BaseModel):
+    color: str
+    conteo_actual: int
+    total_historico: int
+    lotes_completados: int
+
+
+class CajasPorHoraOut(BaseModel):
+    hora: datetime
+    color: str
+    cantidad: int
