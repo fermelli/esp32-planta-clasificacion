@@ -1,6 +1,8 @@
--- Bloque 2 (Producción y conteo). NO aplicar todavía: se corre a mano
--- (docker compose exec -T postgres psql -U planta -d planta -f ...) recién
--- cuando empecemos ese bloque.
+-- Bloque 2 (Producción y conteo). docker-compose.yml la monta junto con
+-- schema.sql en docker-entrypoint-initdb.d, así que se aplica sola la
+-- primera vez que se crea el volumen pgdata. Si el volumen ya existía,
+-- aplicar a mano: docker compose exec -T postgres psql -U planta -d planta
+-- -f /docker-entrypoint-initdb.d/02-produccion.sql
 
 -- CADA CAJA QUE PASA POR EL SENSOR. Es la tabla central: inventario y dataset a la vez.
 -- 'conteo' es el valor del contador del ESP32 en ese momento, o sea lo que muestran los LEDs.
