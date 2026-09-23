@@ -39,6 +39,7 @@ struct __attribute__((packed)) SorterMsg {   // #2 -> #1
   uint8_t color_id;
   uint16_t r, g, b, c;
   uint8_t count_r, count_g, count_b;
+  uint8_t lote_completo;  // 1 si este evento cerró un lote de 5 (Bloque 2)
   uint8_t motor_state;
   uint8_t door_open;
   uint32_t ts_ms;
