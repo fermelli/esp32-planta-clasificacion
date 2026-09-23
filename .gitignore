@@ -1,0 +1,29 @@
+# server/ — Python (FastAPI)
+server/.venv/
+server/__pycache__/
+server/**/__pycache__/
+*.pyc
+server/.env
+server/ml/*.pkl
+
+# firmware/ — PlatformIO (esp32-sorter/, esp32-gateway/)
+firmware/**/.pio/
+firmware/**/.vscode/.browse.c_cpp.db*
+firmware/**/.vscode/c_cpp_properties.json
+firmware/**/.vscode/launch.json
+firmware/**/.vscode/ipch
+firmware/**/include/config.h
+
+# dashboard/ — Vue + Vite
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.vite/
+dashboard/.env
+dashboard/.env.local
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+
+# Imagen de referencia de la pizarra: pesada (~4MB) y no es entregable
+IMG_20260922_101616.jpg.jpeg
