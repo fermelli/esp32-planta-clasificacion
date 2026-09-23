@@ -1,0 +1,10 @@
+#pragma once
+
+// Copiar a config.h (no se sube a git) y poner los datos reales.
+// El broker vive en la PC de escritorio: usar su IP en la misma red WiFi.
+
+#define WIFI_SSID "nombre-de-tu-red"
+#define WIFI_PASSWORD "clave-de-tu-red"
+
+#define MQTT_HOST "192.168.1.100"
+#define MQTT_PORT 1883
