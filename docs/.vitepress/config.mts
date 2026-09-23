@@ -26,6 +26,13 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Software',
+        items: [
+          { text: 'Servidor (FastAPI)', link: '/servidor' },
+          { text: 'Dashboard (Vue)', link: '/dashboard' },
+        ],
+      },
+      {
         text: 'Conexiones',
         items: [
           { text: 'ESP32 #1 — gateway', link: '/conexiones-esp32-gateway' },

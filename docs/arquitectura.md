@@ -34,6 +34,8 @@ el broker. Más detalle en `server/.env.example`.
 
 ## Ver también
 
+- [`servidor.md`](./servidor.md) — estructura de `server/`, cómo correrlo, endpoints
+- [`dashboard.md`](./dashboard.md) — estructura de `dashboard/`, cómo correrlo
 - [`conexiones-esp32-gateway.md`](./conexiones-esp32-gateway.md) — cableado del ESP32 #1
 - [`conexiones-esp32-sorter.md`](./conexiones-esp32-sorter.md) — cableado del ESP32 #2
 - [`protocolo.md`](./protocolo.md) — structs de ESP-NOW y topics de MQTT, con ejemplos de payload

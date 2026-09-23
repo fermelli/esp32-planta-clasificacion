@@ -72,5 +72,6 @@ hardware — ver el historial de commits de `server/app/mqtt_client.py`.
 ## Ver también
 
 - [`arquitectura.md`](./arquitectura.md) — dónde corre cada pieza
+- [`servidor.md`](./servidor.md) — endpoints REST que exponen estos mismos datos
 - [`conexiones-esp32-gateway.md`](./conexiones-esp32-gateway.md)
 - [`conexiones-esp32-sorter.md`](./conexiones-esp32-sorter.md)
