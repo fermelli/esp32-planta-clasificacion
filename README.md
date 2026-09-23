@@ -4,6 +4,12 @@ Sistema de clasificación de cajas por color: 2 ESP32 (login por teclado +
 LCD, y servo/cinta/sensor/LEDs), un servidor FastAPI con Postgres y MQTT,
 y un dashboard en Vue con datos en vivo por WebSocket.
 
+**Repo:** [github.com/fermelli/esp32-planta-clasificacion](https://github.com/fermelli/esp32-planta-clasificacion)
+
+```bash
+git clone https://github.com/fermelli/esp32-planta-clasificacion.git
+```
+
 **Documentación completa:** [`docs/`](./docs/) — o `npm run docs:dev` para
 navegarla con VitePress (sidebar, búsqueda). Empezá por
 [`docs/guia-armado.md`](./docs/guia-armado.md) si vas a cablear el
