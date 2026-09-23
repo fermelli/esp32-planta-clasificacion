@@ -12,18 +12,29 @@ versión "todo junto" para armar de corrido sin saltar entre páginas.
   motor, sensor, LEDs) son placas separadas — no comparten cables entre sí,
   solo se "hablan" por WiFi/ESP-NOW una vez programadas.
 - **2 fuentes externas**, ninguna de las dos sale del ESP32:
-  - Servo puerta: 5-12V
+  - Servo puerta: **4.8-6V** (el SG90 se quema arriba de 6V)
   - Motor + L298N: 6-12V
-  - Pueden ser la misma fuente si da el voltaje para ambas, pero **nunca**
-    el pin `5V`/`VIN` del ESP32 — no aguanta la corriente.
+  - Pueden ser la **misma fuente física** si tiene salidas separadas para
+    cada voltaje (ej. una fuente vieja de PC con salidas de 6V, 9V y 12V:
+    servo a la de 6V, motor a la de 9V) — pero **nunca** conectes el servo
+    a una salida de 9V o 12V, y **nunca** el pin `5V`/`VIN` del ESP32.
+  - Ambos ESP32 se alimentan aparte, por su propio cargador de celular
+    (5V USB).
 - **GND común obligatorio** en cada placa: ESP32 + su(s) fuente(s) externa(s)
-  - todo lo que alimenten esas fuentes comparten un mismo GND.
+  - todo lo que alimenten esas fuentes comparten un mismo GND, aunque el
+    ESP32 coma de un cargador USB distinto.
+
+![Así se alimenta todo](img/alimentacion-dibujo.svg)
+
+![Esquema de alimentación](img/alimentacion-esquematico.svg)
 
 ---
 
 ## ESP32 #1 — gateway
 
 ### Teclado 4x4 + LCD I2C
+
+![Así se conecta el teclado y la pantalla](img/esp32-gateway-dibujo.svg)
 
 ![Esquemático del ESP32 gateway](img/esp32-gateway-esquematico.svg)
 
@@ -55,16 +66,20 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 
 ### Puerta: servo + botón
 
+![Así se conecta la puerta](img/esp32-sorter-puerta-dibujo.svg)
+
 ![Esquemático del ESP32 sorter](img/esp32-sorter-esquematico.svg)
 
-| Señal         | GPIO | Notas                                   |
-| ------------- | ---- | --------------------------------------- |
-| Servo — Señal | 13   | PWM                                     |
-| Servo — V+    | —    | Fuente externa 5-12V                    |
-| Servo — GND   | —    | GND común                               |
-| Botón puerta  | 4    | `INPUT_PULLUP`, sin resistencia externa |
+| Señal         | GPIO | Notas                                                |
+| ------------- | ---- | ---------------------------------------------------- |
+| Servo — Señal | 13   | PWM                                                  |
+| Servo — V+    | —    | Fuente externa a **6V** (SG90: 4.8-6V, nunca 9V/12V) |
+| Servo — GND   | —    | GND común                                            |
+| Botón puerta  | 4    | `INPUT_PULLUP`, sin resistencia externa              |
 
 ### Cinta: motor + L298N, y sensor de color
+
+![Así se conecta la cinta y el sensor](img/esp32-sorter-motor-sensor-dibujo.svg)
 
 ![Motor L298N y sensor TCS3472](img/esp32-sorter-motor-sensor.svg)
 
@@ -73,7 +88,7 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 | L298N — ENA             | 25    | PWM, velocidad                          |
 | L298N — IN1             | 26    | Dirección (fija en el firmware)         |
 | L298N — IN2             | 27    | Dirección                               |
-| L298N — VMS/12V         | —     | Fuente externa 6-12V                    |
+| L298N — VMS/12V         | —     | Fuente externa 6-12V (ej. salida de 9V) |
 | L298N — GND             | —     | GND común                               |
 | Motor — OUT1/OUT2       | —     | A los bornes del motor, cualquier orden |
 | TCS3472 — SDA           | 21    | I2C                                     |
@@ -83,6 +98,8 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 | Botón inicio/stop cinta | 14    | `INPUT_PULLUP`, alterna off↔low         |
 
 ### Los 9 LEDs — contador binario
+
+![Así se conecta cada LED](img/esp32-sorter-leds-dibujo.svg)
 
 ![9 LEDs y resistencias](img/esp32-sorter-leds.svg)
 
@@ -108,9 +125,9 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 - [ ] Teclado: 8 cables a filas/columnas, ninguno mezclado con los del sorter (son placas distintas)
 - [ ] LCD: `VIN` (no `3V3`) + GND + SDA + SCL
-- [ ] Servo: señal a GPIO13; V+ y GND a la fuente externa, **no** al ESP32
+- [ ] Servo: señal a GPIO13; V+ a la salida de **6V** (nunca 9V/12V), GND a la fuente externa, **no** al ESP32
 - [ ] Botón puerta: GPIO4 + GND (sin resistencia)
-- [ ] Motor: OUT1/OUT2 del L298N; VMS del L298N a fuente externa 6-12V, GND común
+- [ ] Motor: OUT1/OUT2 del L298N; VMS del L298N a la salida de 9V (o 6-12V), GND común
 - [ ] L298N: ENA=25, IN1=26, IN2=27
 - [ ] Sensor: SDA=21, SCL=22, VIN a `3V3`, GND común
 - [ ] Botón cinta: GPIO14 + GND

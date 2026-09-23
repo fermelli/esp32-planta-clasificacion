@@ -1,62 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 510" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-  <title>ESP32 #2 (sorter) — esquemático de conexión (Bloque 1)</title>
-  <rect x="0" y="0" width="880" height="510" fill="#ffffff"/>
-  <text x="440" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">ESP32 #2 (sorter) — esquemático de conexión (Bloque 1)</text>
-  <text x="440" y="52" text-anchor="middle" font-size="12" fill="#555">Servo + botón + fuente externa y por qué comparten GND. Posición física real en esp32-sorter-conexiones.svg</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<title>ESP32 #2 (sorter) — esquemático de conexión (Bloque 1)</title>
+<rect x="0" y="0" width="800" height="560" fill="#ffffff"/>
+<text x="400" y="34" text-anchor="middle" font-size="22" font-weight="800" fill="#111">El esquema: puerta (servo + botón)</text>
+<text x="400" y="56" text-anchor="middle" font-size="13" fill="#555">rojo = V+ · negro = GND · naranja = señal PWM · morado = señal del botón</text>
 
-  <g transform="translate(0,70)">
-    <rect x="50" y="90" width="160" height="220" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
-    <text x="130" y="120" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="600">ESP32 #2</text>
-    <text x="130" y="138" text-anchor="middle" font-size="12" fill="#64748b" font-family="sans-serif">sorter</text>
+<!-- ESP32 -->
+<rect x="30" y="100" width="170" height="300" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+<text x="115" y="130" text-anchor="middle" font-size="16" font-weight="800">ESP32 #2</text>
+<text x="115" y="150" text-anchor="middle" font-size="12" fill="#64748b">sorter</text>
 
-    <g font-family="sans-serif" font-size="11">
-      <line x1="210" y1="140" x2="558" y2="100" stroke="#1d4ed8" stroke-width="1.5"/>
-      <text x="216" y="136" fill="#334155">GPIO 13</text>
+<!-- Servo box -->
+<rect x="590" y="80" width="180" height="120" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="680" y="106" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">Servo puerta</text>
+<text x="680" y="124" text-anchor="middle" font-size="12" fill="#1e40af">SG90 (máx 6V)</text>
+<text x="610" y="150" font-size="12" fill="#334155">Señal</text>
+<text x="610" y="170" font-size="12" fill="#334155">V+</text>
+<text x="610" y="190" font-size="12" fill="#334155">GND</text>
 
-      <line x1="210" y1="210" x2="558" y2="235" stroke="#b45309" stroke-width="1.5"/>
-      <text x="216" y="206" fill="#334155">GPIO 4</text>
-      <text x="216" y="222" fill="#64748b" font-size="10">(INPUT_PULLUP)</text>
-    </g>
+<!-- Boton box -->
+<rect x="590" y="230" width="180" height="90" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="680" y="256" text-anchor="middle" font-size="15" font-weight="700" fill="#78350f">Botón puerta</text>
+<text x="610" y="280" font-size="12" fill="#78350f">a GPIO4</text>
+<text x="610" y="300" font-size="12" fill="#78350f">a GND</text>
 
-    <!-- Servo -->
-    <rect x="560" y="70" width="210" height="110" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
-    <text x="665" y="93" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Servo puerta</text>
-    <text x="665" y="109" text-anchor="middle" font-size="11" fill="#1e40af" font-family="sans-serif">SG90 / MG90S</text>
-    <g font-family="sans-serif" font-size="10.5" fill="#1e40af">
-      <text x="572" y="103">Señal</text>
-      <text x="572" y="133">V+</text>
-      <text x="572" y="163">GND</text>
-    </g>
+<!-- Fuente 6V box -->
+<rect x="590" y="350" width="180" height="70" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+<text x="680" y="376" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Fuente 6V</text>
+<text x="680" y="394" text-anchor="middle" font-size="11" fill="#166534">no el pin 5V del ESP32</text>
 
-    <!-- Boton -->
-    <rect x="560" y="210" width="210" height="90" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
-    <text x="665" y="233" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Botón puerta</text>
-    <g font-family="sans-serif" font-size="10.5" fill="#92400e">
-      <text x="572" y="239">a GPIO 4</text>
-      <text x="572" y="278">a GND</text>
-    </g>
+<!-- Wires: GPIO13 -> señal (naranja), orthogonal -->
+<line x1="200" y1="150" x2="500" y2="150" stroke="#ea580c" stroke-width="3"/>
+<line x1="500" y1="150" x2="500" y2="150" stroke="#ea580c" stroke-width="3"/>
+<line x1="500" y1="150" x2="590" y2="150" stroke="#ea580c" stroke-width="3"/>
+<text x="230" y="144" font-size="12" fill="#334155" font-weight="700">GPIO13</text>
+<line x1="200" y1="150" x2="200" y2="150" stroke="none"/>
 
-    <!-- Fuente externa -->
-    <rect x="560" y="330" width="210" height="70" rx="8" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
-    <text x="665" y="355" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="600">Fuente externa 5-12V</text>
-    <text x="665" y="372" text-anchor="middle" font-size="10.5" fill="#991b1b" font-family="sans-serif">nunca desde el pin 5V del ESP32</text>
+<!-- Wires: fuente V+ -> servo V+ (rojo) -->
+<line x1="680" y1="350" x2="680" y2="280" stroke="#dc2626" stroke-width="3"/>
+<line x1="680" y1="280" x2="500" y2="280" stroke="#dc2626" stroke-width="3"/>
+<line x1="500" y1="280" x2="500" y2="170" stroke="#dc2626" stroke-width="3"/>
+<line x1="500" y1="170" x2="590" y2="170" stroke="#dc2626" stroke-width="3"/>
+<text x="330" y="274" font-size="12" fill="#991b1b" font-weight="700">V+ 6V (fuente externa)</text>
 
-    <!-- GND bus -->
-    <g stroke="#475569" stroke-width="2">
-      <line x1="210" y1="280" x2="210" y2="420"/>
-      <line x1="210" y1="420" x2="700" y2="420"/>
-      <line x1="540" y1="163" x2="540" y2="420"/>
-      <line x1="580" y1="278" x2="580" y2="420"/>
-      <line x1="700" y1="420" x2="700" y2="368"/>
-    </g>
-    <line x1="540" y1="163" x2="558" y2="163" stroke="#475569" stroke-width="2"/>
-    <line x1="580" y1="278" x2="558" y2="278" stroke="#475569" stroke-width="2"/>
-    <text x="330" y="414" font-size="11" fill="#475569" font-family="sans-serif" font-weight="600">GND común (ESP32 + fuente + servo + botón)</text>
+<!-- Wires: GPIO4 -> boton (morado) -->
+<line x1="200" y1="220" x2="440" y2="220" stroke="#7c3aed" stroke-width="3"/>
+<line x1="440" y1="220" x2="440" y2="280" stroke="#7c3aed" stroke-width="3"/>
+<line x1="440" y1="280" x2="590" y2="280" stroke="#7c3aed" stroke-width="3"/>
+<text x="230" y="214" font-size="12" fill="#334155" font-weight="700">GPIO4</text>
 
-    <!-- Fuente V+ a Servo V+ -->
-    <line x1="620" y1="330" x2="560" y2="133" stroke="#b91c1c" stroke-width="1.5"/>
-    <text x="500" y="240" font-size="10.5" fill="#b91c1c" font-family="sans-serif">V+</text>
-  </g>
+<!-- GND bus -->
+<line x1="115" y1="400" x2="115" y2="470" stroke="#111827" stroke-width="4"/>
+<line x1="115" y1="470" x2="720" y2="470" stroke="#111827" stroke-width="4"/>
+<line x1="590" y1="190" x2="560" y2="190" stroke="#111827" stroke-width="3"/>
+<line x1="560" y1="190" x2="560" y2="470" stroke="#111827" stroke-width="3"/>
+<line x1="590" y1="300" x2="565" y2="300" stroke="#111827" stroke-width="3"/>
+<line x1="565" y1="300" x2="565" y2="470" stroke="#111827" stroke-width="3"/>
+<line x1="720" y1="420" x2="720" y2="470" stroke="#111827" stroke-width="3"/>
+<text x="400" y="490" text-anchor="middle" font-size="13" font-weight="800" fill="#111">GND común (ESP32 + fuente + servo + botón)</text>
 
-  <text x="440" y="500" text-anchor="middle" font-size="11" fill="#888">Sin el GND común, el ESP32 se reinicia apenas el servo empieza a moverse.</text>
+<text x="400" y="520" text-anchor="middle" font-size="12" fill="#888">Sin el GND común, el ESP32 se reinicia apenas el servo empieza a moverse.</text>
+<rect x="30" y="440" width="0" height="0"/>
 </svg>

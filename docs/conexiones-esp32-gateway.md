@@ -3,6 +3,8 @@
 Teclado matricial 4x4 + LCD I2C. Es la única placa con WiFi; se alimenta
 por el USB de programación, nada aquí necesita fuente externa.
 
+![Así se conecta el teclado y la pantalla](img/esp32-gateway-dibujo.svg)
+
 ![Esquemático del ESP32 gateway](img/esp32-gateway-esquematico.svg)
 
 8 GPIO para el teclado (4 filas + 4 columnas, sin resistencias externas: las columnas usan pull-up interno) y 4 para el LCD por I2C. Ningún componente de esta placa necesita fuente externa.

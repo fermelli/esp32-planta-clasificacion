@@ -3,7 +3,21 @@
 Servo de la puerta, botón, cinta (motor DC + L298N), sensor de color
 TCS3472 y los 9 LEDs del contador binario. Sin WiFi — solo ESP-NOW.
 
+## Alimentación (leer primero)
+
+![Así se alimenta todo](img/alimentacion-dibujo.svg)
+
+![Esquema de alimentación](img/alimentacion-esquematico.svg)
+
+El servo (SG90) va a la salida de **6V** de la fuente vieja de PC, el
+motor con L298N va a la salida de **9V** (o cualquier valor entre 6-12V), y
+ambos ESP32 se alimentan por su propio cargador de celular (5V USB). El
+SG90 aguanta como máximo **6V** — nunca lo conectes a la salida de 9V o
+12V, se quema.
+
 ## Puerta y botón (Bloque 1)
+
+![Así se conecta la puerta](img/esp32-sorter-puerta-dibujo.svg)
 
 ![Esquemático del ESP32 sorter](img/esp32-sorter-esquematico.svg)
 
@@ -12,12 +26,12 @@ servo, botón, fuente externa y ESP32 comparten un único GND. Sin ese cable
 de tierra común, el ESP32 se reinicia apenas el servo empieza a moverse —
 ver "Por qué la fuente externa" más abajo.
 
-| Señal         | GPIO | Notas                                                                       |
-| ------------- | ---- | --------------------------------------------------------------------------- |
-| Servo — Señal | 13   | PWM, `Servo.attach(13)` (librería ESP32Servo)                               |
-| Servo — V+    | —    | Fuente externa 5-12V, **no** el pin 5V del ESP32                            |
-| Servo — GND   | —    | Al GND común                                                                |
-| Botón puerta  | 4    | `INPUT_PULLUP`, antirrebote 40ms en firmware — no lleva resistencia externa |
+| Señal         | GPIO | Notas                                                                                      |
+| ------------- | ---- | ------------------------------------------------------------------------------------------ |
+| Servo — Señal | 13   | PWM, `Servo.attach(13)` (librería ESP32Servo)                                              |
+| Servo — V+    | —    | Fuente externa a **6V** (el SG90 aguanta 4.8-6V, nunca 9V/12V), **no** el pin 5V del ESP32 |
+| Servo — GND   | —    | Al GND común                                                                               |
+| Botón puerta  | 4    | `INPUT_PULLUP`, antirrebote 40ms en firmware — no lleva resistencia externa                |
 
 Coincide con `PIN_SERVO_PUERTA` y `PIN_BOTON_PUERTA` en
 [`firmware/esp32-sorter/src/main.cpp`](../firmware/esp32-sorter/src/main.cpp).
@@ -35,6 +49,8 @@ interprete bien.
 
 ## Cinta (L298N + motor) y sensor de color (Bloque 2)
 
+![Así se conecta la cinta y el sensor](img/esp32-sorter-motor-sensor-dibujo.svg)
+
 ![Motor L298N y sensor TCS3472](img/esp32-sorter-motor-sensor.svg)
 
 | Señal                   | GPIO | Notas                                                                                  |
@@ -42,7 +58,7 @@ interprete bien.
 | L298N — ENA             | 25   | PWM (`ledcAttachPin`), controla la velocidad                                           |
 | L298N — IN1             | 26   | Dirección, fija en `HIGH` en el firmware (un solo sentido de giro)                     |
 | L298N — IN2             | 27   | Dirección, fija en `LOW`                                                               |
-| L298N — VMS / 12V       | —    | Fuente externa 6-12V (la del motor), **no** el ESP32                                   |
+| L298N — VMS / 12V       | —    | Fuente externa 6-12V (ej. la salida de 9V), **no** el ESP32                            |
 | L298N — GND             | —    | Al GND común (ESP32 + fuente + L298N)                                                  |
 | Motor — OUT1 / OUT2     | —    | A los dos bornes del motor, no importa cuál va a cuál (si gira al revés, se invierten) |
 | TCS3472 — SDA           | 21   | I2C, mismo bus que usa el LCD del gateway (son placas distintas, no hay conflicto)     |
@@ -61,6 +77,8 @@ devkit aguanta. El sensor es la excepción: un TCS3472 consume miliamperios,
 así que su `VIN` va directo al `3V3` del ESP32 sin problema.
 
 ## Los 9 LEDs — contador binario (Bloque 2)
+
+![Así se conecta cada LED](img/esp32-sorter-leds-dibujo.svg)
 
 ![9 LEDs y resistencias](img/esp32-sorter-leds.svg)
 
