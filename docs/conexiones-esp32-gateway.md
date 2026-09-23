@@ -42,5 +42,6 @@ Si tu módulo LCD no responde, probá la dirección `0x3F` (la otra dirección c
 El diagrama de arriba marca la posición real de cada pin sobre el layout
 físico de una DOIT ESP32 DEVKIT V1 (30 pines) — el mismo modelo y la misma
 plantilla que `esp32-potenciometro-led/docs/img/esp32-pinout-fisico.svg`.
-Referencia completa, sin resaltar nada, en
-[`img/esp32-pinout-fisico.svg`](./img/esp32-pinout-fisico.svg).
+Referencia completa, sin resaltar nada:
+
+![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)

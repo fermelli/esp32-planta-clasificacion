@@ -52,8 +52,9 @@ cables mientras conectás el Bloque 1:
 Entre el Bloque 1 y el Bloque 2 este ESP32 usa 17 de sus 30 pines físicos —
 por eso vale la pena el diagrama de posición real en vez de una lista: al
 armar a mano es fácil confundir un pin cercano en la placa por otro.
-Referencia completa (sin resaltar nada) en
-[`img/esp32-pinout-fisico.svg`](./img/esp32-pinout-fisico.svg).
+Referencia completa (sin resaltar nada):
+
+![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)
 
 ## Cómo el sorter encuentra el canal del gateway
 

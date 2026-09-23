@@ -22,8 +22,9 @@ abrir directo (doble clic, o arrastrar al navegador) sin pasar por ningún
 layout físico de una DOIT ESP32 DEVKIT V1 de 30 pines — no son cajas
 inventadas, es la misma plantilla verificada en
 `esp32-potenciometro-led/docs/img/esp32-pinout-fisico.svg`. La referencia
-completa sin resaltar nada está en
-[`img/esp32-pinout-fisico.svg`](./img/esp32-pinout-fisico.svg).
+completa sin resaltar nada:
+
+![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)
 
 El plan completo del proyecto (los 4 bloques, la BBDD, qué se dejó fuera y
 por qué) vive en `C:\Users\fermelli\.claude\plans\pero-tb-se-registra-peppy-raccoon.md`.

@@ -21,6 +21,11 @@ dashboard/.vite/
 dashboard/.env
 dashboard/.env.local
 
+# docs/ — VitePress
+node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
 # Sistema operativo / editor
 .DS_Store
 Thumbs.db
