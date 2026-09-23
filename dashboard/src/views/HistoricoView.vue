@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { apiFetch } from '@/lib/api'
 import type { CajaPorHora } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { History, ChartNoAxesColumn } from 'lucide-vue-next'
 
 const COLORES = [
   { id: 'rojo', hex: '#ef4444' },
@@ -11,9 +12,14 @@ const COLORES = [
 ] as const
 
 const datos = ref<CajaPorHora[]>([])
+const cargando = ref(true)
 
 onMounted(async () => {
-  datos.value = await apiFetch<CajaPorHora[]>('/api/produccion/historico?horas=24')
+  try {
+    datos.value = await apiFetch<CajaPorHora[]>('/api/produccion/historico?horas=24')
+  } finally {
+    cargando.value = false
+  }
 })
 
 const horas = computed(() => [...new Set(datos.value.map((d) => d.hora))].sort())
@@ -54,12 +60,20 @@ const lineasGuia = computed(() =>
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-foreground">Cajas por hora (últimas 24h)</CardTitle>
+      <CardTitle class="flex items-center gap-2 text-foreground">
+        <History class="h-4 w-4 text-muted-foreground" stroke-width="2" />
+        Cajas por hora (últimas 24h)
+      </CardTitle>
       <CardDescription>Una barra por color, agrupadas por hora.</CardDescription>
     </CardHeader>
     <CardContent>
-      <div v-if="horas.length === 0" class="py-10 text-center text-muted-foreground">
-        Todavía no hay eventos registrados.
+      <div v-if="cargando" class="h-[320px] w-full animate-pulse rounded-md bg-muted" />
+      <div
+        v-else-if="horas.length === 0"
+        class="flex flex-col items-center gap-2 py-14 text-muted-foreground"
+      >
+        <ChartNoAxesColumn class="h-8 w-8" stroke-width="1.5" />
+        <span>Todavía no hay eventos registrados.</span>
       </div>
       <figure v-else class="overflow-x-auto">
         <svg

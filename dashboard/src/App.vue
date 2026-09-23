@@ -6,6 +6,16 @@ import { useLiveStore } from '@/stores/live'
 import { useThemeStore } from '@/stores/theme'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Boxes,
+  Gauge,
+  History,
+  KeyRound,
+  BellRing,
+  Sun,
+  Moon,
+  LogOut,
+} from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,11 +37,21 @@ watch(
 )
 
 const NAV = [
-  { to: '/', label: 'Producción' },
-  { to: '/historico', label: 'Histórico' },
-  { to: '/intentos', label: 'Accesos' },
-  { to: '/alertas', label: 'Alertas' },
+  { to: '/', label: 'Producción', icon: Gauge },
+  { to: '/historico', label: 'Histórico', icon: History },
+  { to: '/intentos', label: 'Accesos', icon: KeyRound },
+  { to: '/alertas', label: 'Alertas', icon: BellRing },
 ]
+
+function iniciales(nombre: string | null): string {
+  if (!nombre) return '?'
+  return nombre
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join('')
+}
 </script>
 
 <template>
@@ -42,19 +62,7 @@ const NAV = [
           <span
             class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-4.5 w-4.5"
-            >
-              <path d="M21 7.5 12 3 3 7.5l9 4.5 9-4.5Z" />
-              <path d="M3 7.5v9l9 4.5 9-4.5v-9" />
-              <path d="M12 12v9" />
-            </svg>
+            <Boxes class="h-4.5 w-4.5" stroke-width="1.8" />
           </span>
           <span class="hidden font-semibold tracking-tight sm:inline">Planta de clasificación</span>
         </div>
@@ -66,9 +74,10 @@ const NAV = [
             v-for="item in NAV"
             :key="item.to"
             :to="item.to"
-            class="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            class="flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
             active-class="!bg-primary !text-primary-foreground shadow-sm"
           >
+            <component :is="item.icon" class="h-3.5 w-3.5" stroke-width="2" />
             {{ item.label }}
           </RouterLink>
         </nav>
@@ -76,12 +85,10 @@ const NAV = [
         <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <Badge :variant="live.conectado ? 'success' : 'destructive'" class="gap-1.5">
             <span
-              class="h-1.5 w-1.5 rounded-full"
-              :class="
-                live.conectado ? 'bg-primary-foreground animate-pulse' : 'bg-primary-foreground'
-              "
+              class="h-1.5 w-1.5 rounded-full bg-primary-foreground"
+              :class="live.conectado && 'animate-pulse'"
             />
-            {{ live.conectado ? 'en vivo' : 'desconectado' }}
+            <span class="hidden sm:inline">{{ live.conectado ? 'en vivo' : 'desconectado' }}</span>
           </Badge>
 
           <button
@@ -89,43 +96,49 @@ const NAV = [
             :aria-label="theme.oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
             @click="theme.alternar"
           >
-            <svg
-              v-if="theme.oscuro"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-4 w-4"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path
-                d="M12 2v2M12 20v2M4 12H2M22 12h-2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-              />
-            </svg>
-            <svg
-              v-else
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-4 w-4"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-            </svg>
+            <Sun v-if="theme.oscuro" class="h-4 w-4" stroke-width="2" />
+            <Moon v-else class="h-4 w-4" stroke-width="2" />
           </button>
 
-          <span class="hidden text-sm text-muted-foreground sm:inline">{{ auth.nombre }}</span>
-          <Button variant="outline" size="sm" @click="salir"> Salir </Button>
+          <div class="hidden items-center gap-2 sm:flex">
+            <span
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground"
+            >
+              {{ iniciales(auth.nombre) }}
+            </span>
+            <span class="text-sm text-muted-foreground">{{ auth.nombre }}</span>
+          </div>
+
+          <Button variant="outline" size="sm" class="gap-1.5" @click="salir">
+            <LogOut class="h-3.5 w-3.5" stroke-width="2" />
+            <span class="hidden sm:inline">Salir</span>
+          </Button>
         </div>
       </div>
     </header>
 
     <main class="mx-auto max-w-6xl px-4 py-6">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </RouterView>
     </main>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

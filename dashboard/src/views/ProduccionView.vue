@@ -15,6 +15,18 @@ import {
   TableCell,
 } from '@/components/ui/table'
 import ContadorBinario from '@/components/ContadorBinario.vue'
+import {
+  SlidersHorizontal,
+  ListOrdered,
+  Package,
+  Power,
+  Gauge,
+  Zap,
+  DoorOpen,
+  DoorClosed,
+  RotateCcw,
+  Inbox,
+} from 'lucide-vue-next'
 
 const live = useLiveStore()
 
@@ -24,17 +36,29 @@ const COLORES = [
   { id: 'azul', label: 'Azul', hex: '#3b82f6' },
 ] as const
 
+const CINTA_OPCIONES = [
+  { arg: 0, valor: 'off' as const, label: 'Apagada', icon: Power },
+  { arg: 1, valor: 'low' as const, label: 'Baja', icon: Gauge },
+  { arg: 2, valor: 'full' as const, label: 'Full', icon: Zap },
+]
+
 const conteos = ref<Record<string, ConteoColor>>({})
 const eventosIniciales = ref<EventoCaja[]>([])
 const enviandoComando = ref<string | null>(null)
+const cargando = ref(true)
 
 async function cargar() {
-  const [c, e] = await Promise.all([
-    apiFetch<ConteoColor[]>('/api/conteos'),
-    apiFetch<EventoCaja[]>('/api/eventos?limite=15'),
-  ])
-  conteos.value = Object.fromEntries(c.map((x) => [x.color, x]))
-  eventosIniciales.value = e
+  cargando.value = true
+  try {
+    const [c, e] = await Promise.all([
+      apiFetch<ConteoColor[]>('/api/conteos'),
+      apiFetch<EventoCaja[]>('/api/eventos?limite=15'),
+    ])
+    conteos.value = Object.fromEntries(c.map((x) => [x.color, x]))
+    eventosIniciales.value = e
+  } finally {
+    cargando.value = false
+  }
 }
 
 onMounted(cargar)
@@ -65,6 +89,10 @@ const filasTabla = computed(() => {
   return [...vivos, ...eventosIniciales.value].slice(0, 15)
 })
 
+const totalProcesado = computed(() =>
+  Object.values(conteos.value).reduce((acc, c) => acc + c.total_historico, 0),
+)
+
 async function enviarComando(cmd: string, arg = 0) {
   enviandoComando.value = `${cmd}:${arg}`
   try {
@@ -84,110 +112,113 @@ async function enviarComando(cmd: string, arg = 0) {
         class="overflow-hidden border-t-2"
         :style="{ borderTopColor: color.hex }"
       >
-        <CardHeader class="pb-2">
-          <CardTitle class="flex items-center gap-2">
-            <span class="h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: color.hex }" />
-            {{ color.label }}
+        <CardHeader class="pb-1">
+          <CardTitle class="flex items-center justify-between text-sm font-medium text-muted-foreground">
+            <span class="flex items-center gap-2">
+              <span
+                class="flex h-6 w-6 items-center justify-center rounded-md"
+                :style="{ backgroundColor: `${color.hex}1a`, color: color.hex }"
+              >
+                <Package class="h-3.5 w-3.5" stroke-width="2" />
+              </span>
+              {{ color.label }}
+            </span>
+            <Badge v-if="conteos[color.id]?.lotes_completados" variant="outline" class="text-[11px]">
+              {{ conteos[color.id]?.lotes_completados }} lote{{ conteos[color.id]!.lotes_completados === 1 ? '' : 's' }}
+            </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent class="flex items-center justify-between">
+        <CardContent class="flex items-end justify-between pt-1">
+          <div v-if="cargando" class="h-9 w-16 animate-pulse rounded-md bg-muted" />
+          <p v-else class="text-4xl font-bold tabular-nums tracking-tight text-foreground">
+            {{ conteos[color.id]?.total_historico ?? 0 }}
+          </p>
           <ContadorBinario
             :valor="conteos[color.id]?.conteo_actual ?? 0"
             :color-encendido="color.hex"
             label="LEDs"
           />
-          <div class="text-right text-sm text-muted-foreground">
-            <p>
-              Total:
-              <span class="font-medium tabular-nums text-foreground">{{
-                conteos[color.id]?.total_historico ?? 0
-              }}</span>
-            </p>
-            <p>
-              Lotes:
-              <span class="font-medium tabular-nums text-foreground">{{
-                conteos[color.id]?.lotes_completados ?? 0
-              }}</span>
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
 
     <Card>
       <CardHeader>
-        <CardTitle>Cinta y puerta</CardTitle>
+        <CardTitle class="flex items-center gap-2">
+          <SlidersHorizontal class="h-4 w-4 text-muted-foreground" stroke-width="2" />
+          Cinta y puerta
+        </CardTitle>
       </CardHeader>
-      <CardContent class="flex flex-wrap items-center gap-3">
-        <Badge
-          :variant="
-            live.sorterEstado.cinta_estado && live.sorterEstado.cinta_estado !== 'off'
-              ? 'success'
-              : 'outline'
-          "
-        >
-          Cinta: {{ live.sorterEstado.cinta_estado ?? 'sin datos' }}
-        </Badge>
-        <Badge :variant="live.sorterEstado.puerta_abierta ? 'warning' : 'outline'">
-          Puerta:
-          {{
-            live.sorterEstado.puerta_abierta === undefined
-              ? 'sin datos'
-              : live.sorterEstado.puerta_abierta
-                ? 'abierta'
-                : 'cerrada'
-          }}
-        </Badge>
-        <div class="ml-auto flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="secondary"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('motor', 0)"
-            >Apagar cinta</Button
-          >
-          <Button
-            size="sm"
-            variant="secondary"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('motor', 1)"
-            >Cinta low</Button
-          >
-          <Button
-            size="sm"
-            variant="secondary"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('motor', 2)"
-            >Cinta full</Button
-          >
-          <Button
-            size="sm"
-            variant="outline"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('puerta', 1)"
-            >Abrir puerta</Button
-          >
-          <Button
-            size="sm"
-            variant="outline"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('puerta', 0)"
-            >Cerrar puerta</Button
-          >
-          <Button
-            size="sm"
-            variant="destructive"
-            :disabled="!!enviandoComando"
-            @click="enviarComando('reset_counts')"
-            >Reset contadores</Button
-          >
+      <CardContent class="flex flex-wrap items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex items-center gap-1 rounded-lg bg-muted p-1">
+            <Button
+              v-for="opcion in CINTA_OPCIONES"
+              :key="opcion.arg"
+              size="sm"
+              variant="ghost"
+              class="gap-1.5"
+              :class="
+                live.sorterEstado.cinta_estado === opcion.valor
+                  ? '!bg-card !text-foreground shadow-sm'
+                  : ''
+              "
+              :disabled="!!enviandoComando"
+              @click="enviarComando('motor', opcion.arg)"
+            >
+              <component :is="opcion.icon" class="h-3.5 w-3.5" stroke-width="2" />
+              {{ opcion.label }}
+            </Button>
+          </div>
+
+          <div class="flex items-center gap-1 rounded-lg bg-muted p-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              class="gap-1.5"
+              :class="live.sorterEstado.puerta_abierta === true ? '!bg-card !text-foreground shadow-sm' : ''"
+              :disabled="!!enviandoComando"
+              @click="enviarComando('puerta', 1)"
+            >
+              <DoorOpen class="h-3.5 w-3.5" stroke-width="2" />
+              Abrir
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              class="gap-1.5"
+              :class="live.sorterEstado.puerta_abierta === false ? '!bg-card !text-foreground shadow-sm' : ''"
+              :disabled="!!enviandoComando"
+              @click="enviarComando('puerta', 0)"
+            >
+              <DoorClosed class="h-3.5 w-3.5" stroke-width="2" />
+              Cerrar
+            </Button>
+          </div>
         </div>
+
+        <Button
+          size="sm"
+          variant="destructive"
+          class="ml-auto gap-1.5"
+          :disabled="!!enviandoComando"
+          @click="enviarComando('reset_counts')"
+        >
+          <RotateCcw class="h-3.5 w-3.5" stroke-width="2" />
+          Reset contadores
+        </Button>
       </CardContent>
     </Card>
 
     <Card>
       <CardHeader>
-        <CardTitle>Últimas cajas</CardTitle>
+        <CardTitle class="flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <ListOrdered class="h-4 w-4 text-muted-foreground" stroke-width="2" />
+            Últimas cajas
+          </span>
+          <span class="text-xs font-normal text-muted-foreground">{{ totalProcesado }} en total</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -224,10 +255,13 @@ async function enviarComando(cmd: string, arg = 0) {
                 new Date(fila.creado_en).toLocaleTimeString()
               }}</TableCell>
             </TableRow>
-            <TableRow v-if="filasTabla.length === 0">
-              <TableCell colspan="5" class="text-center text-muted-foreground"
-                >Todavía no pasó ninguna caja</TableCell
-              >
+            <TableRow v-if="!cargando && filasTabla.length === 0">
+              <TableCell colspan="5">
+                <div class="flex flex-col items-center gap-2 py-8 text-muted-foreground">
+                  <Inbox class="h-8 w-8" stroke-width="1.5" />
+                  <span>Todavía no pasó ninguna caja</span>
+                </div>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
