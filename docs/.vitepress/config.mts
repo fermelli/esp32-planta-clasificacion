@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'Planta de clasificación',
   description: 'Documentación técnica — COM520 primer parcial',
   lang: 'es',
+  base: '/esp32-planta-clasificacion/',
   cleanUrls: true,
   lastUpdated: true,
   // Enlaces intencionales al código fuente fuera de docs/ (../firmware/...)
