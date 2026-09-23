@@ -7,13 +7,16 @@ hero:
   tagline: COM520 — primer parcial. Bloque 1 y Bloque 2 completos — backend, MQTT, firmware de los dos ESP32 y dashboard, probado de punta a punta.
   actions:
     - theme: brand
+      text: Guía de armado
+      link: /guia-armado
+    - theme: alt
       text: Arquitectura
       link: /arquitectura
-    - theme: alt
-      text: Protocolo
-      link: /protocolo
 
 features:
+  - title: Guía de armado completo
+    details: Los dos ESP32 y todos sus componentes en una sola página, en orden, con checklist antes de encender.
+    link: /guia-armado
   - title: Arquitectura
     details: Los 2 ESP32, Mosquitto, FastAPI, Postgres y el dashboard — dónde corre cada pieza y por qué.
     link: /arquitectura

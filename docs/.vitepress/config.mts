@@ -13,11 +13,16 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Inicio', link: '/' },
+      { text: 'Guía de armado', link: '/guia-armado' },
       { text: 'Arquitectura', link: '/arquitectura' },
       { text: 'Protocolo', link: '/protocolo' },
     ],
 
     sidebar: [
+      {
+        text: 'Armado',
+        items: [{ text: 'Guía completa (todo junto)', link: '/guia-armado' }],
+      },
       {
         text: 'Sistema',
         items: [
@@ -33,7 +38,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Conexiones',
+        text: 'Conexiones (por placa)',
         items: [
           { text: 'ESP32 #1 — gateway', link: '/conexiones-esp32-gateway' },
           { text: 'ESP32 #2 — sorter', link: '/conexiones-esp32-sorter' },

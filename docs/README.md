@@ -6,6 +6,8 @@ probados de punta a punta. Pendiente: calibrar el sensor de color con las
 cajas reales, y flashear el hardware (falta SSID/contraseña del WiFi de la
 demo e IP de la PC de escritorio en `firmware/esp32-gateway/include/config.h`).
 
+- [`guia-armado.md`](./guia-armado.md) — **todos** los componentes de las
+  dos placas juntos, en orden de armado, con checklist antes de encender.
 - [`arquitectura.md`](./arquitectura.md) — el sistema completo: los 2 ESP32,
   Mosquitto, FastAPI, Postgres y el dashboard, y dónde corre cada uno.
 - [`servidor.md`](./servidor.md) — estructura de `server/`, cómo correrlo,
