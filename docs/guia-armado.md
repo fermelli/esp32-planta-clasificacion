@@ -11,13 +11,14 @@ versión "todo junto" para armar de corrido sin saltar entre páginas.
 - **2 ESP32 distintos.** El gateway (teclado + LCD) y el sorter (servo,
   motor, sensor, LEDs) son placas separadas — no comparten cables entre sí,
   solo se "hablan" por WiFi/ESP-NOW una vez programadas.
-- **2 fuentes externas**, ninguna de las dos sale del ESP32:
+- **Una fuente externa con salida de 6V**, no sale del ESP32:
   - Servo puerta: **4.8-6V** (el SG90 se quema arriba de 6V)
-  - Motor + L298N: 6-12V
-  - Pueden ser la **misma fuente física** si tiene salidas separadas para
-    cada voltaje (ej. una fuente vieja de PC con salidas de 6V, 9V y 12V:
-    servo a la de 6V, motor a la de 9V) — pero **nunca** conectes el servo
-    a una salida de 9V o 12V, y **nunca** el pin `5V`/`VIN` del ESP32.
+  - Motor + L298N: el motor es un TT amarillo, rateado 3-6V
+  - El servo y el motor van **los dos a la misma salida de 6V** de la
+    fuente vieja de PC (que solo tiene 6V y 12V, no 9V) — esa salida tiene
+    que aguantar los dos consumos juntos, unos 2A en total.
+  - **Nunca** conectes servo ni motor a la salida de 12V, y **nunca** el
+    pin `5V`/`VIN` del ESP32.
   - Ambos ESP32 se alimentan aparte, por su propio cargador de celular
     (5V USB).
 - **GND común obligatorio** en cada placa: ESP32 + su(s) fuente(s) externa(s)
@@ -70,12 +71,12 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 
 ![Esquemático del ESP32 sorter](img/esp32-sorter-esquematico.svg)
 
-| Señal         | GPIO | Notas                                                |
-| ------------- | ---- | ---------------------------------------------------- |
-| Servo — Señal | 13   | PWM                                                  |
-| Servo — V+    | —    | Fuente externa a **6V** (SG90: 4.8-6V, nunca 9V/12V) |
-| Servo — GND   | —    | GND común                                            |
-| Botón puerta  | 4    | `INPUT_PULLUP`, sin resistencia externa              |
+| Señal         | GPIO | Notas                                             |
+| ------------- | ---- | ------------------------------------------------- |
+| Servo — Señal | 13   | PWM                                               |
+| Servo — V+    | —    | Fuente externa a **6V** (SG90: 4.8-6V, nunca 12V) |
+| Servo — GND   | —    | GND común                                         |
+| Botón puerta  | 4    | `INPUT_PULLUP`, sin resistencia externa           |
 
 ### Cinta: motor + L298N, y sensor de color
 
@@ -83,19 +84,19 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 
 ![Motor L298N y sensor TCS3472](img/esp32-sorter-motor-sensor.svg)
 
-| Señal                   | GPIO  | Notas                                   |
-| ----------------------- | ----- | --------------------------------------- |
-| L298N — ENA             | 25    | PWM, velocidad                          |
-| L298N — IN1             | 26    | Dirección (fija en el firmware)         |
-| L298N — IN2             | 27    | Dirección                               |
-| L298N — VMS/12V         | —     | Fuente externa 6-12V (ej. salida de 9V) |
-| L298N — GND             | —     | GND común                               |
-| Motor — OUT1/OUT2       | —     | A los bornes del motor, cualquier orden |
-| TCS3472 — SDA           | 21    | I2C                                     |
-| TCS3472 — SCL           | 22    | I2C                                     |
-| TCS3472 — VIN           | `3V3` | Sí sale del ESP32 (consume poco)        |
-| TCS3472 — GND           | —     | GND común                               |
-| Botón inicio/stop cinta | 14    | `INPUT_PULLUP`, alterna off↔low         |
+| Señal                   | GPIO  | Notas                                        |
+| ----------------------- | ----- | -------------------------------------------- |
+| L298N — ENA             | 25    | PWM, velocidad                               |
+| L298N — IN1             | 26    | Dirección (fija en el firmware)              |
+| L298N — IN2             | 27    | Dirección                                    |
+| L298N — VMS             | —     | Fuente externa a **6V** (la misma del servo) |
+| L298N — GND             | —     | GND común                                    |
+| Motor — OUT1/OUT2       | —     | A los bornes del motor, cualquier orden      |
+| TCS3472 — SDA           | 21    | I2C                                          |
+| TCS3472 — SCL           | 22    | I2C                                          |
+| TCS3472 — VIN           | `3V3` | Sí sale del ESP32 (consume poco)             |
+| TCS3472 — GND           | —     | GND común                                    |
+| Botón inicio/stop cinta | 14    | `INPUT_PULLUP`, alterna off↔low              |
 
 ### Los 9 LEDs — contador binario
 
@@ -125,9 +126,9 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 - [ ] Teclado: 8 cables a filas/columnas, ninguno mezclado con los del sorter (son placas distintas)
 - [ ] LCD: `VIN` (no `3V3`) + GND + SDA + SCL
-- [ ] Servo: señal a GPIO13; V+ a la salida de **6V** (nunca 9V/12V), GND a la fuente externa, **no** al ESP32
+- [ ] Servo: señal a GPIO13; V+ a la salida de **6V** (nunca 12V), GND a la fuente externa, **no** al ESP32
 - [ ] Botón puerta: GPIO4 + GND (sin resistencia)
-- [ ] Motor: OUT1/OUT2 del L298N; VMS del L298N a la salida de 9V (o 6-12V), GND común
+- [ ] Motor: OUT1/OUT2 del L298N; VMS del L298N a la misma salida de **6V** del servo, GND común
 - [ ] L298N: ENA=25, IN1=26, IN2=27
 - [ ] Sensor: SDA=21, SCL=22, VIN a `3V3`, GND común
 - [ ] Botón cinta: GPIO14 + GND
