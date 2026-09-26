@@ -1,90 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 680" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 730" font-family="Segoe UI, Helvetica, Arial, sans-serif">
 <title>ESP32 #2 (sorter) — cinta (L298N + motor), sensor TCS3472 y botón</title>
-<rect x="0" y="0" width="800" height="680" fill="#ffffff"/>
+<rect x="0" y="0" width="800" height="730" fill="#ffffff"/>
 <text x="400" y="34" text-anchor="middle" font-size="22" font-weight="800" fill="#111">El esquema: cinta (L298N + motor), sensor y botón</text>
 <text x="400" y="56" text-anchor="middle" font-size="13" fill="#555">Dos módulos con fuente propia (L298N) o del ESP32 (sensor, consume poco)</text>
 
 <!-- ESP32 -->
-<rect x="30" y="90" width="160" height="420" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+<rect x="30" y="90" width="160" height="510" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
 <text x="110" y="120" text-anchor="middle" font-size="16" font-weight="800">ESP32 #2</text>
 <text x="110" y="140" text-anchor="middle" font-size="12" fill="#64748b">sorter</text>
 
 <!-- L298N box -->
-<rect x="560" y="70" width="200" height="140" rx="8" fill="#fef2f2" stroke="#b91c1c" stroke-width="2"/>
-<text x="660" y="96" text-anchor="middle" font-size="15" font-weight="700" fill="#7f1d1d">Driver L298N</text>
-<text x="580" y="122" font-size="12" fill="#334155">ENA</text>
-<text x="580" y="144" font-size="12" fill="#334155">IN1</text>
-<text x="580" y="166" font-size="12" fill="#334155">IN2</text>
-<text x="580" y="192" font-size="11" fill="#991b1b">VMS/GND abajo</text>
+<rect x="470" y="90" width="150" height="140" rx="8" fill="#fef2f2" stroke="#b91c1c" stroke-width="2"/>
+<text x="545" y="108" text-anchor="middle" font-size="14" font-weight="700" fill="#7f1d1d">Driver L298N</text>
+<text x="478" y="114" font-size="11" fill="#334155">ENA</text>
+<text x="478" y="144" font-size="11" fill="#334155">IN1</text>
+<text x="478" y="174" font-size="11" fill="#334155">IN2</text>
+<text x="505" y="220" text-anchor="middle" font-size="10.5" fill="#991b1b">VMS</text>
+<text x="585" y="220" text-anchor="middle" font-size="10.5" fill="#991b1b">GND</text>
 
 <!-- Motor -->
-<circle cx="700" cy="280" r="45" fill="#fff7ed" stroke="#c2410c" stroke-width="2.5"/>
-<text x="700" y="286" text-anchor="middle" font-size="14" font-weight="800" fill="#c2410c">M</text>
-<text x="700" y="345" text-anchor="middle" font-size="12" fill="#9a3412">Motor TT amarillo (3-6V)</text>
+<circle cx="700" cy="150" r="40" fill="#fff7ed" stroke="#c2410c" stroke-width="2.5"/>
+<text x="700" y="156" text-anchor="middle" font-size="14" font-weight="800" fill="#c2410c">M</text>
+<text x="700" y="206" text-anchor="middle" font-size="12" fill="#9a3412">Motor TT amarillo (3-6V)</text>
+<text x="625" y="122" font-size="10.5" fill="#57534e">OUT1</text>
+<text x="625" y="190" font-size="10.5" fill="#57534e">OUT2</text>
 
 <!-- Fuente 6V -->
-<rect x="560" y="240" width="200" height="70" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
-<text x="660" y="266" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Fuente 6V</text>
-<text x="660" y="284" text-anchor="middle" font-size="11" fill="#166534">la misma del servo, nunca del ESP32</text>
+<rect x="470" y="270" width="150" height="70" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+<text x="545" y="296" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Fuente 6V</text>
+<text x="545" y="314" text-anchor="middle" font-size="10.5" fill="#166534">la misma del servo, nunca el ESP32</text>
 
 <!-- Sensor -->
-<rect x="560" y="360" width="200" height="120" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
-<text x="660" y="386" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">Sensor TCS3472</text>
-<text x="580" y="410" font-size="12" fill="#334155">SDA</text>
-<text x="580" y="432" font-size="12" fill="#334155">SCL</text>
-<text x="580" y="454" font-size="12" fill="#334155">VIN</text>
+<rect x="470" y="355" width="150" height="125" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="545" y="376" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">Sensor TCS3472</text>
+<text x="478" y="397" font-size="11" fill="#334155">SDA</text>
+<text x="478" y="422" font-size="11" fill="#334155">SCL</text>
+<text x="478" y="447" font-size="11" fill="#334155">VIN</text>
+<text x="598" y="464" text-anchor="end" font-size="10.5" fill="#991b1b">GND</text>
 
 <!-- Boton cinta -->
-<rect x="560" y="500" width="200" height="80" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
-<text x="660" y="526" text-anchor="middle" font-size="14" font-weight="700" fill="#78350f">Botón cinta</text>
-<text x="580" y="550" font-size="12" fill="#78350f">a GPIO14</text>
-<text x="580" y="568" font-size="12" fill="#78350f">a GND</text>
+<rect x="470" y="500" width="150" height="90" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="545" y="520" text-anchor="middle" font-size="13" font-weight="700" fill="#78350f">Botón cinta</text>
+<text x="478" y="536" font-size="11" fill="#78350f">a GPIO14</text>
+<text x="596" y="562" text-anchor="end" font-size="11" fill="#78350f">a GND</text>
 
 <!-- Wires ESP32 -> L298N -->
-<line x1="190" y1="120" x2="560" y2="120" stroke="#ea580c" stroke-width="3"/>
+<line x1="190" y1="120" x2="470" y2="120" stroke="#ea580c" stroke-width="3"/>
 <text x="220" y="114" font-size="12" fill="#c2410c" font-weight="700">GPIO25 → ENA (PWM)</text>
-<line x1="190" y1="145" x2="560" y2="145" stroke="#0284c7" stroke-width="3"/>
-<text x="220" y="139" font-size="12" fill="#075985" font-weight="700">GPIO26 → IN1</text>
-<line x1="190" y1="170" x2="560" y2="170" stroke="#16a34a" stroke-width="3"/>
-<text x="220" y="164" font-size="12" fill="#15803d" font-weight="700">GPIO27 → IN2</text>
-
-<!-- Fuente -> L298N VMS -->
-<line x1="660" y1="240" x2="660" y2="210" stroke="#dc2626" stroke-width="3"/>
-<text x="670" y="230" font-size="11" fill="#991b1b">VMS 6V</text>
+<line x1="190" y1="150" x2="470" y2="150" stroke="#0284c7" stroke-width="3"/>
+<text x="220" y="144" font-size="12" fill="#075985" font-weight="700">GPIO26 → IN1</text>
+<line x1="190" y1="180" x2="470" y2="180" stroke="#16a34a" stroke-width="3"/>
+<text x="220" y="174" font-size="12" fill="#15803d" font-weight="700">GPIO27 → IN2</text>
 
 <!-- L298N -> motor -->
-<line x1="655" y1="210" x2="655" y2="240" stroke="#78716c" stroke-width="3"/>
-<line x1="655" y1="240" x2="655" y2="240" stroke="none"/>
-<line x1="650" y1="210" x2="650" y2="235" stroke="#78716c" stroke-width="3"/>
-<line x1="650" y1="235" x2="655" y2="235" stroke="#78716c" stroke-width="3"/>
-<line x1="760" y1="200" x2="800" y2="200" stroke="none"/>
-<line x1="620" y1="210" x2="620" y2="270" stroke="#78716c" stroke-width="3"/>
-<line x1="620" y1="270" x2="655" y2="270" stroke="#78716c" stroke-width="3"/>
-<line x1="640" y1="210" x2="640" y2="290" stroke="#78716c" stroke-width="3"/>
-<line x1="640" y1="290" x2="655" y2="290" stroke="#78716c" stroke-width="3"/>
-<text x="600" y="330" font-size="11" fill="#57534e">OUT1 / OUT2</text>
+<line x1="620" y1="130" x2="665" y2="130" stroke="#78716c" stroke-width="3"/>
+<line x1="620" y1="170" x2="665" y2="170" stroke="#78716c" stroke-width="3"/>
+
+<!-- Fuente -> L298N VMS -->
+<line x1="505" y1="270" x2="505" y2="230" stroke="#dc2626" stroke-width="3"/>
+<text x="515" y="255" font-size="11" fill="#991b1b">VMS 6V</text>
 
 <!-- ESP32 -> sensor -->
-<line x1="190" y1="405" x2="560" y2="405" stroke="#eab308" stroke-width="3"/>
-<text x="220" y="399" font-size="12" fill="#854d0e" font-weight="700">GPIO21 → SDA</text>
-<line x1="190" y1="427" x2="560" y2="427" stroke="#16a34a" stroke-width="3"/>
+<line x1="190" y1="402" x2="470" y2="402" stroke="#eab308" stroke-width="3"/>
+<text x="220" y="396" font-size="12" fill="#854d0e" font-weight="700">GPIO21 → SDA</text>
+<line x1="190" y1="427" x2="470" y2="427" stroke="#16a34a" stroke-width="3"/>
 <text x="220" y="421" font-size="12" fill="#15803d" font-weight="700">GPIO22 → SCL</text>
-<line x1="190" y1="449" x2="560" y2="449" stroke="#dc2626" stroke-width="3"/>
-<text x="220" y="443" font-size="12" fill="#991b1b" font-weight="700">3V3 → VIN</text>
+<line x1="190" y1="452" x2="470" y2="452" stroke="#dc2626" stroke-width="3"/>
+<text x="220" y="446" font-size="12" fill="#991b1b" font-weight="700">3V3 → VIN</text>
 
 <!-- ESP32 -> boton -->
-<line x1="190" y1="530" x2="560" y2="530" stroke="#7c3aed" stroke-width="3"/>
-<text x="220" y="524" font-size="12" fill="#6d28d9" font-weight="700">GPIO14 → botón</text>
+<line x1="190" y1="540" x2="470" y2="540" stroke="#7c3aed" stroke-width="3"/>
+<text x="220" y="534" font-size="12" fill="#6d28d9" font-weight="700">GPIO14 → botón</text>
 
-<!-- GND bus -->
-<line x1="115" y1="510" x2="115" y2="620" stroke="#111827" stroke-width="4"/>
-<line x1="115" y1="620" x2="760" y2="620" stroke="#111827" stroke-width="4"/>
-<line x1="660" y1="310" x2="660" y2="620" stroke="#111827" stroke-width="3"/>
-<line x1="660" y1="480" x2="660" y2="620" stroke="#111827" stroke-width="3"/>
-<line x1="660" y1="580" x2="660" y2="620" stroke="#111827" stroke-width="3"/>
-<line x1="660" y1="210" x2="700" y2="210" stroke="#111827" stroke-width="3"/>
-<line x1="700" y1="210" x2="700" y2="620" stroke="#111827" stroke-width="3"/>
-<text x="400" y="642" text-anchor="middle" font-size="13" font-weight="800" fill="#111">GND común: ESP32 + fuente 6V + L298N + sensor + botón</text>
+<!-- GND: riel único a la derecha -->
+<line x1="585" y1="230" x2="585" y2="250" stroke="#111827" stroke-width="3"/>
+<line x1="585" y1="250" x2="650" y2="250" stroke="#111827" stroke-width="3"/>
+<line x1="620" y1="305" x2="650" y2="305" stroke="#111827" stroke-width="3"/>
+<line x1="620" y1="468" x2="650" y2="468" stroke="#111827" stroke-width="3"/>
+<line x1="620" y1="565" x2="650" y2="565" stroke="#111827" stroke-width="3"/>
+<line x1="650" y1="250" x2="650" y2="650" stroke="#111827" stroke-width="3"/>
+<line x1="650" y1="650" x2="110" y2="650" stroke="#111827" stroke-width="3"/>
+<line x1="110" y1="650" x2="110" y2="600" stroke="#111827" stroke-width="3"/>
+<circle cx="650" cy="250" r="3" fill="#111827"/>
+<circle cx="650" cy="305" r="3" fill="#111827"/>
+<circle cx="650" cy="468" r="3" fill="#111827"/>
+<circle cx="650" cy="565" r="3" fill="#111827"/>
+<text x="95" y="614" font-size="11" fill="#334155" font-weight="700">GND</text>
 
-<text x="400" y="665" text-anchor="middle" font-size="11.5" fill="#888">El motor nunca se alimenta del ESP32 — el L298N puede pedir hasta 2A al arranque.</text>
+<text x="400" y="685" text-anchor="middle" font-size="13" font-weight="800" fill="#111">GND común: ESP32 + fuente 6V + L298N + sensor + botón</text>
+<text x="400" y="708" text-anchor="middle" font-size="11.5" fill="#888">El motor nunca se alimenta del ESP32 — el L298N puede pedir hasta 2A al arranque.</text>
 </svg>
