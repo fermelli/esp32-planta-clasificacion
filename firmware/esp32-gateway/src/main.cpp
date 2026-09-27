@@ -211,11 +211,16 @@ void conectarWifi() {
 void conectarMqtt() {
   mqtt.setServer(MQTT_HOST, MQTT_PORT);
   mqtt.setCallback(onMqttMessage);
+  Serial.printf("Conectando a MQTT %s:%d...\n", MQTT_HOST, MQTT_PORT);
   while (!mqtt.connected()) {
     if (mqtt.connect("esp32-gateway")) {
       mqtt.subscribe("planta/login/resultado");
       mqtt.subscribe("planta/cmd");
+      Serial.println("MQTT OK, conectado y suscrito");
     } else {
+      // DIAGNOSTICO TEMPORAL: -4 timeout, -3 conexion perdida, -2 conexion
+      // fallida (host/puerto malo), -1 desconectado, 1..5 rechazo del broker
+      Serial.printf("MQTT fallo, state()=%d, reintento en 1s\n", mqtt.state());
       delay(1000);
     }
   }
