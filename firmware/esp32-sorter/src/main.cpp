@@ -46,7 +46,10 @@ int estadoBotonCintaEstable = HIGH;
 unsigned long ultimoCambioBotonCinta = 0;
 
 // --- Motor / cinta ---
-constexpr int CANAL_PWM_MOTOR = 0;
+// Canal 4, no 0: la libreria ESP32Servo agarra el canal 0 para el servo de
+// la puerta, y si el motor tambien pedia el canal 0 se "robaban" el canal
+// entre si (el que se configura ultimo terminaba controlando el pin del otro).
+constexpr int CANAL_PWM_MOTOR = 4;
 constexpr int FREQ_PWM_MOTOR = 5000;
 constexpr int RES_PWM_MOTOR = 8;  // 0-255
 constexpr int DUTY_LOW = 130;     // ~51%
@@ -236,6 +239,7 @@ void leerBotonPuerta() {
   if ((millis() - ultimoCambioBotonPuerta) > DEBOUNCE_MS && lectura != estadoBotonPuertaEstable) {
     estadoBotonPuertaEstable = lectura;
     if (estadoBotonPuertaEstable == LOW) {
+      Serial.println("Boton puerta detectado, moviendo servo...");  // DIAGNOSTICO TEMPORAL
       aplicarPuerta(!puertaAbierta);
       enviarEstado();
     }
@@ -250,6 +254,7 @@ void leerBotonCinta() {
   if ((millis() - ultimoCambioBotonCinta) > DEBOUNCE_MS && lectura != estadoBotonCintaEstable) {
     estadoBotonCintaEstable = lectura;
     if (estadoBotonCintaEstable == LOW) {
+      Serial.println("Boton cinta detectado, moviendo motor...");  // DIAGNOSTICO TEMPORAL
       aplicarMotor(motorState == MOTOR_OFF ? MOTOR_LOW : MOTOR_OFF);
       enviarEstado();
     }
@@ -297,4 +302,13 @@ void loop() {
     leerSensorYClasificar();
   }
 #endif
+
+  // DIAGNOSTICO TEMPORAL: estado crudo de los pines de botones cada 500ms,
+  // para ver si se mueven del todo aunque sea un instante al presionar.
+  static unsigned long ultimoPrint = 0;
+  if (millis() - ultimoPrint >= 500) {
+    ultimoPrint = millis();
+    Serial.printf("raw: puerta(GPIO4)=%d cinta(GPIO14)=%d\n", digitalRead(PIN_BOTON_PUERTA),
+                  digitalRead(PIN_BOTON_CINTA));
+  }
 }
