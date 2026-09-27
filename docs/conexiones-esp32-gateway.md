@@ -28,7 +28,29 @@ por el USB de programación, nada aquí necesita fuente externa.
 
 Coincide exactamente con `pinesFilas`/`pinesColumnas` y `LiquidCrystal_I2C lcd(0x27, 16, 2)`
 en [`firmware/esp32-gateway/src/main.cpp`](../firmware/esp32-gateway/src/main.cpp).
-Si tu módulo LCD no responde, probá la dirección `0x3F` (la otra dirección común de estos backpacks).
+La dirección I2C del LCD depende del módulo físico soldado (puede ser `0x27`
+o `0x3F` según la variante del chip PCF8574) — **reescaneala cada vez que
+cambies de módulo**, no asumas que es la misma. `main.cpp` ya trae un
+escáner I2C en `setup()` que la reporta por Serial, o usá el sketch aparte
+[`firmware/lcd-test/`](../firmware/lcd-test/) para probar el LCD solo, sin
+esperar a que conecte WiFi/MQTT.
+
+### Problemas comunes del LCD
+
+- **Sin texto, con o sin luz de fondo**: primero el potenciómetro de
+  contraste del propio módulo I2C (un trimmer pequeño, normalmente azul,
+  junto al chip PCF8574) — gíralo muy despacio, la ventana legible suele
+  ser angosta y pegada a un extremo.
+- **Bloques negros sólidos en una línea, la otra vacía**: esto **no** es un
+  fallo de cableado — es contraste demasiado alto saturando los caracteres
+  reales que el firmware sí está escribiendo bien (la línea vacía lo está
+  porque el código no le manda texto en ese momento, no porque algo esté
+  roto). Bajar el contraste con el trimmer.
+- **El trimmer no cambia nada al girarlo** (mismo resultado en todo su
+  rango): el potenciómetro está roto o mal conectado. Se puede saltear
+  poniendo una resistencia entre el pin `V0` del LCD y VCC o GND según haga
+  falta subir o bajar el contraste (ver historial de commits de este
+  archivo para más detalle de cómo se diagnosticó).
 
 ## Notas de armado
 

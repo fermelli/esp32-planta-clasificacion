@@ -241,6 +241,18 @@ podría dockerizarse igual, pero no hacía falta para el plazo del examen.
   firewall de Windows está bloqueando el puerto 8000 (API/WS) o el 1883
   (MQTT) para conexiones entrantes desde la red local.
 
+  Caso puntual ya visto: Docker Desktop crea sola una regla de firewall
+  ("Docker Desktop Backend") para el puerto de Mosquitto, pero esa regla
+  viene con el perfil de red limitado a **Público** — si tu red WiFi/Ethernet
+  está en modo **Privado** (lo normal en casa), la regla no aplica y el
+  ESP32 nunca completa la conexión TCP al 1883 aunque el contenedor esté
+  arriba. Se soluciona agregando una regla propia:
+  ```powershell
+  New-NetFirewallRule -DisplayName "MQTT 1883 (planta)" -Direction Inbound -Protocol TCP -LocalPort 1883 -Action Allow -Profile Private,Domain
+  ```
+  (requiere PowerShell como Administrador). Revisa el perfil de tu red con
+  `Get-NetConnectionProfile`.
+
 ## Ver también
 
 - [`arquitectura.md`](./arquitectura.md) — dónde corre cada pieza

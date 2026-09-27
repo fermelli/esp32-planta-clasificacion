@@ -67,7 +67,7 @@ interprete bien.
 | TCS3472 — SCL           | 22   | I2C                                                                                             |
 | TCS3472 — VIN           | 3V3  | El sensor sí se alimenta del propio ESP32 — a diferencia del motor, consume poquísimo           |
 | TCS3472 — GND           | —    | Al mismo GND común                                                                              |
-| Botón inicio/stop cinta | 14   | `INPUT_PULLUP`, alterna off↔low; "full" solo por comando remoto                                 |
+| Botón inicio/stop cinta | 14   | `INPUT_PULLUP`, cicla off→low→full→off en cada pulsación                                        |
 
 Coincide con `PIN_MOTOR_ENA/IN1/IN2`, `PIN_BOTON_CINTA` y la inicialización
 de `Adafruit_TCS34725` en
@@ -85,7 +85,24 @@ para entregar 5V limpios — con VMS a 6V puede quedar corto. Si el motor
 no responde o anda errático, medí con el multímetro el pin de 5V lógico
 del módulo: si da bien por debajo de 5V, sacá el jumper y alimentá ese
 pin aparte (por ejemplo desde el `5V`/`VIN` del ESP32 — la lógica consume
-muy poco, a diferencia del motor).
+muy poco, a diferencia del motor). Ojo: en algunos módulos ese pin se
+llama `VLÓGICO`/`+5V` y el jumper puede no tener nada impreso — identificalo
+por posición (junto a `VIN+`/`+12V` y `GND`), no por el texto.
+
+### Problemas comunes del motor/cinta
+
+- **Al presionar el botón de la cinta se mueve el servo de la puerta en vez
+  del motor**: conflicto de canal PWM entre la librería `ESP32Servo` (usa
+  el canal LEDC 0 para el servo) y `CANAL_PWM_MOTOR` si también está en 0
+  — el que se configura último "roba" el canal del otro. En el firmware
+  actual el motor usa el canal 4 para evitar esto; si movés el pin del
+  servo o agregás otro PWM, cuidado con volver a pisar canales.
+- **El motor zumba pero no gira** (con el canal ya sin conflicto): dos
+  causas posibles, probar en este orden — (1) la lógica del L298N sin
+  suficiente voltaje limpio, ver el punto del jumper `5V-EN` arriba; (2) el
+  duty cycle de `MOTOR_LOW` es insuficiente para el torque real de tu
+  motor/cinta — en este armado hizo falta subirlo a `~92%` (235/255), muy
+  por encima del `~51%` original, para vencer la fricción real.
 
 ## Los 9 LEDs — contador binario (Bloque 2)
 
