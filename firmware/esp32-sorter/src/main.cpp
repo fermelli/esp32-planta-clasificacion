@@ -52,7 +52,8 @@ unsigned long ultimoCambioBotonCinta = 0;
 constexpr int CANAL_PWM_MOTOR = 4;
 constexpr int FREQ_PWM_MOTOR = 5000;
 constexpr int RES_PWM_MOTOR = 8;  // 0-255
-constexpr int DUTY_LOW = 130;     // ~51%
+constexpr int DUTY_LOW = 235;     // ~92% -- ni 130 (~51%) ni 200 (~78%) alcanzaron
+                                   // torque para vencer la friccion real de la cinta/motor
 constexpr int DUTY_FULL = 255;
 uint8_t motorState = MOTOR_OFF;
 
