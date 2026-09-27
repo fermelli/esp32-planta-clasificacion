@@ -2,6 +2,7 @@
 // MQTT hacia el servidor, y el puente ESP-NOW hacia el sorter (ESP32 #2).
 
 #include <Arduino.h>
+#include <Wire.h>
 #include <WiFi.h>
 #include <esp_now.h>
 #include <PubSubClient.h>
@@ -23,7 +24,8 @@ byte pinesFilas[FILAS] = {13, 14, 27, 26};
 byte pinesColumnas[COLUMNAS] = {25, 33, 32, 15};
 Keypad teclado = Keypad(makeKeymap(TECLAS), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // direccion segun el escaner I2C (main.cpp escanea en setup());
+                                     // este valor depende del modulo fisico soldado - reescanear si se cambia el modulo
 
 WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
@@ -230,6 +232,24 @@ void manejarTeclado() {
 
 void setup() {
   Serial.begin(115200);
+  delay(500);  // margen para que se abra el monitor y no perderse las primeras lineas
+
+  // --- DIAGNOSTICO TEMPORAL: escaner I2C, antes de tocar el LCD ---
+  Serial.println("Escaneando bus I2C (SDA=21, SCL=22)...");
+  Wire.begin();
+  int encontrados = 0;
+  for (uint8_t addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.printf("  Dispositivo I2C encontrado en 0x%02X\n", addr);
+      encontrados++;
+    }
+  }
+  if (encontrados == 0) {
+    Serial.println("  Nada respondio. Revisar alimentacion (VIN, no 3V3) y cableado SDA/SCL.");
+  }
+  // --- fin diagnostico ---
+
   lcd.init();
   lcd.backlight();
 
