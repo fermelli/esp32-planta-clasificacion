@@ -256,7 +256,11 @@ void leerBotonCinta() {
     estadoBotonCintaEstable = lectura;
     if (estadoBotonCintaEstable == LOW) {
       Serial.println("Boton cinta detectado, moviendo motor...");  // DIAGNOSTICO TEMPORAL
-      aplicarMotor(motorState == MOTOR_OFF ? MOTOR_LOW : MOTOR_OFF);
+      // Cicla los 3 estados: off -> low -> full -> off
+      uint8_t siguiente = motorState == MOTOR_OFF   ? MOTOR_LOW
+                          : motorState == MOTOR_LOW  ? MOTOR_FULL
+                                                      : MOTOR_OFF;
+      aplicarMotor(siguiente);
       enviarEstado();
     }
   }
