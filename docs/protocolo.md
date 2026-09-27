@@ -62,8 +62,10 @@ también inserta una fila en `alertas` (tipo `lote_completo`) y se
 retransmite por WebSocket como evento aparte.
 
 `cmd: "motor"` con `arg` 0/1/2 selecciona off/low/full directamente; el
-botón físico del sorter solo alterna entre off y low (inicio/stop simple) —
-"full" es exclusivamente remoto, desde el dashboard.
+botón físico del sorter cicla por los 3 estados en el mismo orden
+(off → low → full → off), así que cualquiera de los dos caminos —botón
+físico o comando remoto— llega a los mismos tres estados. El comando
+remoto puede pisar el estado del botón en cualquier momento.
 
 Probado de punta a punta con `mosquitto_pub`/`mosquitto_sub` antes de tener
 hardware — ver el historial de commits de `server/app/mqtt_client.py`.
