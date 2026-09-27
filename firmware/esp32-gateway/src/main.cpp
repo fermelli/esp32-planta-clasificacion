@@ -175,10 +175,35 @@ void conectarWifi() {
   lcd.clear();
   lcd.print("Conectando WiFi");
   WiFi.mode(WIFI_STA);
+
+  // --- DIAGNOSTICO TEMPORAL: lista redes visibles antes de intentar conectar ---
+  Serial.println("\nBuscando redes WiFi visibles...");
+  int n = WiFi.scanNetworks();
+  bool ssidVisible = false;
+  for (int i = 0; i < n; i++) {
+    Serial.printf("  %2d) %-32s  RSSI:%4d  canal:%2d  %s\n", i + 1, WiFi.SSID(i).c_str(),
+                  WiFi.RSSI(i), WiFi.channel(i),
+                  WiFi.encryptionType(i) == WIFI_AUTH_OPEN ? "abierta" : "cifrada");
+    if (WiFi.SSID(i) == WIFI_SSID) ssidVisible = true;
+  }
+  if (!ssidVisible) {
+    Serial.printf("AVISO: \"%s\" no aparece en el escaneo. Puede ser red de 5GHz (invisible "
+                  "para el ESP32) o el nombre no coincide exactamente.\n",
+                  WIFI_SSID);
+  }
+  // --- fin diagnostico ---
+
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  unsigned long inicio = millis();
   while (WiFi.status() != WL_CONNECTED) {
     delay(300);
     Serial.print(".");
+    if (millis() - inicio > 15000) {
+      Serial.printf("\nNo conecto en 15s. WiFi.status()=%d "
+                    "(0=idle 1=sin_ssid 3=conectado 4=fallo 5=perdida 6=desconectado)\n",
+                    WiFi.status());
+      inicio = millis();  // sigue intentando, pero re-imprime cada 15s
+    }
   }
   Serial.printf("\nWiFi OK, canal %d, IP %s\n", WiFi.channel(), WiFi.localIP().toString().c_str());
 }
