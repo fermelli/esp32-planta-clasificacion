@@ -240,6 +240,7 @@ void publicarIntentoLogin() {
 
 void manejarTeclado() {
   char tecla = teclado.getKey();
+  if (tecla) Serial.printf("Tecla detectada: '%c'\n", tecla);  // DIAGNOSTICO TEMPORAL
   if (!tecla || esperandoRespuesta) return;
 
   if (mostrandoMensaje) {
