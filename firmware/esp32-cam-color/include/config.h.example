@@ -1,0 +1,18 @@
+#pragma once
+
+// Copiar a config.h (no se sube a git) y poner los datos reales.
+// La laptop corre el broker y la API: usar su IP en el hotspot del celular
+// (red de 2.4 GHz — el ESP32 no ve redes de 5 GHz).
+
+#define WIFI_SSID "nombre-de-tu-hotspot"
+#define WIFI_PASSWORD "clave-del-hotspot"
+
+#define MQTT_HOST "192.168.43.100"
+#define MQTT_PORT 1883
+
+#define API_URL "http://192.168.43.100:8000"
+#define CAMARA_TOKEN "cambia-el-token-de-la-camara"  // igual que CAMARA_TOKEN en server/.env
+
+// Si la imagen sale al revés o espejada:
+// #define CAM_VFLIP 1
+// #define CAM_HMIRROR 1

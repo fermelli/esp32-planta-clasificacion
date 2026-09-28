@@ -146,11 +146,24 @@ void onMqttMessage(char *topic, byte *payload, unsigned int length) {
     bool exito = doc["exito"];
     bool bloqueado = doc["bloqueado"];
     const char *nombre = doc["nombre"] | "";
+    const char *motivo = doc["motivo"] | "";
+
+    // PIN correcto con login por rostro activo en el servidor: todavia no hay
+    // resultado, sigue esperando a que la camara verifique la cara.
+    if (doc["requiere_rostro"] | false) {
+      lcd.clear();
+      lcd.print("Mire la camara");
+      lcd.setCursor(0, 1);
+      lcd.print(nombre);
+      return;
+    }
 
     if (exito) {
       lcdMensaje("Bienvenido", String(nombre), 2000);
     } else if (bloqueado) {
       lcdMensaje("Bloqueado", "2 intentos fallidos", 4000);
+    } else if (strcmp(motivo, "rostro") == 0) {
+      lcdMensaje("Rostro no valido", "Intento 2/2", 2000);
     } else {
       lcdMensaje("PIN incorrecto", "Intento 2/2", 2000);
     }
