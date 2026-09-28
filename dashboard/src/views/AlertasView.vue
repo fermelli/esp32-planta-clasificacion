@@ -5,7 +5,7 @@ import { useLiveStore } from '@/stores/live'
 import type { Alerta } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { BellRing, PackageCheck, ShieldAlert, Info, BellOff } from 'lucide-vue-next'
+import { BellRing, PackageCheck, ShieldAlert, CameraOff, Info, BellOff } from 'lucide-vue-next'
 
 const live = useLiveStore()
 const iniciales = ref<Alerta[]>([])
@@ -25,6 +25,7 @@ const TIPO_INFO: Record<
 > = {
   lote_completo: { variant: 'success', icon: PackageCheck },
   login_bloqueado: { variant: 'destructive', icon: ShieldAlert },
+  camara_offline: { variant: 'warning', icon: CameraOff },
 }
 
 function infoTipo(tipo: string) {

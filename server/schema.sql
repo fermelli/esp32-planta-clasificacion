@@ -29,7 +29,7 @@ CREATE INDEX idx_intentos_login_creado_en ON intentos_login (creado_en DESC);
 -- 'lote_completo' lo empieza a producir el Bloque 2, pero la tabla ya existe desde ahora.
 CREATE TABLE alertas (
   id        SERIAL PRIMARY KEY,
-  tipo      TEXT NOT NULL,             -- 'login_bloqueado' | 'lote_completo'
+  tipo      TEXT NOT NULL,             -- 'login_bloqueado' | 'lote_completo' | 'camara_offline'
   mensaje   TEXT NOT NULL,
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );

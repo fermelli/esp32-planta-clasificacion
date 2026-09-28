@@ -74,6 +74,8 @@ Definidas en `app/config.py` (pydantic-settings), con default si no están en
 | `CAMARA_TOKEN`                   | `cambia-el-token-de-la-camara`                     | Header `X-Camara-Token` con el que se autentica la ESP32-S3-CAM   |
 | `LOGIN_ROSTRO`                   | `false`                                            | Versión A: el login del teclado exige PIN + rostro                |
 | `ROSTRO_UMBRAL`                  | `0.363`                                            | Similitud coseno mínima para aceptar una cara                     |
+| `ROSTRO_VENTANA_S`               | `15`                                               | Segundos que tiene la cámara para resolver el rostro tras el PIN  |
+| `ROSTRO_MAX_RECHAZOS`            | `3`                                                | Fotos con otra cara antes de cerrar el intento como fallido       |
 | `CAMARA_COLOR`                   | `false`                                            | Versión B: cada caja dispara una foto que clasifica la IA         |
 | `COLOR_RECORTE`                  | `0.6`                                              | Fracción central de la foto que mira el clasificador de color     |
 | `CAPTURAS_DIR` / `MODELOS_DIR`   | `capturas` / `modelos`                             | Carpetas (relativas a `server/`) de las fotos y los modelos       |
@@ -90,7 +92,7 @@ Cuatro tablas base, repartidas entre `schema.sql` (Bloque 1) y
 | ---------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `usuarios`       | Los 2 operadores de la pizarra | Solo `seed.py` (columna única `password_hash`, ver [`dashboard.md`](./dashboard.md) sobre el mismo secreto en keypad y web) |
 | `intentos_login` | Cada login, exitoso o fallido  | `POST /api/auth/login` (origen `web`) y `planta/login/intento` (origen `keypad`)                                            |
-| `alertas`        | Avisos para LCD y dashboard    | Login bloqueado (2º intento fallido) y lote de 5 cajas completado                                                           |
+| `alertas`        | Avisos para LCD y dashboard    | Login bloqueado (2º intento fallido), lote de 5 cajas completado y cámara desconectada (`camara_offline`)                   |
 | `eventos_caja`   | Cada caja que pasa el sensor   | `planta/sorter/evento`; es la tabla central, inventario y dataset a la vez                                                  |
 
 `eventos_caja` trae `color_ml` y `etiqueta_real`. `color_ml` lo llena la
@@ -136,7 +138,7 @@ Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <t
 | -------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `POST`   | `/api/auth/login`                                    | `{nombre, password}` → JWT. Registra el intento (origen `web`)                                                                     |
 | `GET`    | `/api/intentos?limite=50`                            | Historial de login (`keypad` + `web`)                                                                                              |
-| `GET`    | `/api/alertas?limite=50`                             | Alertas (`login_bloqueado`, `lote_completo`)                                                                                       |
+| `GET`    | `/api/alertas?limite=50`                             | Alertas (`login_bloqueado`, `lote_completo`, `camara_offline`)                                                                     |
 | `POST`   | `/api/comandos`                                      | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts`                                                   |
 | `GET`    | `/api/eventos?limite=50`                             | Últimas cajas, con lectura cruda del sensor                                                                                        |
 | `GET`    | `/api/conteos`                                       | Conteo actual + total histórico + lotes por color                                                                                  |
