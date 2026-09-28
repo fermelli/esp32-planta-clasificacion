@@ -15,15 +15,24 @@ server/
 │   ├── security.py         # hashing (bcrypt) y JWT
 │   ├── deps.py              # get_current_user (protege los endpoints)
 │   ├── mqtt_client.py       # cliente MQTT: valida, persiste, retransmite por WS
+│   ├── camara.py             # token de la cámara, carpetas de capturas/modelos, guardar_jpeg
+│   ├── rostro.py              # cámara A: YuNet + SFace (OpenCV), login PIN + rostro pendiente
+│   ├── color_ia.py             # cámara B: características + SVM (scikit-learn), entrenar/predecir
 │   ├── ws.py                 # ConnectionManager del WebSocket
 │   ├── schemas.py             # modelos Pydantic de entrada/salida
 │   └── routers/
 │       ├── auth.py             # POST /api/auth/login
 │       ├── intentos.py          # GET /api/intentos, /api/alertas
 │       ├── comandos.py           # POST /api/comandos
-│       └── produccion.py          # GET /api/eventos, /api/conteos, /api/produccion/historico
+│       ├── produccion.py          # GET /api/eventos, /api/conteos, /api/produccion/historico
+│       ├── rostro.py               # /api/rostro/*: verificar, muestra (cámara) y enrolar, usuarios (dashboard)
+│       └── color.py                 # /api/color/*: captura (cámara) y capturas, resumen, entrenar (dashboard)
 ├── schema.sql               # esquema del Bloque 1 (se auto-aplica al crear el contenedor)
 ├── migrations/               # esquema de bloques siguientes, se auto-aplica igual que schema.sql
+├── ml/
+│   ├── descargar_modelos.py    # baja YuNet y SFace a modelos/ (una vez, con internet)
+│   └── entrenar_color.py        # entrena el clasificador de color desde la terminal
+├── capturas/  modelos/       # fotos de la cámara y modelos .onnx/.joblib (no van a git)
 ├── seed.py                    # siembra los 2 usuarios (idempotente)
 ├── docker-compose.yml           # Postgres + Mosquitto
 └── .env.example
@@ -62,11 +71,18 @@ Definidas en `app/config.py` (pydantic-settings), con default si no están en
 | `JWT_EXPIRE_MINUTES`             | `480` (8 h)                                        | Vigencia del token del login web y del keypad                     |
 | `SEED_USUARIO_1_NOMBRE/_SECRETO` | `operador1` / `1234`                               | Usuario sembrado por `seed.py`                                    |
 | `SEED_USUARIO_2_NOMBRE/_SECRETO` | `operador2` / `5678`                               | Segundo usuario sembrado por `seed.py`                            |
+| `CAMARA_TOKEN`                   | `cambia-el-token-de-la-camara`                     | Header `X-Camara-Token` con el que se autentica la ESP32-S3-CAM   |
+| `LOGIN_ROSTRO`                   | `false`                                            | Versión A: el login del teclado exige PIN + rostro                |
+| `ROSTRO_UMBRAL`                  | `0.363`                                            | Similitud coseno mínima para aceptar una cara                     |
+| `CAMARA_COLOR`                   | `false`                                            | Versión B: cada caja dispara una foto que clasifica la IA         |
+| `COLOR_RECORTE`                  | `0.6`                                              | Fracción central de la foto que mira el clasificador de color     |
+| `CAPTURAS_DIR` / `MODELOS_DIR`   | `capturas` / `modelos`                             | Carpetas (relativas a `server/`) de las fotos y los modelos       |
 
 ## Modelo de datos
 
-Cuatro tablas, repartidas entre `schema.sql` (Bloque 1) y
-`migrations/002_produccion.sql` (Bloque 2):
+Cuatro tablas base, repartidas entre `schema.sql` (Bloque 1) y
+`migrations/002_produccion.sql` (Bloque 2), más tres de la cámara
+(`003_rostro.sql` y `004_color_camara.sql`, ver abajo):
 
 | Tabla            | Para qué                       | Quién escribe                                                                                                               |
 | ---------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
@@ -75,9 +91,18 @@ Cuatro tablas, repartidas entre `schema.sql` (Bloque 1) y
 | `alertas`        | Avisos para LCD y dashboard    | Login bloqueado (2º intento fallido) y lote de 5 cajas completado                                                           |
 | `eventos_caja`   | Cada caja que pasa el sensor   | `planta/sorter/evento`; es la tabla central, inventario y dataset a la vez                                                  |
 
-`eventos_caja` ya trae `color_ml` y `etiqueta_real`, pero ninguno de los dos
-se usa todavía — quedan reservados para cuando el Bloque 3 agregue el
-modelo de clasificación (predicción vs. corrección manual).
+`eventos_caja` trae `color_ml` y `etiqueta_real`. `color_ml` lo llena la
+cámara de color (versión B) con lo que predijo la IA; `etiqueta_real`
+queda para corregir a mano el color de una caja, y tiene prioridad sobre el
+del sensor al entrenar.
+
+Las tablas de la cámara:
+
+| Tabla                   | Para qué                                                         | Quién escribe                |
+| ----------------------- | ---------------------------------------------------------------- | ---------------------------- |
+| `rostros`               | Embeddings (128 números) de las caras enroladas de cada usuario  | `POST /api/rostro/muestra`   |
+| `verificaciones_rostro` | Cada foto con cara verificada durante un login, con su similitud | `POST /api/rostro/verificar` |
+| `capturas_camara`       | Una foto por caja + lo que predijo la IA (color, confianza)      | `POST /api/color/captura`    |
 
 ### Migraciones
 
@@ -93,6 +118,8 @@ haber levantado el proyecto), hay dos opciones:
 ```bash
 # opción A: aplicar solo la migración nueva a mano
 docker compose exec -T postgres psql -U planta -d planta -f /docker-entrypoint-initdb.d/02-produccion.sql
+# (igual con 03-rostro.sql y 04-color-camara.sql; en Git Bash de Windows
+# anteponer MSYS_NO_PATHCONV=1 o usar PowerShell, si no reescribe la ruta)
 
 # opción B: recrear el volumen desde cero (se pierde todo lo guardado)
 docker compose down -v
@@ -103,17 +130,26 @@ docker compose up -d
 
 Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <token>`.
 
-| Método | Ruta                                 | Qué hace                                                                            |
-| ------ | ------------------------------------ | ----------------------------------------------------------------------------------- |
-| `POST` | `/api/auth/login`                    | `{nombre, password}` → JWT. Registra el intento (origen `web`)                      |
-| `GET`  | `/api/intentos?limite=50`            | Historial de login (`keypad` + `web`)                                               |
-| `GET`  | `/api/alertas?limite=50`             | Alertas (`login_bloqueado`, `lote_completo`)                                        |
-| `POST` | `/api/comandos`                      | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts`    |
-| `GET`  | `/api/eventos?limite=50`             | Últimas cajas, con lectura cruda del sensor                                         |
-| `GET`  | `/api/conteos`                       | Conteo actual + total histórico + lotes por color                                   |
-| `GET`  | `/api/produccion/historico?horas=24` | Cajas por hora, agrupadas por color                                                 |
-| `GET`  | `/api/salud`                         | Sin auth. Para confirmar que el proceso está vivo                                   |
-| `WS`   | `/ws`                                | Sin auth. Reenvía `intento_login`, `sorter_estado`, `evento_caja`, `alerta` en vivo |
+| Método   | Ruta                                                 | Qué hace                                                                                                                           |
+| -------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/auth/login`                                    | `{nombre, password}` → JWT. Registra el intento (origen `web`)                                                                     |
+| `GET`    | `/api/intentos?limite=50`                            | Historial de login (`keypad` + `web`)                                                                                              |
+| `GET`    | `/api/alertas?limite=50`                             | Alertas (`login_bloqueado`, `lote_completo`)                                                                                       |
+| `POST`   | `/api/comandos`                                      | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts`                                                   |
+| `GET`    | `/api/eventos?limite=50`                             | Últimas cajas, con lectura cruda del sensor                                                                                        |
+| `GET`    | `/api/conteos`                                       | Conteo actual + total histórico + lotes por color                                                                                  |
+| `GET`    | `/api/produccion/historico?horas=24`                 | Cajas por hora, agrupadas por color                                                                                                |
+| `GET`    | `/api/salud`                                         | Sin auth. Para confirmar que el proceso está vivo                                                                                  |
+| `WS`     | `/ws`                                                | Sin auth. Reenvía `intento_login`, `sorter_estado`, `evento_caja`, `alerta`, `verificacion_rostro`, `clasificacion_camara` en vivo |
+| `GET`    | `/capturas/<ruta>`                                   | Sin auth. Las fotos de la cámara (un `<img>` no puede mandar el JWT)                                                               |
+| `POST`   | `/api/rostro/verificar`, `/muestra`                  | Cámara, con `X-Camara-Token`. Foto JPEG en el cuerpo (ver [`protocolo.md`](./protocolo.md))                                        |
+| `GET`    | `/api/camara/config`                                 | Por versión de cámara: `flag` (activada en el `.env`), `online` (hay placa conectada) y `activo` (las dos)                         |
+| `GET`    | `/api/rostro/config`, `/usuarios`, `/verificaciones` | Estado del login por rostro, muestras por usuario, verificaciones recientes                                                        |
+| `POST`   | `/api/rostro/enrolar/{usuario_id}`                   | Ordena a la cámara tomar 5 fotos de ese usuario                                                                                    |
+| `DELETE` | `/api/rostro/muestras/{usuario_id}`                  | Borra las muestras de rostro de un usuario                                                                                         |
+| `POST`   | `/api/color/captura`                                 | Cámara, con `X-Camara-Token`. Foto de una caja (`?evento_id=`)                                                                     |
+| `GET`    | `/api/color/capturas`, `/resumen`                    | Fotos con sensor vs. IA; % de acuerdo, dataset por color y métricas del modelo                                                     |
+| `POST`   | `/api/color/entrenar`                                | Entrena el clasificador con las fotos guardadas y devuelve accuracy y matriz de confusión                                          |
 
 El WebSocket es de solo lectura desde el dashboard: el servidor nunca
 espera un mensaje entrante, solo transmite.
@@ -183,26 +219,41 @@ handlers pueden usar el mismo pool de Postgres y el mismo
   fila en `intentos_login` (origen `keypad`); si es el 2º intento fallido,
   además inserta una alerta `login_bloqueado`. Responde en
   `planta/login/resultado` y lo retransmite por WS como `intento_login`.
+  Con `LOGIN_ROSTRO=true` y el PIN correcto, en cambio, deja el login
+  pendiente y le pide la cara a la cámara (ver [`camara-rostro.md`](./camara-rostro.md));
+  el resultado sale recién cuando la cara se resolvió. Si **no hay cámara de
+  rostro conectada**, el login entra solo con el PIN y queda una alerta
+  `camara_offline`: el teclado nunca se bloquea por una placa caída.
 - **`planta/sorter/estado`** — se reenvía tal cual por WebSocket
   (`sorter_estado`) y no se persiste: es estado instantáneo del hardware
   (puerta, cinta), no un evento con historia.
 - **`planta/sorter/evento`** — cada caja que pasa el sensor. Inserta la fila
   completa en `eventos_caja` (color, conteo, lectura cruda del sensor) y la
   retransmite como `evento_caja`. Si trae `lote_completo: true`, además
-  inserta una alerta `lote_completo` y manda un WS `alerta` aparte.
+  inserta una alerta `lote_completo` y manda un WS `alerta` aparte. Con
+  `CAMARA_COLOR=true` **y una cámara de color conectada** publica además
+  `planta/camara/capturar` con el `id` de la fila, para que la cámara saque
+  la foto de esa caja.
+- **`planta/camara/estado/rostro`** y **`.../color`** — el saludo de cada
+  firmware de cámara. El servidor guarda cuáles están conectadas, lo
+  retransmite por WS como `camara_estado` y, si una versión activada por flag
+  se desconecta, inserta una alerta `camara_offline`.
 - **`planta/sorter/alerta`** — inserta la alerta con el `tipo`/`mensaje` que
   venga y la retransmite. Sin uso todavía por parte del sorter, pero el
   camino ya está listo.
 
 ### Mensajes que llegan por el WebSocket
 
-Los 4 `type` que puede recibir `/ws`, con la forma real del JSON:
+Los `type` que puede recibir `/ws`, con la forma real del JSON:
 
 ```json
 { "type": "intento_login", "exito": true, "nombre": "operador1", "bloqueado": false, "intento": 1 }
 { "type": "sorter_estado", "puerta_abierta": true, "cinta_estado": "low" }
 { "type": "evento_caja", "color": "rojo", "conteo": 3, "lote_completo": false, "r": 900, "g": 200, "b": 180, "c": 1300 }
 { "type": "alerta", "tipo": "lote_completo", "mensaje": "Lote de 5 cajas rojo completado" }
+{ "type": "camara_estado", "version": "rostro", "online": true }
+{ "type": "verificacion_rostro", "usuario_id": 1, "nombre": "operador1", "similitud": 0.92, "exito": true, "umbral": 0.363, "imagen": "rostro/v1_1759000000000.jpg" }
+{ "type": "clasificacion_camara", "evento_id": 42, "color_sensor": "rojo", "color_ia": "rojo", "confianza": 0.87, "coincide": true, "imagen": "color/42.jpg" }
 ```
 
 ## Seguridad (alcance de laboratorio)
@@ -217,6 +268,8 @@ sale a internet:
   suscribirse a los topics.
 - **`/ws` sin autenticación** — el WebSocket no pide token; solo transmite,
   nunca ejecuta comandos.
+- **`/capturas/` sin autenticación** — las fotos de la cámara (incluidas las
+  de las caras) las puede pedir cualquiera que conozca el nombre del archivo.
 - **`seed.py` imprime la clave sembrada** por consola, para poder copiarla al
   keypad del ESP32 sin ir a buscarla en el `.env`.
 
@@ -247,9 +300,11 @@ podría dockerizarse igual, pero no hacía falta para el plazo del examen.
   está en modo **Privado** (lo normal en casa), la regla no aplica y el
   ESP32 nunca completa la conexión TCP al 1883 aunque el contenedor esté
   arriba. Se soluciona agregando una regla propia:
+
   ```powershell
   New-NetFirewallRule -DisplayName "MQTT 1883 (planta)" -Direction Inbound -Protocol TCP -LocalPort 1883 -Action Allow -Profile Private,Domain
   ```
+
   (requiere PowerShell como Administrador). Revisa el perfil de tu red con
   `Get-NetConnectionProfile`.
 
@@ -258,3 +313,4 @@ podría dockerizarse igual, pero no hacía falta para el plazo del examen.
 - [`arquitectura.md`](./arquitectura.md) — dónde corre cada pieza
 - [`protocolo.md`](./protocolo.md) — los topics MQTT que consume/publica este servidor, con payloads reales
 - [`dashboard.md`](./dashboard.md) — el cliente que consume esta API
+- [`camara-rostro.md`](./camara-rostro.md) y [`camara-color.md`](./camara-color.md) — la cámara con IA

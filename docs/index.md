@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Planta de clasificación
   text: Documentación técnica
-  tagline: COM520 — primer parcial. Bloque 1 y Bloque 2 completos — backend, MQTT, firmware de los dos ESP32 y dashboard, probado de punta a punta.
+  tagline: COM520 — primer parcial. Bloque 1 y Bloque 2 completos — backend, MQTT, firmware de los dos ESP32 y dashboard, más una cámara con IA (rostro y color).
   actions:
     - theme: brand
       text: Guía de armado
@@ -35,6 +35,12 @@ features:
   - title: Protocolo
     details: Structs de ESP-NOW y topics MQTT, con payloads reales.
     link: /protocolo
+  - title: Cámara con IA — rostro
+    details: ESP32-S3-CAM en el login del teclado, como segundo factor después del PIN (OpenCV YuNet + SFace).
+    link: /camara-rostro
+  - title: Cámara con IA — color
+    details: Foto de cada caja clasificada por un modelo scikit-learn, en paralelo al sensor de color.
+    link: /camara-color
 ---
 
 ## Pendiente
@@ -42,6 +48,10 @@ features:
 Calibrar `UMBRAL_PRESENCIA` del sensor de color con las cajas reales, y
 flashear el hardware: SSID/contraseña del WiFi de la demo e IP de la PC de
 escritorio, en `firmware/esp32-gateway/include/config.h`.
+
+De la cámara con IA: probar el firmware en la ESP32-S3-CAM física (pinout,
+PSRAM, iluminación), enrolar las caras, y juntar fotos reales de las cajas
+para entrenar el clasificador de color.
 
 El plan completo del proyecto (los 4 bloques, la BBDD, qué se dejó fuera y
 por qué) vive fuera de este repo, en el plan de la sesión de Claude Code.

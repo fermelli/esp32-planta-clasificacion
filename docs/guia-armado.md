@@ -122,6 +122,25 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 ---
 
+## ESP32-S3-CAM (opcional)
+
+La cámara con IA es un tercer nodo aparte y **no se cablea a los otros dos**:
+solo necesita alimentación por USB (5V, su propio cargador) y WiFi. Tiene dos
+usos que se eligen con el firmware que se flashea (uno por vez en la misma
+placa, o dos placas para tenerlos a la vez):
+
+- **Rostro** (`firmware/esp32-cam-rostro`): fija junto al teclado del gateway,
+  a la altura de la cara de quien teclea, con luz de frente. Ver
+  [`camara-rostro.md`](./camara-rostro.md).
+- **Color** (`firmware/esp32-cam-color`): sobre la cinta, apuntando a la zona
+  donde queda la caja un poco después del sensor de color, con luz pareja.
+  Ver [`camara-color.md`](./camara-color.md).
+
+Al flashear por USB usar el puerto marcado "UART". La placa se conecta al
+hotspot de 2.4 GHz igual que los otros ESP32.
+
+---
+
 ## Checklist antes de encender
 
 - [ ] Teclado: 8 cables a filas/columnas, ninguno mezclado con los del sorter (son placas distintas)
@@ -136,6 +155,7 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 - [ ] GND común verificado con multímetro (continuidad) entre ESP32, fuente(s) externa(s) y todos los módulos
 - [ ] Ningún componente alimentado desde el pin `5V`/`VIN` del ESP32 salvo el LCD (que sí puede, consume poco)
 - [ ] Cable USB de **datos** (no solo carga) en cada placa
+- [ ] Si usás la cámara: `config.h` con WiFi, IP de la laptop y `CAMARA_TOKEN` igual al de `server/.env`, y lente apuntando según la versión
 
 ## Referencia de todos los pines juntos
 
@@ -145,3 +165,4 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 - [`arquitectura.md`](./arquitectura.md) — cómo se comunican las dos placas entre sí y con el servidor
 - [`protocolo.md`](./protocolo.md) — qué manda cada placa una vez armada y flasheada
+- [`camara-rostro.md`](./camara-rostro.md) y [`camara-color.md`](./camara-color.md) — la cámara con IA

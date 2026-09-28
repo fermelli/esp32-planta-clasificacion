@@ -6,6 +6,13 @@ probados de punta a punta. Pendiente: calibrar el sensor de color con las
 cajas reales, y flashear el hardware (falta SSID/contraseña del WiFi de la
 demo e IP de la PC de escritorio en `firmware/esp32-gateway/include/config.h`).
 
+Además, la **cámara con IA** (ESP32-S3-CAM) está implementada en dos
+versiones, ambas apagadas por defecto: login por PIN + rostro y color de las
+cajas en paralelo al sensor. El servidor, el dashboard y los dos firmwares
+están probados (con datos sintéticos, contra un servidor real); **falta
+probar el firmware en la placa física** (pinout, PSRAM, iluminación) y
+entrenar el clasificador de color con fotos reales de las cajas.
+
 - [`guia-armado.md`](./guia-armado.md) — **todos** los componentes de las
   dos placas juntos, en orden de armado, con checklist antes de encender.
 - [`arquitectura.md`](./arquitectura.md) — el sistema completo: los 2 ESP32,
@@ -20,6 +27,10 @@ demo e IP de la PC de escritorio en `firmware/esp32-gateway/include/config.h`).
   del ESP32 #2: servo + botón, cinta, sensor de color, LEDs binarios.
 - [`protocolo.md`](./protocolo.md) — los structs de ESP-NOW y los topics de
   MQTT, con ejemplos reales de payload.
+- [`camara-rostro.md`](./camara-rostro.md) — ESP32-S3-CAM, versión A: login
+  por PIN + reconocimiento facial (OpenCV YuNet + SFace).
+- [`camara-color.md`](./camara-color.md) — ESP32-S3-CAM, versión B: color de
+  cada caja clasificado por IA (scikit-learn) en paralelo al sensor.
 
 Los diagramas son archivos `.svg` sueltos en [`img/`](./img/) — se pueden
 abrir directo (doble clic, o arrastrar al navegador) sin pasar por ningún

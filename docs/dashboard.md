@@ -34,7 +34,9 @@ dashboard/
 │       ├── ProduccionView.vue           # conteos en vivo, cinta/puerta, últimas cajas
 │       ├── HistoricoView.vue             # cajas por hora (gráfico SVG a mano)
 │       ├── IntentosView.vue
-│       └── AlertasView.vue
+│       ├── AlertasView.vue
+│       ├── RostroView.vue                 # cámara A: enrolar caras, verificaciones
+│       └── CamaraColorView.vue             # cámara B: sensor vs. IA, entrenar
 └── .env.example
 ```
 
@@ -71,13 +73,15 @@ sobre por qué.
 Todas las rutas salvo `/login` están protegidas por el guard de
 `router/index.ts` (sin `auth.token` → redirige a `/login?next=<ruta>`).
 
-| Ruta         | Vista            | Carga inicial (REST)                              | Se actualiza en vivo con...                      |
-| ------------ | ---------------- | ------------------------------------------------- | ------------------------------------------------ |
-| `/login`     | `LoginView`      | `POST /api/auth/login`                            | —                                                |
-| `/`          | `ProduccionView` | `GET /api/conteos` + `GET /api/eventos?limite=15` | `evento_caja`, `sorter_estado`                   |
-| `/historico` | `HistoricoView`  | `GET /api/produccion/historico?horas=24`          | No se actualiza sola; hay que recargar la página |
-| `/intentos`  | `IntentosView`   | `GET /api/intentos?limite=30`                     | `intento_login`                                  |
-| `/alertas`   | `AlertasView`    | `GET /api/alertas?limite=30`                      | `alerta`                                         |
+| Ruta            | Vista             | Carga inicial (REST)                               | Se actualiza en vivo con...                      |
+| --------------- | ----------------- | -------------------------------------------------- | ------------------------------------------------ |
+| `/login`        | `LoginView`       | `POST /api/auth/login`                             | —                                                |
+| `/`             | `ProduccionView`  | `GET /api/conteos` + `GET /api/eventos?limite=15`  | `evento_caja`, `sorter_estado`                   |
+| `/historico`    | `HistoricoView`   | `GET /api/produccion/historico?horas=24`           | No se actualiza sola; hay que recargar la página |
+| `/intentos`     | `IntentosView`    | `GET /api/intentos?limite=30`                      | `intento_login`                                  |
+| `/alertas`      | `AlertasView`     | `GET /api/alertas?limite=30`                       | `alerta`                                         |
+| `/rostro`       | `RostroView`      | `GET /api/rostro/{config,usuarios,verificaciones}` | `verificacion_rostro`                            |
+| `/camara-color` | `CamaraColorView` | `GET /api/color/{resumen,capturas}`                | `clasificacion_camara`                           |
 
 `ProduccionView` además tiene los controles de planta: botones de cinta
 (apagada/baja/full) y de puerta, y un botón de reset de contadores — los
@@ -90,7 +94,10 @@ Cada vista pide su estado inicial por REST al entrar (`onMounted`) y lo
 combina con el buffer en vivo del store `live` (WebSocket a `/ws`, abierto
 una sola vez desde `App.vue` al iniciar sesión). Ese store guarda como
 máximo los últimos 30 mensajes de cada tipo (`intento_login`, `alerta`,
-`evento_caja`) y el último `sorter_estado` recibido.
+`evento_caja`, `verificacion_rostro`, `clasificacion_camara`) y el último `sorter_estado` recibido. También guarda `camaras`: qué
+versiones de la cámara están activadas y conectadas (`GET /api/camara/config`,
+actualizado en vivo por el mensaje `camara_estado`), que `App.vue` usa para
+mostrar u ocultar las pantallas Rostro y Cámara del menú.
 
 El patrón varía un poco según la vista:
 
