@@ -159,3 +159,24 @@ Implementado en `barrerCanalSiHaceFalta()` dentro de
 Limitación conocida: si el gateway se reconecta a un canal distinto después
 de que el sorter ya sincronizó, no hay reintento automático — hay que
 reiniciar el sorter. Aceptable para una demo de examen, no para producción.
+
+## Cámara de color (opcional)
+
+La versión B de la cámara (color de cada caja, en paralelo al TCS3472) va
+**sobre la cinta de este sorter**, pero **no se cablea a él**: es una placa
+aparte con su propio USB de 5 V. El sorter sigue sin WiFi y decide color,
+conteo y LEDs igual que siempre; la cámara solo aporta una segunda opinión.
+
+![Cámara de color junto al sorter](img/esp32-sorter-camara-dibujo.svg)
+
+| Qué                       | Cómo                                                                             |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| Pines del sorter que usa  | **Ninguno** (el cableado de arriba no cambia)                                    |
+| Alimentación de la cámara | Su propio cargador USB de 5 V. **Nunca** la fuente de 6 V / 12 V ni `VIN` / `5V` |
+| Comunicación              | WiFi 2.4 GHz a la laptop: MQTT :1883 (órdenes) y HTTP :8000 (foto)               |
+| Firmware                  | [`firmware/esp32-cam-color/`](../firmware/esp32-cam-color/)                      |
+| `config.h` de la cámara   | `WIFI_SSID`, `WIFI_PASSWORD`, `MQTT_HOST`, `API_URL`, `CAMARA_TOKEN`             |
+| Dónde ponerla             | Sobre la cinta, apuntando un poco después del sensor de color                    |
+
+El sorter no cambia en absoluto (ni cableado ni firmware). Flujo completo,
+IA y puesta en marcha en [`camara-color.md`](./camara-color.md).

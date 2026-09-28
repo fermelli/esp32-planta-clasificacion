@@ -61,6 +61,19 @@ necesita alimentación de `VIN`, no de `3V3`, o el backlight queda muy tenue.
 
 ![Conexiones del ESP32 gateway](img/esp32-gateway-conexiones.svg)
 
+### Cámara de rostro (opcional)
+
+Va junto al teclado y **no se cablea al gateway** (ningún pin): solo su propio
+cargador USB de 5 V y WiFi. Se coordinan a través de la laptop.
+
+![Cámara de rostro junto al gateway](img/esp32-gateway-camara-dibujo.svg)
+
+![Cómo se conectan el gateway y la cámara](img/camara-conexion-red.svg)
+
+Detalle en [`conexiones-esp32-gateway.md`](./conexiones-esp32-gateway.md#camara-de-rostro-opcional)
+y [`camara-rostro.md`](./camara-rostro.md). Al flashear por USB usar el puerto
+marcado "UART".
+
 ---
 
 ## ESP32 #2 — sorter
@@ -120,29 +133,16 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 ![Conexiones del ESP32 sorter](img/esp32-sorter-conexiones.svg)
 
----
+### Cámara de color (opcional)
 
-## ESP32-S3-CAM (opcional)
+Va sobre la cinta, un poco después del sensor, y **no se cablea al sorter**
+(ningún pin): su propio cargador USB de 5 V y WiFi. **Nunca** a la fuente de
+6 V / 12 V ni a `VIN` / `5V`.
 
-La cámara con IA es un tercer nodo aparte y **no se cablea a los otros dos** (ni
-al gateway: se comunican por WiFi a través de la laptop, ver el esquema):
-solo necesita alimentación por USB (5V, su propio cargador) y WiFi. Tiene dos
-usos que se eligen con el firmware que se flashea (uno por vez en la misma
-placa, o dos placas para tenerlos a la vez):
+![Cámara de color junto al sorter](img/esp32-sorter-camara-dibujo.svg)
 
-- **Rostro** (`firmware/esp32-cam-rostro`): fija junto al teclado del gateway,
-  a la altura de la cara de quien teclea, con luz de frente. Ver
-  [`camara-rostro.md`](./camara-rostro.md).
-- **Color** (`firmware/esp32-cam-color`): sobre la cinta, apuntando a la zona
-  donde queda la caja un poco después del sensor de color, con luz pareja.
-  Ver [`camara-color.md`](./camara-color.md).
-
-![Cómo se conectan el gateway y la cámara](img/camara-conexion-red.svg)
-
-![Montaje de la cámara según la versión](img/camara-montaje.svg)
-
-Al flashear por USB usar el puerto marcado "UART". La placa se conecta al
-hotspot de 2.4 GHz igual que los otros ESP32.
+Detalle en [`conexiones-esp32-sorter.md`](./conexiones-esp32-sorter.md#camara-de-color-opcional)
+y [`camara-color.md`](./camara-color.md).
 
 ---
 
@@ -160,7 +160,7 @@ hotspot de 2.4 GHz igual que los otros ESP32.
 - [ ] GND común verificado con multímetro (continuidad) entre ESP32, fuente(s) externa(s) y todos los módulos
 - [ ] Ningún componente alimentado desde el pin `5V`/`VIN` del ESP32 salvo el LCD (que sí puede, consume poco)
 - [ ] Cable USB de **datos** (no solo carga) en cada placa
-- [ ] Si usás la cámara: `config.h` con WiFi, IP de la laptop y `CAMARA_TOKEN` igual al de `server/.env`, y lente apuntando según la versión
+- [ ] Si usás la cámara: `config.h` con WiFi, IP de la laptop y `CAMARA_TOKEN` igual al de `server/.env`; alimentada por su propio USB de 5 V (nunca la fuente de 6 V); lente apuntando según la versión
 
 ## Referencia de todos los pines juntos
 

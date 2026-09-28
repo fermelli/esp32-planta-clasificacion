@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-  <title>Arquitectura del sistema — Bloque 1</title>
+  <title>Arquitectura del sistema — con la cámara (opcional)</title>
   <rect x="0" y="0" width="980" height="470" fill="#ffffff"/>
-  <text x="490.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Arquitectura del sistema — Bloque 1</text>
-  <text x="490.0" y="52" text-anchor="middle" font-size="13" fill="#555">Solo el ESP32 #1 tiene WiFi; Mosquitto, FastAPI y Postgres corren juntos en la PC de escritorio</text>
+  <text x="490.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Arquitectura del sistema — con la cámara (opcional)</text>
+  <text x="490.0" y="52" text-anchor="middle" font-size="13" fill="#555">El sorter solo habla ESP-NOW; el gateway y la cámara (opcional) tienen WiFi; Mosquitto, FastAPI y Postgres corren juntos en la PC</text>
   <g transform="translate(0,70)">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -28,6 +28,16 @@
   <path d="M295,150 q10,-14 20,0" fill="none" stroke="#334155" stroke-width="1.5"/>
   <path d="M300,150 q5,-7 10,0" fill="none" stroke="#334155" stroke-width="1.5"/>
   <circle cx="305" cy="151" r="1.6" fill="#334155"/>
+
+  <!-- ESP32-S3-CAM (opcional: versión A rostro / versión B color) -->
+  <rect x="95" y="290" width="150" height="70" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="170" y="316" text-anchor="middle" font-size="14" font-family="sans-serif" font-weight="600">ESP32-S3-CAM</text>
+  <text x="170" y="334" text-anchor="middle" font-size="12" font-family="sans-serif">cámara (rostro / color)</text>
+  <text x="170" y="350" text-anchor="middle" font-size="10.5" fill="#a16207" font-family="sans-serif">la IA corre en FastAPI</text>
+  <!-- antena wifi -->
+  <path d="M160,290 q10,-14 20,0" fill="none" stroke="#a16207" stroke-width="1.5"/>
+  <path d="M165,290 q5,-7 10,0" fill="none" stroke="#a16207" stroke-width="1.5"/>
+  <circle cx="170" cy="291" r="1.6" fill="#a16207"/>
 
   <!-- Mosquitto -->
   <rect x="410" y="60" width="140" height="60" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
@@ -56,6 +66,10 @@
   <path d="M305,150 C305,120 400,105 408,90" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
   <path d="M408,100 C400,115 305,130 305,150" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)"/>
   <text x="345" y="118" text-anchor="middle" font-size="11" font-family="sans-serif">WiFi + MQTT</text>
+
+  <path d="M245,325 C320,325 385,250 408,205" fill="none" stroke="#a16207" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#arrow)"/>
+  <text x="318" y="296" text-anchor="middle" font-size="11" fill="#a16207" font-family="sans-serif">WiFi: foto por HTTP</text>
+  <text x="318" y="310" text-anchor="middle" font-size="11" fill="#a16207" font-family="sans-serif">+ órdenes por MQTT</text>
 
   <line x1="480" y1="120" x2="480" y2="158" stroke="#4338ca" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
   <text x="530" y="143" text-anchor="middle" font-size="10.5" fill="#4338ca" font-family="sans-serif">paho-mqtt</text>

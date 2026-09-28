@@ -134,7 +134,7 @@ solo como evidencia para el dashboard.
 
 ## Montaje
 
-![Montaje de la cámara según la versión](img/camara-montaje.svg)
+![Cámara de rostro junto al gateway](img/esp32-gateway-camara-dibujo.svg)
 
 La cámara va **fija junto al teclado**, a la altura de la cara de quien está
 tecleando, apuntando hacia esa persona y con luz de frente (no a contraluz).

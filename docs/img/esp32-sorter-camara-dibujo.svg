@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Cámara de color junto al sorter</title>
+  <rect x="0" y="0" width="900" height="600" fill="#ffffff"/>
+  <text x="450.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Cámara de color junto al sorter</text>
+  <defs><marker id="a475569" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#475569"/></marker><marker id="ab45309" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#b45309"/></marker></defs>
+  <text x="450.0" y="52" text-anchor="middle" font-size="13" fill="#555">La cámara mira la cinta un poco después del sensor; el sorter sigue sin WiFi y sin cambios de cableado</text>
+  <rect x="600" y="72" width="190" height="44" rx="8" fill="#f0f9ff" stroke="#0369a1" stroke-width="1.5"/>
+  <text x="695" y="92" text-anchor="middle" font-size="12.5" fill="#0369a1" font-weight="600">Hotspot del celular</text>
+  <text x="695" y="107" text-anchor="middle" font-size="10.5" fill="#0369a1">2.4 GHz</text>
+  <rect x="30" y="140" width="230" height="200" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="145" y="166" text-anchor="middle" font-size="14" fill="#111" font-weight="700">ESP32 #2 — sorter</text>
+  <text x="145" y="184" text-anchor="middle" font-size="10.5" fill="#64748b">sin WiFi · solo ESP-NOW</text>
+  <text x="145" y="214" text-anchor="middle" font-size="11" fill="#334155">servo · motor · LEDs</text>
+  <text x="145" y="232" text-anchor="middle" font-size="11" fill="#334155">sensor TCS3472 (GPIO 21 / 22)</text>
+  <text x="145" y="272" text-anchor="middle" font-size="11" fill="#334155">pines del sorter que usa la cámara:</text>
+  <text x="145" y="290" text-anchor="middle" font-size="13" fill="#a16207" font-weight="700">ninguno</text>
+  <rect x="120" y="340" width="50" height="14" rx="2" fill="#334155"/>
+  <line x1="145" y1="354" x2="145" y2="380" stroke="#334155" stroke-width="1.5"/>
+  <rect x="65" y="380" width="160" height="38" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+  <text x="145.0" y="396.0" text-anchor="middle" font-size="10.5" fill="#334155" font-weight="600">Cargador USB</text>
+  <text x="145.0" y="410.0" text-anchor="middle" font-size="10.5" fill="#334155">5 V</text>
+  <rect x="320" y="300" width="540" height="52" rx="6" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+  <text x="590" y="346" text-anchor="middle" font-size="11" fill="#475569">cinta transportadora</text>
+  <line x1="360" y1="372" x2="820" y2="372" stroke="#475569" stroke-width="1.5" marker-end="url(#a475569)"/>
+  <text x="590" y="390" text-anchor="middle" font-size="10.5" fill="#475569">sentido de la cinta</text>
+  <rect x="400" y="226" width="74" height="50" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="437" y="246" text-anchor="middle" font-size="10.5" fill="#4338ca" font-weight="600">TCS3472</text>
+  <text x="437" y="262" text-anchor="middle" font-size="10" fill="#4338ca">sensor</text>
+  <path d="M260,251 L398,251" fill="none" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="330" y="243" text-anchor="middle" font-size="9.5" fill="#4338ca" paint-order="stroke" stroke="#fff" stroke-width="4">SDA / SCL / 3V3 / GND</text>
+  <line x1="437" y1="277" x2="437" y2="300" stroke="#4338ca" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <rect x="425" y="312" width="24" height="24" rx="3" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.2"/>
+  <line x1="462" y1="324" x2="640" y2="324" stroke="#b45309" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ab45309)"/>
+  <text x="550" y="318" text-anchor="middle" font-size="10" fill="#b45309" paint-order="stroke" stroke="#fff" stroke-width="4">la caja avanza</text>
+  <rect x="683" y="312" width="24" height="24" rx="3" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.2" opacity="0.5"/>
+  <rect x="600" y="140" width="190" height="78" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="695" y="164" text-anchor="middle" font-size="14" fill="#111" font-weight="700">ESP32-S3-CAM</text>
+  <text x="695" y="181" text-anchor="middle" font-size="10.5" fill="#a16207">firmware esp32-cam-color</text>
+  <path d="M695,232 L640.0,300 L750.0,300 Z" fill="#fefce8" stroke="#a16207" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <circle cx="695" cy="232" r="11" fill="#1f2937" stroke="#111827" stroke-width="1.5"/>
+  <circle cx="695" cy="232" r="4.5" fill="#60a5fa"/>
+  <text x="760" y="262" text-anchor="start" font-size="10.5" fill="#a16207">un poco después</text>
+  <text x="760" y="277" text-anchor="start" font-size="10.5" fill="#a16207">del sensor</text>
+  <rect x="790" y="153" width="12" height="24" rx="2" fill="#334155"/>
+  <line x1="802" y1="177" x2="812" y2="177" stroke="#334155" stroke-width="1.5"/>
+  <rect x="812" y="150" width="78" height="46" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+  <text x="851.0" y="170.0" text-anchor="middle" font-size="10.5" fill="#334155" font-weight="600">Cargador</text>
+  <text x="851.0" y="184.0" text-anchor="middle" font-size="10.5" fill="#334155">USB 5 V</text>
+  <line x1="695" y1="140" x2="695" y2="117" stroke="#0369a1" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <text x="722" y="132" text-anchor="middle" font-size="10.5" fill="#0369a1" paint-order="stroke" stroke="#fff" stroke-width="4">WiFi</text>
+  <text x="300" y="428" text-anchor="start" font-size="11" fill="#334155">① La cámara lleva su propio cargador USB de 5 V, aparte de la fuente de 6 V.</text>
+  <text x="300" y="446" text-anchor="start" font-size="11" fill="#334155">② El sorter sigue sin WiFi: la cámara se conecta sola y habla con la laptop.</text>
+  <text x="300" y="464" text-anchor="start" font-size="11" fill="#334155">③ Apuntar a la zona un poco después del sensor, con luz pareja y sin reflejos.</text>
+  <rect x="30" y="440" width="230" height="44" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+  <text x="145" y="458" text-anchor="middle" font-size="11" fill="#92400e" font-weight="600">Fuente externa de 6 V</text>
+  <text x="145" y="474" text-anchor="middle" font-size="10.5" fill="#92400e">servo + motor (como antes)</text>
+  <rect x="30" y="510" width="840" height="62" rx="8" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+  <text x="450" y="534" text-anchor="middle" font-size="12" fill="#b91c1c" font-weight="700">Nunca conectes la cámara a la fuente de 6 V / 12 V, ni a los pines VIN / 5V del sorter.</text>
+  <text x="450" y="554" text-anchor="middle" font-size="11.5" fill="#b91c1c">Una ESP32-S3-CAM se alimenta solo por su USB de 5 V; a 6 V o más se puede quemar.</text>
+</svg>

@@ -1,13 +1,22 @@
 # Arquitectura
 
-De los dos ESP32 del sistema, solo el **ESP32 #1 (gateway)** tiene WiFi. El
-**ESP32 #2 (sorter)** habla únicamente por ESP-NOW — nunca se conecta a
-ningún punto de acceso — y todo lo que produce (estado de la puerta, y en el
-Bloque 2 los eventos de caja) llega al servidor pasando siempre por el
-gateway. La **ESP32-S3-CAM** es un tercer nodo opcional con WiFi propio (ver
-más abajo).
+Solo el **ESP32 #1 (gateway)** tiene WiFi. El **ESP32 #2 (sorter)** habla
+únicamente por ESP-NOW — nunca se conecta a ningún punto de acceso — y todo
+lo que produce (estado de la puerta, y en el Bloque 2 los eventos de caja)
+llega al servidor pasando siempre por el gateway.
 
 ![Arquitectura del sistema](img/arquitectura-sistema.svg)
+
+El sorter nunca toca la red: todo pasa por el gateway. Mosquitto, FastAPI y
+Postgres corren juntos en la PC de escritorio (docker-compose); el
+dashboard es la única pieza que corre en el navegador.
+
+## Con la cámara (opcional)
+
+![Arquitectura del sistema con la cámara](img/arquitectura-sistema-camara.svg)
+
+El diagrama de arriba es el sistema base y sigue valiendo tal cual con el
+firmware de siempre; esta versión suma la cámara.
 
 La **cámara** (ESP32-S3-CAM, un tercer nodo) sí se conecta a WiFi por su
 cuenta: manda fotos de 30–50 KB por HTTP, que ni ESP-NOW ni el buffer MQTT
@@ -16,10 +25,6 @@ seguridad de abajo no le aplica. Tiene dos versiones que se eligen con
 variables del servidor (ver [`camara-rostro.md`](./camara-rostro.md) y
 [`camara-color.md`](./camara-color.md)); la IA corre en la PC, no en las
 placas.
-
-El sorter nunca toca la red: todo pasa por el gateway. Mosquitto, FastAPI y
-Postgres corren juntos en la PC de escritorio (docker-compose); el
-dashboard es la única pieza que corre en el navegador.
 
 ## Por qué solo el gateway tiene WiFi
 

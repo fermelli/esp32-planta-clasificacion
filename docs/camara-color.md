@@ -107,7 +107,7 @@ pasadas de cajas.
 
 ## Montaje
 
-![Montaje de la cámara según la versión](img/camara-montaje.svg)
+![Cámara de color junto al sorter](img/esp32-sorter-camara-dibujo.svg)
 
 La cámara va **sobre la cinta, apuntando a la zona donde queda la caja un
 poco después del sensor de color**: entre que el TCS3472 la detecta, el

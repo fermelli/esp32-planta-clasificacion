@@ -1,6 +1,6 @@
 # Conexiones — ESP32 #1 (gateway)
 
-Teclado matricial 4x4 + LCD I2C. Es la única placa con WiFi; se alimenta
+Teclado matricial 4x4 + LCD I2C. Es la única placa con WiFi (de las dos del sistema base; la cámara opcional, más abajo, tiene el suyo); se alimenta
 por el USB de programación, nada aquí necesita fuente externa.
 
 ![Así se conecta el teclado y la pantalla](img/esp32-gateway-dibujo.svg)
@@ -76,3 +76,25 @@ modelo y la misma plantilla que
 Referencia completa sin resaltar nada:
 
 ![Pinout físico ESP32 DevKit](img/esp32-pinout-fisico.svg)
+
+## Cámara de rostro (opcional)
+
+La versión A de la cámara (login por PIN + rostro) va **junto a este gateway**,
+pero **no se cablea a él**: es una placa aparte con su propio USB de 5 V, y se
+coordinan por WiFi a través de la laptop.
+
+![Cámara de rostro junto al gateway](img/esp32-gateway-camara-dibujo.svg)
+
+| Qué                       | Cómo                                                                        |
+| ------------------------- | --------------------------------------------------------------------------- |
+| Pines del gateway que usa | **Ninguno** (el cableado de arriba no cambia)                               |
+| Alimentación de la cámara | Su propio cargador USB de 5 V, no el gateway                                |
+| Comunicación              | WiFi 2.4 GHz a la laptop: MQTT :1883 (órdenes) y HTTP :8000 (foto)          |
+| Firmware                  | [`firmware/esp32-cam-rostro/`](../firmware/esp32-cam-rostro/)               |
+| `config.h` de la cámara   | `WIFI_SSID`, `WIFI_PASSWORD`, `MQTT_HOST`, `API_URL`, `CAMARA_TOKEN`        |
+| Dónde ponerla             | Junto al teclado, a la altura de la cara de quien teclea, con luz de frente |
+
+El gateway solo cambia en el firmware: muestra "Mire la camara" y "Rostro no
+valido" en el LCD. Flujo completo, IA y puesta en marcha en
+[`camara-rostro.md`](./camara-rostro.md); esquema de red en
+[`camara-conexion-red.svg`](img/camara-conexion-red.svg).
