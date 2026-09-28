@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Cómo se conectan el gateway y la cámara</title>
+  <rect x="0" y="0" width="960" height="500" fill="#ffffff"/>
+  <text x="480.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Cómo se conectan el gateway y la cámara</text>
+  <defs><marker id="a1d4ed8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d4ed8"/></marker><marker id="a334155" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#334155"/></marker><marker id="ab45309" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#b45309"/></marker></defs>
+  <text x="480.0" y="52" text-anchor="middle" font-size="13" fill="#555">No hay cable ni enlace directo entre ellos: cada placa entra por WiFi al hotspot y el servidor los coordina</text>
+  <rect x="370" y="72" width="220" height="56" rx="8" fill="#f0f9ff" stroke="#0369a1" stroke-width="1.5"/>
+  <text x="480" y="96" text-anchor="middle" font-size="13" fill="#0369a1" font-weight="600">Hotspot del celular</text>
+  <text x="480" y="114" text-anchor="middle" font-size="10.5" fill="#0369a1">2.4 GHz · todos en la misma red</text>
+  <rect x="20" y="250" width="130" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="85" y="278" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32 #2</text>
+  <text x="85" y="296" text-anchor="middle" font-size="12" fill="#111">sorter</text>
+  <text x="85" y="340" text-anchor="middle" font-size="10.5" fill="#64748b">sin WiFi</text>
+  <rect x="205" y="250" width="150" height="70" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="280" y="278" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32 #1</text>
+  <text x="280" y="296" text-anchor="middle" font-size="11" fill="#111">gateway (teclado + LCD)</text>
+  <rect x="415" y="250" width="170" height="70" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="500" y="276" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32-S3-CAM</text>
+  <text x="500" y="293" text-anchor="middle" font-size="10.5" fill="#a16207">esp32-cam-rostro</text>
+  <text x="500" y="307" text-anchor="middle" font-size="10.5" fill="#a16207">o esp32-cam-color</text>
+  <rect x="650" y="226" width="290" height="128" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="795" y="250" text-anchor="middle" font-size="13" fill="#4338ca" font-weight="600">Laptop</text>
+  <text x="795" y="274" text-anchor="middle" font-size="11" fill="#4338ca">Mosquitto  :1883  (MQTT)</text>
+  <text x="795" y="292" text-anchor="middle" font-size="11" fill="#4338ca">FastAPI  :8000  (HTTP + WebSocket)</text>
+  <text x="795" y="310" text-anchor="middle" font-size="11" fill="#4338ca">Postgres · IA (OpenCV, scikit-learn)</text>
+  <text x="795" y="328" text-anchor="middle" font-size="11" fill="#4338ca">Dashboard en el navegador</text>
+  <line x1="151" y1="285" x2="203" y2="285" stroke="#334155" stroke-width="1.5" marker-end="url(#a334155)" marker-start="url(#a334155)"/>
+  <text x="177" y="275" text-anchor="middle" font-size="9.5" fill="#334155" paint-order="stroke" stroke="#fff" stroke-width="4">ESP-NOW</text>
+  <line x1="300" y1="250" x2="410" y2="129" stroke="#0369a1" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="500" y1="250" x2="480" y2="129" stroke="#0369a1" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <line x1="795" y1="226" x2="591" y2="108" stroke="#0369a1" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <text x="340" y="186" text-anchor="middle" font-size="10.5" fill="#0369a1" paint-order="stroke" stroke="#fff" stroke-width="4">WiFi</text>
+  <text x="503" y="190" text-anchor="middle" font-size="10.5" fill="#0369a1" paint-order="stroke" stroke="#fff" stroke-width="4">WiFi</text>
+  <text x="700" y="160" text-anchor="middle" font-size="10.5" fill="#0369a1" paint-order="stroke" stroke="#fff" stroke-width="4">WiFi</text>
+  <text x="280" y="346" text-anchor="middle" font-size="10.5" fill="#334155" font-weight="600">config.h:</text>
+  <text x="280" y="360" text-anchor="middle" font-size="10" fill="#64748b">WIFI_SSID / WIFI_PASSWORD, MQTT_HOST</text>
+  <text x="500" y="346" text-anchor="middle" font-size="10.5" fill="#a16207" font-weight="600">config.h:</text>
+  <text x="500" y="360" text-anchor="middle" font-size="10" fill="#a16207">WIFI_*, MQTT_HOST, API_URL, CAMARA_TOKEN</text>
+  <text x="795" y="376" text-anchor="middle" font-size="10" fill="#4338ca">su IP en el hotspot (ipconfig) va en MQTT_HOST y API_URL</text>
+  <rect x="20" y="394" width="920" height="92" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="480" y="414" text-anchor="middle" font-size="12" fill="#334155" font-weight="600">Qué viaja por dónde (todo pasa por la laptop)</text>
+  <line x1="44" y1="430" x2="76" y2="430" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="90" y="434" text-anchor="start" font-size="11" fill="#334155">Gateway ↔ laptop:  MQTT :1883 — login, eventos de caja, comandos</text>
+  <line x1="44" y1="449" x2="76" y2="449" stroke="#b45309" stroke-width="1.5" marker-end="url(#ab45309)"/>
+  <text x="90" y="453" text-anchor="start" font-size="11" fill="#334155">Cámara ↔ laptop:  MQTT :1883 (órdenes y estado) + HTTP :8000 (foto JPEG con X-Camara-Token)</text>
+  <text x="44" y="473" text-anchor="start" font-size="11" fill="#64748b">Gateway y cámara nunca se hablan entre sí: por eso no hay cable ni pines compartidos. Con el mismo SSID en los config.h alcanza.</text>
+</svg>

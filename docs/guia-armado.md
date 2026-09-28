@@ -124,7 +124,8 @@ el layout físico real (DOIT ESP32 DEVKIT V1, 30 pines):
 
 ## ESP32-S3-CAM (opcional)
 
-La cámara con IA es un tercer nodo aparte y **no se cablea a los otros dos**:
+La cámara con IA es un tercer nodo aparte y **no se cablea a los otros dos** (ni
+al gateway: se comunican por WiFi a través de la laptop, ver el esquema):
 solo necesita alimentación por USB (5V, su propio cargador) y WiFi. Tiene dos
 usos que se eligen con el firmware que se flashea (uno por vez en la misma
 placa, o dos placas para tenerlos a la vez):
@@ -135,6 +136,8 @@ placa, o dos placas para tenerlos a la vez):
 - **Color** (`firmware/esp32-cam-color`): sobre la cinta, apuntando a la zona
   donde queda la caja un poco después del sensor de color, con luz pareja.
   Ver [`camara-color.md`](./camara-color.md).
+
+![Cómo se conectan el gateway y la cámara](img/camara-conexion-red.svg)
 
 ![Montaje de la cámara según la versión](img/camara-montaje.svg)
 

@@ -8,6 +8,23 @@ docente; el rostro es un extra que se prende con `LOGIN_ROSTRO=true`.
 Con la variable en `false` (el valor por defecto) el sistema se comporta
 exactamente como antes de tener cámara.
 
+## Cómo se conecta con el gateway
+
+**No se conecta directamente**: no hay cable, pines compartidos ni enlace
+ESP-NOW entre la cámara y el gateway. Cada placa entra por WiFi a la misma red
+(el hotspot del celular, 2.4 GHz) y hablan con la laptop, que las coordina.
+Para el login, el gateway le avisa al servidor el PIN y el servidor le
+ordena a la cámara verificar la cara; el resultado vuelve al gateway para el LCD.
+
+![Cómo se conectan el gateway y la cámara](img/camara-conexion-red.svg)
+
+Para que funcione, en los `config.h` de **las dos placas** (gateway y cámara)
+va el mismo `WIFI_SSID` / `WIFI_PASSWORD`, y `MQTT_HOST` con la IP de la laptop
+en ese hotspot (`ipconfig`). La cámara además lleva `API_URL`
+(`http://<esa IP>:8000`) y un `CAMARA_TOKEN` igual al de `server/.env`. En
+Windows, el firewall tiene que dejar entrar los puertos 1883 (MQTT) y 8000
+(API).
+
 ## Cómo funciona
 
 ![Secuencia del login por PIN + rostro](img/camara-rostro-secuencia.svg)
