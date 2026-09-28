@@ -17,5 +17,19 @@ class Settings(BaseSettings):
     seed_usuario_2_nombre: str = "operador2"
     seed_usuario_2_secreto: str = "5678"
 
+    # Cámara ESP32-S3-CAM. Las dos versiones vienen apagadas: con ambos flags
+    # en false el servidor se comporta igual que antes de tener cámara.
+    camara_token: str = "cambia-el-token-de-la-camara"
+    capturas_dir: str = "capturas"
+    modelos_dir: str = "modelos"
+
+    login_rostro: bool = False
+    rostro_umbral: float = 0.363  # umbral coseno recomendado por OpenCV para SFace
+    rostro_ventana_s: int = 15
+    rostro_max_rechazos: int = 3
+
+    camara_color: bool = False
+    color_recorte: float = 0.6  # fracción central de la foto que mira el clasificador de color
+
 
 settings = Settings()

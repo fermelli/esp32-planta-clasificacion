@@ -5,6 +5,8 @@ server/**/__pycache__/
 *.pyc
 server/.env
 server/ml/*.pkl
+server/capturas/
+server/modelos/
 
 # firmware/ — PlatformIO (esp32-sorter/, esp32-gateway/)
 firmware/**/.pio/

@@ -11,6 +11,8 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./migrations/002_produccion.sql:/docker-entrypoint-initdb.d/02-produccion.sql:ro
+      - ./migrations/003_rostro.sql:/docker-entrypoint-initdb.d/03-rostro.sql:ro
+      - ./migrations/004_color_camara.sql:/docker-entrypoint-initdb.d/04-color-camara.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U planta"]
       interval: 5s

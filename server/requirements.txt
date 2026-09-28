@@ -5,3 +5,7 @@ pydantic-settings==2.5.2
 pyjwt==2.9.0
 bcrypt==4.2.0
 paho-mqtt==2.1.0
+opencv-python-headless>=4.10,<5
+numpy>=1.26,<3
+scikit-learn>=1.5,<2
+joblib>=1.4
