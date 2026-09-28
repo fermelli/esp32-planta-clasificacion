@@ -10,16 +10,7 @@ antes de tener cámara.
 
 ## Cómo funciona
 
-```
-sorter ─ESP-NOW─► gateway ─planta/sorter/evento─► servidor: inserta la caja (id = 42)
-                                                      │
-        cámara ◄──── planta/camara/capturar ◄─────────┘ {"evento_id": 42}
-           │
-           └─ foto JPEG ─HTTP POST /api/color/captura?evento_id=42─► servidor
-                                                                      │ guarda la foto, extrae
-                                                                      │ características, predice
-                              dashboard ◄──WebSocket clasificacion_camara──┘ sensor vs. IA
-```
+![Secuencia de la clasificación de color](img/camara-color-secuencia.svg)
 
 1. El sensor detecta una caja y el evento llega al servidor por el camino de
    siempre. Ahora el servidor conserva el `id` de la fila y, con
@@ -98,6 +89,8 @@ pasadas de cajas.
    caja por caja.
 
 ## Montaje
+
+![Montaje de la cámara según la versión](img/camara-montaje.svg)
 
 La cámara va **sobre la cinta, apuntando a la zona donde queda la caja un
 poco después del sensor de color**: entre que el TCS3472 la detecta, el

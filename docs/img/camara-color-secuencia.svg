@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Versión B — color de cada caja, sensor vs. IA</title>
+  <rect x="0" y="0" width="960" height="560" fill="#ffffff"/>
+  <text x="480.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Versión B — color de cada caja, sensor vs. IA</text>
+  <defs><marker id="a047857" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#047857"/></marker><marker id="a1d4ed8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d4ed8"/></marker><marker id="ab45309" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#b45309"/></marker></defs>
+  <text x="480.0" y="52" text-anchor="middle" font-size="13" fill="#555">La cámara no reemplaza al TCS3472: saca una foto por caja y el servidor compara las dos opiniones</text>
+  <rect x="15.0" y="68" width="130" height="44" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="80" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32 #2</text>
+  <text x="80" y="104" text-anchor="middle" font-size="10.5" fill="#334155">sorter + TCS3472</text>
+  <line x1="80" y1="112" x2="80" y2="520" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="185.0" y="68" width="130" height="44" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="250" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32 #1</text>
+  <text x="250" y="104" text-anchor="middle" font-size="10.5" fill="#334155">gateway</text>
+  <line x1="250" y1="112" x2="250" y2="520" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="415.0" y="68" width="150" height="44" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="490" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Servidor</text>
+  <text x="490" y="104" text-anchor="middle" font-size="10.5" fill="#4338ca">FastAPI + scikit-learn</text>
+  <line x1="490" y1="112" x2="490" y2="520" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="650.0" y="68" width="140" height="44" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="720" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32-S3-CAM</text>
+  <text x="720" y="104" text-anchor="middle" font-size="10.5" fill="#a16207">esp32-cam-color</text>
+  <line x1="720" y1="112" x2="720" y2="520" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="820.0" y="68" width="120" height="44" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="1.5"/>
+  <text x="880" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Dashboard</text>
+  <text x="880" y="104" text-anchor="middle" font-size="10.5" fill="#047857">navegador</text>
+  <line x1="880" y1="112" x2="880" y2="520" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="80" y1="150" x2="250" y2="150" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="165.0" y="143" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">ESP-NOW  SorterMsg</text>
+  <line x1="250" y1="190" x2="490" y2="190" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="370.0" y="183" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/sorter/evento</text>
+  <rect x="390.0" y="217" width="200" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="490" y="236" text-anchor="middle" font-size="11" fill="#4338ca">INSERT eventos_caja  →  id</text>
+  <line x1="490" y1="275" x2="720" y2="275" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="605.0" y="268" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/camara/capturar  {evento_id}</text>
+  <line x1="720" y1="320" x2="490" y2="320" stroke="#b45309" stroke-width="1.5" marker-end="url(#ab45309)"/>
+  <text x="605.0" y="313" text-anchor="middle" font-size="11" fill="#b45309" paint-order="stroke" stroke="#fff" stroke-width="4">POST /api/color/captura?evento_id=</text>
+  <rect x="330.0" y="347" width="320" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="490" y="366" text-anchor="middle" font-size="11" fill="#4338ca">43 características de la foto → SVM predice el color</text>
+  <line x1="490" y1="410" x2="880" y2="410" stroke="#047857" stroke-width="1.5" marker-end="url(#a047857)"/>
+  <text x="685.0" y="403" text-anchor="middle" font-size="11" fill="#047857" paint-order="stroke" stroke="#fff" stroke-width="4">WebSocket  clasificacion_camara  {color_sensor, color_ia, confianza}</text>
+  <text x="880" y="432" text-anchor="middle" font-size="10.5" fill="#64748b" paint-order="stroke" stroke="#fff" stroke-width="4">sensor vs. IA en vivo</text>
+  <rect x="30" y="458" width="900" height="88" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="480" y="480" text-anchor="middle" font-size="11.5" fill="#a16207">Solo se pide la foto si CAMARA_COLOR=true y hay una placa con el firmware de color conectada.</text>
+  <text x="480" y="499" text-anchor="middle" font-size="11.5" fill="#a16207">Sin modelo entrenado la foto igual se guarda (modo dataset): el sensor la etiqueta y con ~10 fotos por color se entrena.</text>
+  <text x="480" y="518" text-anchor="middle" font-size="11.5" fill="#a16207">El sorter no se entera de la cámara: sigue decidiendo color, conteo y LEDs por su cuenta.</text>
+</svg>

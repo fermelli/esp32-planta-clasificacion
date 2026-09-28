@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Versión A — login por PIN + rostro</title>
+  <rect x="0" y="0" width="900" height="580" fill="#ffffff"/>
+  <text x="450.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Versión A — login por PIN + rostro</text>
+  <defs><marker id="a1d4ed8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d4ed8"/></marker><marker id="ab45309" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#b45309"/></marker></defs>
+  <text x="450.0" y="52" text-anchor="middle" font-size="13" fill="#555">Qué pasa entre el teclado, el servidor y la cámara cuando se teclea un PIN correcto</text>
+  <rect x="55.0" y="68" width="150" height="44" rx="8" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="130" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Gateway</text>
+  <text x="130" y="104" text-anchor="middle" font-size="10.5" fill="#334155">teclado + LCD</text>
+  <line x1="130" y1="112" x2="130" y2="545" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="375.0" y="68" width="150" height="44" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Servidor</text>
+  <text x="450" y="104" text-anchor="middle" font-size="10.5" fill="#4338ca">FastAPI + IA (OpenCV)</text>
+  <line x1="450" y1="112" x2="450" y2="545" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="695.0" y="68" width="150" height="44" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="770" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32-S3-CAM</text>
+  <text x="770" y="104" text-anchor="middle" font-size="10.5" fill="#a16207">firmware esp32-cam-rostro</text>
+  <line x1="770" y1="112" x2="770" y2="545" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="130" y1="150" x2="450" y2="150" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="290.0" y="143" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/login/intento  {pin, intento}</text>
+  <rect x="325.0" y="173" width="250" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="192" text-anchor="middle" font-size="11" fill="#4338ca">valida el PIN contra la base (bcrypt)</text>
+  <line x1="450" y1="230" x2="130" y2="230" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="290.0" y="223" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/login/resultado  {requiere_rostro: true}</text>
+  <text x="140" y="252" text-anchor="start" font-size="10.5" fill="#64748b">LCD: "Mire la camara"</text>
+  <line x1="450" y1="290" x2="770" y2="290" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="610.0" y="283" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/camara/rostro  {modo: verificar}</text>
+  <line x1="770" y1="332" x2="450" y2="332" stroke="#b45309" stroke-width="1.5" marker-end="url(#ab45309)"/>
+  <text x="610.0" y="325" text-anchor="middle" font-size="11" fill="#b45309" paint-order="stroke" stroke="#fff" stroke-width="4">POST /api/rostro/verificar  (JPEG)</text>
+  <text x="610.0" y="351" text-anchor="middle" font-size="10" fill="#64748b">una foto cada ~0,8 s, hasta que el servidor diga listo</text>
+  <rect x="300.0" y="373" width="300" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="392" text-anchor="middle" font-size="11" fill="#4338ca">YuNet detecta · SFace compara (coseno ≥ 0,363)</text>
+  <line x1="450" y1="430" x2="770" y2="430" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ab45309)"/>
+  <text x="610.0" y="423" text-anchor="middle" font-size="11" fill="#b45309" paint-order="stroke" stroke="#fff" stroke-width="4">{listo: true}  (deja de mandar fotos)</text>
+  <line x1="450" y1="470" x2="130" y2="470" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="290.0" y="463" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/login/resultado  {exito, motivo?}</text>
+  <text x="140" y="492" text-anchor="start" font-size="10.5" fill="#64748b">LCD: "Bienvenido" / "Rostro no valido"</text>
+  <rect x="30" y="505" width="840" height="56" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="450" y="527" text-anchor="middle" font-size="11.5" fill="#a16207">Sin cámara de rostro conectada el servidor se salta el rostro: responde el resultado final enseguida, solo con el PIN,</text>
+  <text x="450" y="545" text-anchor="middle" font-size="11.5" fill="#a16207">y deja una alerta camara_offline. Tres fotos con otra cara, o 15 s sin resolverse, cuentan como intento fallido.</text>
+</svg>

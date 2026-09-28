@@ -136,6 +136,8 @@ placa, o dos placas para tenerlos a la vez):
   donde queda la caja un poco después del sensor de color, con luz pareja.
   Ver [`camara-color.md`](./camara-color.md).
 
+![Montaje de la cámara según la versión](img/camara-montaje.svg)
+
 Al flashear por USB usar el puerto marcado "UART". La placa se conecta al
 hotspot de 2.4 GHz igual que los otros ESP32.
 

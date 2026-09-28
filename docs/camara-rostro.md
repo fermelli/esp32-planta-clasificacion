@@ -10,17 +10,7 @@ exactamente como antes de tener cámara.
 
 ## Cómo funciona
 
-```
-teclado ──PIN──► gateway ──planta/login/intento──► servidor
-                                                      │ PIN correcto y LOGIN_ROSTRO=true
-   LCD "Mire la camara" ◄── planta/login/resultado ◄──┤ {"requiere_rostro": true}
-                                                      │
-       cámara ◄────────── planta/camara/rostro ◄──────┘ {"modo":"verificar","usuario_id":1}
-          │
-          └── foto JPEG ──HTTP POST /api/rostro/verificar──► servidor: YuNet detecta la cara,
-                                                             SFace saca el embedding y lo compara
-   LCD "Bienvenido" / "Rostro no valido" ◄── planta/login/resultado
-```
+![Secuencia del login por PIN + rostro](img/camara-rostro-secuencia.svg)
 
 1. El gateway publica el PIN como siempre. El servidor lo valida contra la
    base.
@@ -48,6 +38,8 @@ cámara, al conectarse a MQTT, publica un saludo **retenido**
 (`planta/camara/estado/rostro` o `.../color`) y deja un _last will_: si la
 placa se cae, el broker publica solo `online: false`. Con eso el servidor
 sabe qué versión hay conectada de verdad:
+
+![Qué hace el teclado según la cámara](img/camara-decision-login.svg)
 
 | `LOGIN_ROSTRO` | Placa con firmware de rostro                  | El teclado hace                                            |
 | -------------- | --------------------------------------------- | ---------------------------------------------------------- |
@@ -124,6 +116,8 @@ solo como evidencia para el dashboard.
 > PIN, así que siempre se puede volver a enrolar desde el dashboard).
 
 ## Montaje
+
+![Montaje de la cámara según la versión](img/camara-montaje.svg)
 
 La cámara va **fija junto al teclado**, a la altura de la cara de quien está
 tecleando, apuntando hacia esa persona y con luz de frente (no a contraluz).

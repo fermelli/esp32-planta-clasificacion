@@ -80,6 +80,8 @@ Definidas en `app/config.py` (pydantic-settings), con default si no están en
 
 ## Modelo de datos
 
+![Modelo de datos](img/modelo-datos.svg)
+
 Cuatro tablas base, repartidas entre `schema.sql` (Bloque 1) y
 `migrations/002_produccion.sql` (Bloque 2), más tres de la cámara
 (`003_rostro.sql` y `004_color_camara.sql`, ver abajo):
