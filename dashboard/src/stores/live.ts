@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { WS_URL, apiFetch } from '@/lib/api'
-import type { WsMensaje, SorterEstado, CamaraConfig } from '@/lib/types'
+import type { WsMensaje, SorterEstado, CamaraConfig, PruebaCamara } from '@/lib/types'
 
 const MAX_BUFFER = 30
 
@@ -16,6 +16,9 @@ export const useLiveStore = defineStore('live', () => {
 
   // Qué versiones de la cámara están activadas y cuáles tienen una placa conectada.
   const camaras = ref<CamaraConfig | null>(null)
+
+  // Última foto de prueba de cada versión (la pide el botón "Probar la cámara").
+  const pruebas = ref<Partial<Record<'rostro' | 'color', PruebaCamara>>>({})
 
   async function cargarCamaras() {
     try {
@@ -77,6 +80,8 @@ export const useLiveStore = defineStore('live', () => {
             [msg.version]: { ...actual, online: msg.online, activo: actual.flag && msg.online },
           }
         }
+      } else if (msg.type === 'prueba_camara') {
+        pruebas.value = { ...pruebas.value, [msg.version]: msg }
       } else if (msg.type === 'clasificacion_camara') {
         ultimasClasificaciones.value = [msg, ...ultimasClasificaciones.value].slice(0, MAX_BUFFER)
       }
@@ -92,6 +97,7 @@ export const useLiveStore = defineStore('live', () => {
     ultimasVerificaciones,
     ultimasClasificaciones,
     camaras,
+    pruebas,
     conectar,
   }
 })

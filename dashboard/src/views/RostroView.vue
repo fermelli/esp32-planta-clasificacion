@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { API_URL, apiFetch } from '@/lib/api'
 import { useLiveStore } from '@/stores/live'
 import type { RostroConfig, RostroUsuario, VerificacionRostro } from '@/lib/types'
+import PruebaCamaraCard from '@/components/PruebaCamaraCard.vue'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -133,6 +134,8 @@ async function borrar(u: RostroUsuario) {
         </span>
       </CardContent>
     </Card>
+
+    <PruebaCamaraCard version="rostro" />
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <Card v-for="u in usuarios" :key="u.usuario_id">

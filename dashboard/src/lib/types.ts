@@ -49,6 +49,25 @@ export interface SorterEstado {
   cinta_estado?: 'off' | 'low' | 'full'
 }
 
+export interface PruebaCamara {
+  version: 'rostro' | 'color'
+  imagen: string
+  ts: number
+  ancho: number
+  alto: number
+  kb: number
+  brillo: number
+  nitidez: number
+  avisos: string[]
+  rostro: {
+    caras: number
+    score: number | null
+    umbral: number
+    coincidencias: { nombre: string; similitud: number }[]
+  } | null
+  color: { color_ia: string | null; confianza: number | null; rgb_medio: number[] | null } | null
+}
+
 export interface CamaraVersion {
   flag: boolean
   online: boolean
@@ -128,6 +147,7 @@ export type WsMensaje =
   | ({ type: 'evento_caja' } & Omit<EventoCaja, 'id' | 'creado_en'>)
   | ({ type: 'alerta' } & Pick<Alerta, 'tipo' | 'mensaje'>)
   | { type: 'camara_estado'; version: 'rostro' | 'color'; online: boolean }
+  | ({ type: 'prueba_camara' } & PruebaCamara)
   | {
       type: 'clasificacion_camara'
       evento_id: number

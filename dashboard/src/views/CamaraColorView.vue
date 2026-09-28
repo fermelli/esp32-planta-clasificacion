@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { API_URL, apiFetch } from '@/lib/api'
 import { useLiveStore } from '@/stores/live'
 import type { CapturaColor, MetricasColor, ResumenColor } from '@/lib/types'
+import PruebaCamaraCard from '@/components/PruebaCamaraCard.vue'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -103,6 +104,8 @@ function punto(color: string | null) {
         </CardDescription>
       </CardHeader>
     </Card>
+
+    <PruebaCamaraCard version="color" />
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <Card>
