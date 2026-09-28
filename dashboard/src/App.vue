@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLiveStore } from '@/stores/live'
@@ -7,7 +7,18 @@ import { useThemeStore } from '@/stores/theme'
 import { navegando } from '@/lib/progreso'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Boxes, Gauge, History, KeyRound, BellRing, Sun, Moon, LogOut } from 'lucide-vue-next'
+import {
+  Boxes,
+  Gauge,
+  History,
+  KeyRound,
+  BellRing,
+  ScanFace,
+  Palette,
+  Sun,
+  Moon,
+  LogOut,
+} from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -58,7 +69,19 @@ const NAV = [
   { to: '/historico', label: 'Histórico', icon: History },
   { to: '/intentos', label: 'Accesos', icon: KeyRound },
   { to: '/alertas', label: 'Alertas', icon: BellRing },
+  { to: '/rostro', label: 'Rostro', icon: ScanFace, camara: 'rostro' as const },
+  { to: '/camara-color', label: 'Cámara', icon: Palette, camara: 'color' as const },
 ]
+
+// Las pantallas de cámara aparecen si la versión está activada en el servidor o
+// si hay una placa con ese firmware conectada (hace falta para enrolar caras).
+const nav = computed(() =>
+  NAV.filter((item) => {
+    if (!item.camara) return true
+    const v = live.camaras?.[item.camara]
+    return !!v && (v.flag || v.online)
+  }),
+)
 
 function iniciales(nombre: string | null): string {
   if (!nombre) return '?'
@@ -100,14 +123,24 @@ function iniciales(nombre: string | null): string {
           class="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <RouterLink
-            v-for="item in NAV"
+            v-for="item in nav"
             :key="item.to"
             :to="item.to"
-            class="flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            class="flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
             active-class="!bg-primary !text-primary-foreground shadow-sm"
           >
             <component :is="item.icon" class="h-3.5 w-3.5" stroke-width="2" />
             {{ item.label }}
+            <span
+              v-if="item.camara"
+              class="h-1.5 w-1.5 rounded-full"
+              :class="
+                live.camaras?.[item.camara].online ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+              "
+              :title="
+                live.camaras?.[item.camara].online ? 'cámara conectada' : 'cámara desconectada'
+              "
+            />
           </RouterLink>
         </nav>
 
@@ -135,7 +168,7 @@ function iniciales(nombre: string | null): string {
             >
               {{ iniciales(auth.nombre) }}
             </span>
-            <span class="text-sm text-muted-foreground">{{ auth.nombre }}</span>
+            <span class="hidden text-sm text-muted-foreground 2xl:inline">{{ auth.nombre }}</span>
           </div>
 
           <Button variant="outline" size="sm" class="gap-1.5" @click="salir">

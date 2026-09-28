@@ -73,7 +73,9 @@ const filas = computed(() => {
                 {{ fila.exito ? 'exitoso' : 'fallido' }}
               </Badge>
             </TableCell>
-            <TableCell class="capitalize">{{ fila.origen }}</TableCell>
+            <TableCell class="capitalize">{{
+              fila.origen === 'keypad_rostro' ? 'Keypad + rostro' : fila.origen
+            }}</TableCell>
             <TableCell class="text-xs text-muted-foreground">{{
               new Date(fila.creado_en).toLocaleString()
             }}</TableCell>
