@@ -12,6 +12,7 @@
 #include "camara_s3.h"
 
 constexpr const char *TOPIC_CAPTURAR = "planta/camara/capturar";
+constexpr const char *TOPIC_PROBAR = "planta/camara/probar";  // foto de prueba desde el dashboard
 // Saludo retenido + last will: el servidor sabe que version de camara hay conectada
 // y, si se cae, el broker publica online:false solo (ver docs/camara-rostro.md).
 constexpr const char *TOPIC_ESTADO = "planta/camara/estado/color";
@@ -22,6 +23,7 @@ constexpr const char *ESTADO_OFFLINE = "{\"version\":\"color\",\"online\":false}
 constexpr int MAX_PENDIENTES = 6;
 int pendientes[MAX_PENDIENTES];
 int cantidadPendientes = 0;
+bool probarPendiente = false;
 
 WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
@@ -29,6 +31,10 @@ PubSubClient mqtt(wifiClient);
 void onMqttMessage(char *topic, byte *payload, unsigned int length) {
   JsonDocument doc;
   if (deserializeJson(doc, payload, length) != DeserializationError::Ok) return;
+  if (strcmp(topic, TOPIC_PROBAR) == 0) {
+    if (strcmp(doc["version"] | "", "color") == 0) probarPendiente = true;
+    return;
+  }
   int eventoId = doc["evento_id"] | 0;
   if (eventoId > 0 && cantidadPendientes < MAX_PENDIENTES) pendientes[cantidadPendientes++] = eventoId;
 }
@@ -40,6 +46,7 @@ void conectarMqtt() {
     if (mqtt.connect("esp32-cam-color", nullptr, nullptr, TOPIC_ESTADO, 1, true, ESTADO_OFFLINE)) {
       mqtt.publish(TOPIC_ESTADO, ESTADO_ONLINE, true);
       mqtt.subscribe(TOPIC_CAPTURAR);
+      mqtt.subscribe(TOPIC_PROBAR);
       Serial.println("MQTT OK, suscrito a planta/camara/capturar");
     } else {
       Serial.printf("MQTT fallo, state()=%d, reintento en 1s\n", mqtt.state());
@@ -59,6 +66,18 @@ void capturarYEnviar(int eventoId, unsigned long recibidoEn) {
   int codigo = postJpeg(String(API_URL) + "/api/color/captura?evento_id=" + eventoId, CAMARA_TOKEN, foto, &cuerpo);
   Serial.printf("evento %d: foto %u bytes | orden->foto %lu ms | POST HTTP %d en %lu ms | %s\n", eventoId,
                 (unsigned)foto->len, capturadoEn - recibidoEn, codigo, millis() - capturadoEn, cuerpo.c_str());
+  esp_camera_fb_return(foto);
+}
+
+void probar() {
+  camera_fb_t *foto = esp_camera_fb_get();
+  if (!foto) {
+    Serial.println("esp_camera_fb_get devolvio NULL");
+    return;
+  }
+  String cuerpo;
+  int codigo = postJpeg(String(API_URL) + "/api/camara/prueba?version=color", CAMARA_TOKEN, foto, &cuerpo);
+  Serial.printf("Foto de prueba: %u bytes, HTTP %d %s\n", (unsigned)foto->len, codigo, cuerpo.c_str());
   esp_camera_fb_return(foto);
 }
 
@@ -83,6 +102,11 @@ void loop() {
   }
   if (!mqtt.connected()) conectarMqtt();
   mqtt.loop();
+
+  if (probarPendiente) {
+    probarPendiente = false;
+    probar();
+  }
 
   if (cantidadPendientes > 0) {
     unsigned long recibidoEn = millis();

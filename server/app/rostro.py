@@ -57,23 +57,54 @@ def listo() -> bool:
     return _detector is not None and _reconocedor is not None
 
 
-def embedding(jpeg: bytes) -> np.ndarray | None:
-    """Embedding SFace (128 floats normalizados) de la cara más clara de la
-    foto, o None si no se detecta ninguna. Bloqueante: llamar con to_thread."""
+def _procesar(jpeg: bytes) -> tuple[int, float | None, np.ndarray | None]:
+    """(caras detectadas, score de la más clara, su embedding SFace de 128
+    floats normalizados). Bloqueante: llamar con to_thread."""
     imagen = cv2.imdecode(np.frombuffer(jpeg, np.uint8), cv2.IMREAD_COLOR)
     if imagen is None:
-        return None
+        return 0, None, None
     alto, ancho = imagen.shape[:2]
     with _lock:
         _detector.setInputSize((ancho, alto))
         _, caras = _detector.detect(imagen)
         if caras is None or len(caras) == 0:
-            return None
+            return 0, None, None
         cara = caras[int(np.argmax(caras[:, 14]))]  # la de mayor score
         alineada = _reconocedor.alignCrop(imagen, cara)
         vector = _reconocedor.feature(alineada).flatten().astype(np.float32)
     norma = np.linalg.norm(vector)
-    return vector / norma if norma > 0 else None
+    return len(caras), float(cara[14]), (vector / norma if norma > 0 else None)
+
+
+def embedding(jpeg: bytes) -> np.ndarray | None:
+    """Embedding de la cara más clara de la foto, o None si no hay ninguna."""
+    return _procesar(jpeg)[2]
+
+
+async def analizar(jpeg: bytes) -> dict:
+    """Para la foto de prueba: cuántas caras ve y a quién de los enrolados se
+    parece (la misma comparación que hace el login, sin decidir nada)."""
+    caras, score, vector = await asyncio.to_thread(_procesar, jpeg)
+    coincidencias = []
+    if vector is not None:
+        filas = await pool().fetch(
+            "SELECT u.nombre, r.embedding FROM rostros r JOIN usuarios u ON u.id = r.usuario_id"
+        )
+        mejor: dict[str, float] = {}
+        for f in filas:
+            ref = np.array(f["embedding"], dtype=np.float32)
+            norma = np.linalg.norm(ref)
+            sim = float((ref / norma) @ vector) if norma > 0 else 0.0
+            mejor[f["nombre"]] = max(sim, mejor.get(f["nombre"], -1.0))
+        coincidencias = [
+            {"nombre": n, "similitud": round(s, 3)} for n, s in sorted(mejor.items(), key=lambda kv: -kv[1])
+        ]
+    return {
+        "caras": caras,
+        "score": None if score is None else round(score, 3),
+        "umbral": settings.rostro_umbral,
+        "coincidencias": coincidencias,
+    }
 
 
 async def _embeddings_de(usuario_id: int) -> np.ndarray:

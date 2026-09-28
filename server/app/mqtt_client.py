@@ -18,6 +18,7 @@ TOPIC_SORTER_EVENTO = "planta/sorter/evento"
 TOPIC_SORTER_ALERTA = "planta/sorter/alerta"
 TOPIC_CMD = "planta/cmd"
 TOPIC_CAMARA_CAPTURAR = "planta/camara/capturar"
+TOPIC_CAMARA_PROBAR = "planta/camara/probar"  # foto de prueba desde el dashboard
 # Cada firmware de cámara avisa al conectarse (retenido) y deja un last will
 # "online": false, así el servidor sabe qué versión hay conectada realmente.
 TOPIC_CAMARA_ESTADO_ROSTRO = "planta/camara/estado/rostro"

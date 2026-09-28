@@ -27,6 +27,25 @@ def _archivo_metricas():
     return modelos_dir() / "color_metricas.json"
 
 
+def _centro(jpeg: bytes) -> np.ndarray | None:
+    """El recorte central de la foto (COLOR_RECORTE), reducido a 64x64 BGR."""
+    imagen = cv2.imdecode(np.frombuffer(jpeg, np.uint8), cv2.IMREAD_COLOR)
+    if imagen is None:
+        return None
+    alto, ancho = imagen.shape[:2]
+    mx = int(ancho * (1 - settings.color_recorte) / 2)
+    my = int(alto * (1 - settings.color_recorte) / 2)
+    return cv2.resize(imagen[my : alto - my, mx : ancho - mx], (64, 64), interpolation=cv2.INTER_AREA)
+
+
+def rgb_medio(jpeg: bytes) -> list[int] | None:
+    """Color RGB medio de la zona central: lo que 've' el clasificador."""
+    imagen = _centro(jpeg)
+    if imagen is None:
+        return None
+    return [int(v) for v in imagen[:, :, ::-1].reshape(-1, 3).mean(axis=0)]
+
+
 def caracteristicas(jpeg: bytes) -> np.ndarray | None:
     """Vector de 43 números de una foto, todos entre -1 y 1 (por eso el modelo no
     usa StandardScaler: sobre histogramas con bins casi vacíos amplifica el ruido
@@ -37,13 +56,9 @@ def caracteristicas(jpeg: bytes) -> np.ndarray | None:
       - saturación y brillo medios, y color RGB medio y mediano
     Solo mira el centro de la imagen (COLOR_RECORTE): ahí queda la caja, y el
     fondo de la cinta pesa menos."""
-    imagen = cv2.imdecode(np.frombuffer(jpeg, np.uint8), cv2.IMREAD_COLOR)
+    imagen = _centro(jpeg)
     if imagen is None:
         return None
-    alto, ancho = imagen.shape[:2]
-    mx = int(ancho * (1 - settings.color_recorte) / 2)
-    my = int(alto * (1 - settings.color_recorte) / 2)
-    imagen = cv2.resize(imagen[my : alto - my, mx : ancho - mx], (64, 64), interpolation=cv2.INTER_AREA)
 
     hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
     partes = []
