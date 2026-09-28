@@ -15,7 +15,7 @@ server/
 │   ├── security.py         # hashing (bcrypt) y JWT
 │   ├── deps.py              # get_current_user (protege los endpoints)
 │   ├── mqtt_client.py       # cliente MQTT: valida, persiste, retransmite por WS
-│   ├── camara.py             # token de la cámara, carpetas de capturas/modelos, guardar_jpeg
+│   ├── camara.py             # token de la cámara, carpetas de capturas/modelos, guardar_jpeg, calidad de imagen
 │   ├── rostro.py              # cámara A: YuNet + SFace (OpenCV), login PIN + rostro pendiente
 │   ├── color_ia.py             # cámara B: características + SVM (scikit-learn), entrenar/predecir
 │   ├── ws.py                 # ConnectionManager del WebSocket
@@ -26,7 +26,8 @@ server/
 │       ├── comandos.py           # POST /api/comandos
 │       ├── produccion.py          # GET /api/eventos, /api/conteos, /api/produccion/historico
 │       ├── rostro.py               # /api/rostro/*: verificar, muestra (cámara) y enrolar, usuarios (dashboard)
-│       └── color.py                 # /api/color/*: captura (cámara) y capturas, resumen, entrenar (dashboard)
+│       ├── color.py                 # /api/color/*: captura (cámara) y capturas, resumen, entrenar (dashboard)
+│       └── camara.py                 # /api/camara/*: config y estado de las placas, foto de prueba
 ├── schema.sql               # esquema del Bloque 1 (se auto-aplica al crear el contenedor)
 ├── migrations/               # esquema de bloques siguientes, se auto-aplica igual que schema.sql
 ├── ml/
@@ -148,6 +149,9 @@ Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <t
 | `GET`    | `/capturas/<ruta>`                                   | Sin auth. Las fotos de la cámara (un `<img>` no puede mandar el JWT)                                                               |
 | `POST`   | `/api/rostro/verificar`, `/muestra`                  | Cámara, con `X-Camara-Token`. Foto JPEG en el cuerpo (ver [`protocolo.md`](./protocolo.md))                                        |
 | `GET`    | `/api/camara/config`                                 | Por versión de cámara: `flag` (activada en el `.env`), `online` (hay placa conectada) y `activo` (las dos)                         |
+| `POST`   | `/api/camara/probar/{version}`                       | Pide una foto de prueba a la placa (`rostro` o `color`); 409 si no está conectada. El resultado llega por WS como `prueba_camara`  |
+| `GET`    | `/api/camara/prueba/{version}`                       | Última foto de prueba con sus métricas (brillo, nitidez, caras o color), o `null`                                                  |
+| `POST`   | `/api/camara/prueba`                                 | Placa, con `X-Camara-Token`. La foto de prueba (`?version=`); guarda `capturas/prueba/<version>.jpg`                               |
 | `GET`    | `/api/rostro/config`, `/usuarios`, `/verificaciones` | Estado del login por rostro, muestras por usuario, verificaciones recientes                                                        |
 | `POST`   | `/api/rostro/enrolar/{usuario_id}`                   | Ordena a la cámara tomar 5 fotos de ese usuario                                                                                    |
 | `DELETE` | `/api/rostro/muestras/{usuario_id}`                  | Borra las muestras de rostro de un usuario                                                                                         |
@@ -256,6 +260,7 @@ Los `type` que puede recibir `/ws`, con la forma real del JSON:
 { "type": "evento_caja", "color": "rojo", "conteo": 3, "lote_completo": false, "r": 900, "g": 200, "b": 180, "c": 1300 }
 { "type": "alerta", "tipo": "lote_completo", "mensaje": "Lote de 5 cajas rojo completado" }
 { "type": "camara_estado", "version": "rostro", "online": true }
+{ "type": "prueba_camara", "version": "rostro", "imagen": "prueba/rostro.jpg", "brillo": 124.2, "nitidez": 387.1, "avisos": [], "rostro": { "caras": 1, "coincidencias": [] }, "color": null }
 { "type": "verificacion_rostro", "usuario_id": 1, "nombre": "operador1", "similitud": 0.92, "exito": true, "umbral": 0.363, "imagen": "rostro/v1_1759000000000.jpg" }
 { "type": "clasificacion_camara", "evento_id": 42, "color_sensor": "rojo", "color_ia": "rojo", "confianza": 0.87, "coincide": true, "imagen": "color/42.jpg" }
 ```

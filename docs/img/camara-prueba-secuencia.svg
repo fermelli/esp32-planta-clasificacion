@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Probar la cámara desde el dashboard</title>
+  <rect x="0" y="0" width="900" height="520" fill="#ffffff"/>
+  <text x="450.0" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#111">Probar la cámara desde el dashboard</text>
+  <defs><marker id="a047857" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#047857"/></marker><marker id="a1d4ed8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#1d4ed8"/></marker><marker id="ab45309" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#b45309"/></marker></defs>
+  <text x="450.0" y="52" text-anchor="middle" font-size="13" fill="#555">Sin loguearse ni pasar cajas: la placa saca una foto y el servidor la analiza</text>
+  <rect x="45.0" y="68" width="170" height="44" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="1.5"/>
+  <text x="130" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Dashboard</text>
+  <text x="130" y="104" text-anchor="middle" font-size="10.5" fill="#047857">botón "Sacar foto de prueba"</text>
+  <line x1="130" y1="112" x2="130" y2="490" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="375.0" y="68" width="150" height="44" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">Servidor</text>
+  <text x="450" y="104" text-anchor="middle" font-size="10.5" fill="#4338ca">FastAPI + IA</text>
+  <line x1="450" y1="112" x2="450" y2="490" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <rect x="685.0" y="68" width="170" height="44" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="770" y="88" text-anchor="middle" font-size="13" fill="#111" font-weight="600">ESP32-S3-CAM</text>
+  <text x="770" y="104" text-anchor="middle" font-size="10.5" fill="#a16207">cualquiera de las dos versiones</text>
+  <line x1="770" y1="112" x2="770" y2="490" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="130" y1="150" x2="450" y2="150" stroke="#047857" stroke-width="1.5" marker-end="url(#a047857)"/>
+  <text x="290.0" y="143" text-anchor="middle" font-size="11" fill="#047857" paint-order="stroke" stroke="#fff" stroke-width="4">POST /api/camara/probar/{version}</text>
+  <rect x="325.0" y="173" width="250" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="192" text-anchor="middle" font-size="11" fill="#4338ca">409 si esa placa no está conectada</text>
+  <line x1="450" y1="230" x2="770" y2="230" stroke="#1d4ed8" stroke-width="1.5" marker-end="url(#a1d4ed8)"/>
+  <text x="610.0" y="223" text-anchor="middle" font-size="11" fill="#1d4ed8" paint-order="stroke" stroke="#fff" stroke-width="4">planta/camara/probar  {version}</text>
+  <line x1="770" y1="272" x2="450" y2="272" stroke="#b45309" stroke-width="1.5" marker-end="url(#ab45309)"/>
+  <text x="610.0" y="265" text-anchor="middle" font-size="11" fill="#b45309" paint-order="stroke" stroke="#fff" stroke-width="4">POST /api/camara/prueba?version=  (JPEG)</text>
+  <rect x="280.0" y="299" width="340" height="30" rx="6" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="450" y="318" text-anchor="middle" font-size="11" fill="#4338ca">brillo, nitidez y resolución + análisis de la versión</text>
+  <text x="450" y="344" text-anchor="middle" font-size="10" fill="#64748b">rostro: caras y parecido con los enrolados · color: color medio y predicción</text>
+  <line x1="450" y1="388" x2="130" y2="388" stroke="#047857" stroke-width="1.5" marker-end="url(#a047857)"/>
+  <text x="290.0" y="381" text-anchor="middle" font-size="11" fill="#047857" paint-order="stroke" stroke="#fff" stroke-width="4">WebSocket  prueba_camara  {imagen, métricas, avisos}</text>
+  <text x="140" y="410" text-anchor="start" font-size="10.5" fill="#64748b">foto + diagnóstico en pantalla</text>
+  <rect x="30" y="430" width="840" height="58" rx="8" fill="#fefce8" stroke="#a16207" stroke-width="1.5"/>
+  <text x="450" y="452" text-anchor="middle" font-size="11.5" fill="#a16207">Si la foto no llega en 15 s el dashboard avisa: casi siempre es la IP de la laptop en API_URL,</text>
+  <text x="450" y="470" text-anchor="middle" font-size="11.5" fill="#a16207">el firewall de Windows (puerto 8000) o un CAMARA_TOKEN distinto al de server/.env.</text>
+</svg>

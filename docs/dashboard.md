@@ -28,6 +28,7 @@ dashboard/
 │   │   └── types.d.ts                  # tipa route.meta.publica
 │   ├── components/
 │   │   ├── ui/                        # button, card, input, label, badge, table
+│   │   ├── PruebaCamaraCard.vue        # "Probar la cámara": foto de prueba + diagnóstico (rostro y color)
 │   │   └── ContadorBinario.vue         # los 3 LEDs binarios del hardware, en pantalla
 │   └── views/
 │       ├── LoginView.vue

@@ -149,6 +149,35 @@ más permisivo. La página `/rostro` del dashboard muestra la similitud de
 cada verificación contra el umbral, que es la forma de calibrarlo con las
 condiciones reales del aula.
 
+## Probar la cámara
+
+Antes de usarla de verdad conviene comprobar que la placa, el lente y la luz
+andan. No hace falta loguearse ni pasar cajas: el dashboard tiene un botón.
+
+![Secuencia de la foto de prueba](img/camara-prueba-secuencia.svg)
+
+1. **Monitor serie** (`pio device monitor`, 115200) al arrancar. Tiene que
+   verse: `PSRAM: ... bytes` (si dice 0, cambiar `memory_type` en
+   `platformio.ini`), `Camara OK, sensor PID=0x3660` (es el OV3660; el
+   OV2640 sería `0x2642`), `WiFi OK, IP ...` y `MQTT OK`.
+2. **Dashboard**: en la pantalla **Rostro**, tarjeta **"Probar la cámara"** →
+   "Sacar foto de prueba". Necesita la placa conectada (punto verde en el
+   menú); si no lo está, el botón está deshabilitado.
+3. **Qué mirar**:
+   - La **imagen**: si sale al revés o espejada, `CAM_VFLIP` / `CAM_HMIRROR`
+     en `config.h`; y que el encuadre sea el del montaje.
+   - **Brillo** (0–255) y **nitidez**: avisa si la foto queda muy oscura,
+     sobreexpuesta o desenfocada. Son umbrales orientativos.
+   - **Caras detectadas** y **a quién se parece** (entre los enrolados, con el
+     mismo umbral del login): es la forma más rápida de calibrar
+     `ROSTRO_UMBRAL` y de ver si la posición y la luz alcanzan.
+4. Si no llega nada en 15 s, el dashboard lo avisa. Casi siempre es la IP de
+   la laptop en `API_URL`, el firewall de Windows (puerto 8000) o un
+   `CAMARA_TOKEN` distinto al de `server/.env`; el monitor serie muestra el
+   código HTTP de cada intento.
+
+La última foto de prueba queda guardada en `server/capturas/prueba/`.
+
 ## Problemas comunes
 
 - **`esp_camera_init fallo`** al arrancar: casi siempre el pinout o la PSRAM.

@@ -120,6 +120,35 @@ misma luz al juntar las fotos y al usarlo, sin reflejos directos sobre las
 cajas. Si cambia la luz del aula, conviene juntar unas fotos más y
 reentrenar.
 
+## Probar la cámara
+
+Antes de usarla de verdad conviene comprobar que la placa, el lente y la luz
+andan. No hace falta loguearse ni pasar cajas: el dashboard tiene un botón.
+
+![Secuencia de la foto de prueba](img/camara-prueba-secuencia.svg)
+
+1. **Monitor serie** (`pio device monitor`, 115200) al arrancar. Tiene que
+   verse: `PSRAM: ... bytes` (si dice 0, cambiar `memory_type` en
+   `platformio.ini`), `Camara OK, sensor PID=0x3660` (es el OV3660; el
+   OV2640 sería `0x2642`), `WiFi OK, IP ...` y `MQTT OK`.
+2. **Dashboard**: en la pantalla **Cámara**, tarjeta **"Probar la cámara"** →
+   "Sacar foto de prueba". Necesita la placa conectada (punto verde en el
+   menú); si no lo está, el botón está deshabilitado.
+3. **Qué mirar**:
+   - La **imagen**: si sale al revés o espejada, `CAM_VFLIP` / `CAM_HMIRROR`
+     en `config.h`; y que el encuadre sea el del montaje.
+   - **Brillo** (0–255) y **nitidez**: avisa si la foto queda muy oscura,
+     sobreexpuesta o desenfocada. Son umbrales orientativos.
+   - El **color medio** de la zona central (lo que "ve" el clasificador) y, si
+     ya hay un modelo entrenado, **lo que predice**. Sirve para comprobar el
+     encuadre: la caja tiene que quedar en el centro de la foto.
+4. Si no llega nada en 15 s, el dashboard lo avisa. Casi siempre es la IP de
+   la laptop en `API_URL`, el firewall de Windows (puerto 8000) o un
+   `CAMARA_TOKEN` distinto al de `server/.env`; el monitor serie muestra el
+   código HTTP de cada intento.
+
+La última foto de prueba queda guardada en `server/capturas/prueba/`.
+
 ## Problemas comunes
 
 - **"Hacen falta al menos 2 colores con 10 fotos cada uno"**: todavía no
