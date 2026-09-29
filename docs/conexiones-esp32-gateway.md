@@ -45,10 +45,18 @@ esperar a que conecte WiFi/MQTT.
 | `#`     | Envía el PIN al servidor (`planta/login/intento`)                  |
 | `A B C` | Sin uso                                                            |
 
-Cualquier tecla saca al LCD de un mensaje transitorio (por ejemplo
-"Bloqueado" o el resultado de un login) y vuelve a la pantalla de "Ingrese
-PIN". Mientras arranca (I2C, WiFi, MQTT) el LCD no se actualiza: se queda
-en "Conectando WiFi" durante 10-15 s sin que eso signifique que se colgó.
+Cualquier tecla saca al LCD del mensaje que esté mostrando (el resultado de
+un login, la última caja contada) y **además se procesa**: si es un dígito,
+ya cuenta como el primero del PIN. Mientras arranca (I2C, WiFi, MQTT) el
+LCD no se actualiza: se queda en "Conectando WiFi" durante 10-15 s sin que
+eso signifique que se colgó.
+
+### Qué muestra el LCD cuando pasa una caja
+
+Color arriba y conteo abajo (`Azul` / `3`); cuando esa caja cierra el lote,
+`5 Lote completo!`. Se queda así hasta la próxima caja o la próxima tecla.
+Si alguien está a mitad de un PIN o esperando el resultado del login, la
+caja no interrumpe (se ve igual en el dashboard).
 
 ### Problemas comunes del teclado
 

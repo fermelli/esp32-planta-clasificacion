@@ -49,6 +49,8 @@ void lcdIdle() {
   for (unsigned i = 0; i < pinBuffer.length(); i++) lcd.print('*');
 }
 
+// duracionMs == 0: el mensaje no vence solo, queda hasta la proxima tecla o
+// el proximo mensaje.
 void lcdMensaje(const String &linea1, const String &linea2, unsigned long duracionMs) {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -56,7 +58,7 @@ void lcdMensaje(const String &linea1, const String &linea2, unsigned long duraci
   lcd.setCursor(0, 1);
   lcd.print(linea2);
   mostrandoMensaje = true;
-  mensajeExpiraEn = millis() + duracionMs;
+  mensajeExpiraEn = duracionMs ? millis() + duracionMs : 0;
 }
 
 // Igual que lcdMensaje, pero no interrumpe si el usuario está tecleando un
@@ -117,11 +119,13 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
     size_t n = serializeJson(doc, buf);
     mqtt.publish("planta/sorter/evento", buf, n);
 
-    if (msg.lote_completo) {
-      lcdMensajeSiLibre("Lote completo!", String(color) + " x5", 3000);
-    } else {
-      lcdMensajeSiLibre("Caja: " + String(color), "Conteo: " + String(conteo), 1200);
-    }
+    // Color arriba y conteo (1-5) abajo; queda en el LCD hasta la proxima
+    // caja o hasta que alguien toque el teclado.
+    String titulo(color);
+    titulo.setCharAt(0, toupper(titulo.charAt(0)));
+    String detalle(conteo);
+    if (msg.lote_completo) detalle += " Lote completo!";  // "5 Lote completo!" = 16 chars justos
+    lcdMensajeSiLibre(titulo, detalle, 0);
   }
 }
 
@@ -257,9 +261,11 @@ void manejarTeclado() {
   if (!tecla || esperandoRespuesta) return;
 
   if (mostrandoMensaje) {
-    mostrandoMensaje = false;  // cualquier tecla saca del mensaje transitorio
+    // Cualquier tecla saca del mensaje y ademas se procesa: como el conteo
+    // de cajas queda fijo en pantalla, si se tragara la tecla se perderia
+    // siempre el primer digito del PIN.
+    mostrandoMensaje = false;
     lcdIdle();
-    return;
   }
 
   if (tecla == '*') {
@@ -320,7 +326,7 @@ void loop() {
   if (!mqtt.connected()) conectarMqtt();
   mqtt.loop();
 
-  if (mostrandoMensaje && millis() > mensajeExpiraEn) {
+  if (mostrandoMensaje && mensajeExpiraEn != 0 && millis() > mensajeExpiraEn) {
     mostrandoMensaje = false;
     lcdIdle();
   }
