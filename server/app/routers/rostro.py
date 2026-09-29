@@ -7,7 +7,7 @@ from app.camara import token_camara
 from app.config import settings
 from app.db import pool
 from app.deps import get_current_user
-from app.schemas import RostroConfigOut, RostroUsuarioOut, VerificacionRostroOut
+from app.schemas import MuestraRostroOut, RostroConfigOut, RostroUsuarioOut, VerificacionRostroOut
 
 # La placa no tiene JWT: estos dos endpoints se autentican con X-Camara-Token.
 router_camara = APIRouter(prefix="/api/rostro", tags=["rostro-camara"], dependencies=[Depends(token_camara)])
@@ -69,6 +69,16 @@ async def enrolar(usuario_id: int) -> dict:
     else:
         mqtt_client.publish(rostro.TOPIC_CAMARA_ROSTRO, {"modo": "enrolar", "usuario_id": usuario_id})
     return {"ok": True}
+
+
+@router.get("/muestras/{usuario_id}", response_model=list[MuestraRostroOut])
+async def listar_muestras(usuario_id: int) -> list[MuestraRostroOut]:
+    """Las fotos que se sacaron al enrolar, para verlas en el dashboard."""
+    filas = await pool().fetch(
+        "SELECT id, imagen, creado_en FROM rostros WHERE usuario_id = $1 ORDER BY creado_en DESC",
+        usuario_id,
+    )
+    return [MuestraRostroOut(**dict(f)) for f in filas]
 
 
 @router.delete("/muestras/{usuario_id}")

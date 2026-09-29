@@ -69,6 +69,12 @@ class RostroUsuarioOut(BaseModel):
     muestras: int
 
 
+class MuestraRostroOut(BaseModel):
+    id: int
+    imagen: str | None
+    creado_en: datetime
+
+
 class VerificacionRostroOut(BaseModel):
     id: int
     usuario_nombre: str
