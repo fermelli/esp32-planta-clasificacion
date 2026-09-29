@@ -64,9 +64,17 @@ uint8_t countRojo = 0, countVerde = 0, countAzul = 0;
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 bool sensorOk = false;
 bool cajaEnCurso = false;
-// Calibrar con las cajas reales: el clear (c) sube cuando algo tapa el sensor.
-// Ajustar UMBRAL_PRESENCIA al valor de "sin nada delante" + margen.
-constexpr uint16_t UMBRAL_PRESENCIA = 400;
+// Con un solo umbral, el ruido del sensor hacia que "c" cruzara la linea
+// muchas veces durante el paso de UNA sola caja (visto en vivo: 399 -> 451
+// -> 1283 -> 408 -> 852... en milisegundos), y cada cruce disparaba un
+// evento de color distinto -> LCD con conteo erratico, casi siempre rojo
+// por el sesgo de las lecturas intermedias con poca luz. Dos umbrales con
+// margen entre ellos, mas un cooldown, hacen que un solo paso cuente una
+// sola vez. Calibrado contra el ambiente real (sin nada delante: c~250-310).
+constexpr uint16_t UMBRAL_ENTRA = 450;      // cruzar esto hacia arriba: caja llegando
+constexpr uint16_t UMBRAL_SALE = 300;       // hay que bajar de esto para rearmar
+constexpr unsigned long MS_COOLDOWN_CAJA = 400;  // ignora nuevas cajas justo despues de una
+unsigned long ultimaCajaMs = 0;
 
 // --- Barrido de canal ESP-NOW ---
 // El gateway manda CMD_HELLO cada 1s sin parar; si esta placa deja de
@@ -170,13 +178,22 @@ void leerSensorYClasificar() {
   uint16_t r, g, b, c;
   tcs.getRawData(&r, &g, &b, &c);
 
-  if (!cajaEnCurso && c > UMBRAL_PRESENCIA) {
+  // DIAGNOSTICO TEMPORAL: confirmar que ya no hay reintentos seguidos.
+  static unsigned long ultimoPrintSensor = 0;
+  if (millis() - ultimoPrintSensor >= 300) {
+    ultimoPrintSensor = millis();
+    Serial.printf("sensor: r=%u g=%u b=%u c=%u (entra=%u sale=%u) cajaEnCurso=%d\n", r, g, b, c,
+                  UMBRAL_ENTRA, UMBRAL_SALE, cajaEnCurso);
+  }
+
+  if (!cajaEnCurso && c > UMBRAL_ENTRA && millis() - ultimaCajaMs >= MS_COOLDOWN_CAJA) {
     cajaEnCurso = true;
+    ultimaCajaMs = millis();
     uint8_t colorId = clasificarColor(r, g, b, c);
     bool loteCompleto = false;
     uint8_t conteoDeEstaCaja = procesarConteo(colorId, loteCompleto);
     enviarEventoCaja(colorId, r, g, b, c, conteoDeEstaCaja, loteCompleto);
-  } else if (cajaEnCurso && c <= UMBRAL_PRESENCIA) {
+  } else if (cajaEnCurso && c <= UMBRAL_SALE) {
     cajaEnCurso = false;  // la caja ya pasó, listo para la próxima
   }
 }
