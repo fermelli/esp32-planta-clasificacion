@@ -268,6 +268,11 @@ void manejarTeclado() {
     lcdIdle();
   } else if (tecla == '#') {
     if (pinBuffer.length() > 0) publicarIntentoLogin();
+  } else if (tecla == 'D') {
+    if (pinBuffer.length() > 0) {
+      pinBuffer.remove(pinBuffer.length() - 1);
+      lcdIdle();
+    }
   } else if (isDigit(tecla) && pinBuffer.length() < 8) {
     pinBuffer += tecla;
     lcdIdle();
