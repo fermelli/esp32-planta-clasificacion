@@ -103,7 +103,11 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
     doc["cinta_estado"] = nombreMotor(msg.motor_state);
     char buf[96];
     size_t n = serializeJson(doc, buf);
-    mqtt.publish("planta/sorter/estado", buf, n);
+    // OJO: publish(topic, char*, size_t) no existe en PubSubClient. Sin el
+    // cast, "n" (siempre > 0) se cuela como el 3er parametro real que SI
+    // matchea: publish(topic, const char*, boolean retained) -> quedaba
+    // publicando todo como retenido sin querer.
+    mqtt.publish("planta/sorter/estado", reinterpret_cast<const uint8_t *>(buf), n);
 
   } else if (msg.msg_type == MSG_EVENTO_CAJA) {
     const char *color = nombreColor(msg.color_id);
@@ -118,7 +122,7 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
     doc["r"] = msg.r; doc["g"] = msg.g; doc["b"] = msg.b; doc["c"] = msg.c;
     char buf[160];
     size_t n = serializeJson(doc, buf);
-    mqtt.publish("planta/sorter/evento", buf, n);
+    mqtt.publish("planta/sorter/evento", reinterpret_cast<const uint8_t *>(buf), n);
 
     // Color arriba y conteo (1-5) abajo; queda en el LCD hasta la proxima
     // caja o hasta que alguien toque el teclado.
