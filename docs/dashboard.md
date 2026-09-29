@@ -28,7 +28,7 @@ dashboard/
 │   │   └── types.d.ts                  # tipa route.meta.publica
 │   ├── components/
 │   │   ├── ui/                        # button, card, input, label, badge, table
-│   │   ├── PruebaCamaraCard.vue        # "Probar la cámara": foto de prueba + diagnóstico (rostro y color)
+│   │   ├── PruebaCamaraCard.vue        # "Probar la cámara": foto de prueba + diagnóstico + vista previa en vivo
 │   │   └── ContadorBinario.vue         # los 3 LEDs binarios del hardware, en pantalla
 │   └── views/
 │       ├── LoginView.vue
@@ -36,7 +36,7 @@ dashboard/
 │       ├── HistoricoView.vue             # cajas por hora (gráfico SVG a mano)
 │       ├── IntentosView.vue
 │       ├── AlertasView.vue
-│       ├── RostroView.vue                 # cámara A: enrolar caras, verificaciones
+│       ├── RostroView.vue                 # cámara A: enrolar caras, ver sus fotos, verificaciones
 │       └── CamaraColorView.vue             # cámara B: sensor vs. IA, entrenar
 └── .env.example
 ```
@@ -83,6 +83,9 @@ Todas las rutas salvo `/login` están protegidas por el guard de
 | `/alertas`      | `AlertasView`     | `GET /api/alertas?limite=30`                       | `alerta`                                         |
 | `/rostro`       | `RostroView`      | `GET /api/rostro/{config,usuarios,verificaciones}` | `verificacion_rostro`                            |
 | `/camara-color` | `CamaraColorView` | `GET /api/color/{resumen,capturas}`                | `clasificacion_camara`                           |
+
+`RostroView` pide `GET /api/rostro/muestras/{usuario_id}` recién al abrir la
+galería de fotos de un usuario ("Ver fotos"), no de entrada.
 
 `ProduccionView` además tiene los controles de planta: botones de cinta
 (apagada/baja/full) y de puerta, y un botón de reset de contadores — los

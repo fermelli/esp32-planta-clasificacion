@@ -96,6 +96,12 @@ para el dashboard). El cuerpo es el JPEG crudo, con `Content-Type: image/jpeg`.
 
 `listo: true` le dice a la cámara que deje de mandar fotos.
 
+Con `ROSTRO_WEBCAM` / `COLOR_WEBCAM` en `true` (ver
+[`camara-rostro.md`](./camara-rostro.md#con-webcam-usb-en-vez-de-la-esp32-cam))
+nada de esto se usa para esa versión: el servidor captura la foto él mismo
+con OpenCV, sin topics `planta/camara/*` ni estos endpoints HTTP de por
+medio.
+
 ## Ver también
 
 - [`arquitectura.md`](./arquitectura.md) — dónde corre cada pieza

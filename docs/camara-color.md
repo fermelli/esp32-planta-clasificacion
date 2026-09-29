@@ -49,6 +49,16 @@ funcionando igual; solo dejan de llegar fotos, y si se cae con el flag
 activado queda una alerta `camara_offline`. Con las dos placas
 (una por versión) las dos versiones pueden funcionar a la vez.
 
+## Con webcam USB
+
+Igual que en rostro ([detalle completo en `camara-rostro.md`](./camara-rostro.md#con-webcam-usb-en-vez-de-la-esp32-cam)):
+con `COLOR_WEBCAM=true` el servidor saca la foto él mismo apenas llega el
+evento del sorter, sin ida y vuelta por MQTT a una placa — menos latencia,
+la caja se movió menos entre que el sensor la vio y se saca la foto. Si
+`ROSTRO_WEBCAM` y `COLOR_WEBCAM` están las dos en `true`, comparten **la
+misma webcam** (`WEBCAM_INDICE`): hay que ubicarla según qué se esté
+demostrando en cada momento (el cable USB largo lo permite).
+
 ## La IA: scikit-learn, entrenada con tus propias fotos
 
 No hay dataset externo: **el sensor etiqueta solo las fotos**. Cada caja que
@@ -132,8 +142,10 @@ andan. No hace falta loguearse ni pasar cajas: el dashboard tiene un botón.
    `platformio.ini`), `Camara OK, sensor PID=0x3660` (es el OV3660; el
    OV2640 sería `0x2642`), `WiFi OK, IP ...` y `MQTT OK`.
 2. **Dashboard**: en la pantalla **Cámara**, tarjeta **"Probar la cámara"** →
-   "Sacar foto de prueba". Necesita la placa conectada (punto verde en el
-   menú); si no lo está, el botón está deshabilitado.
+   "Sacar foto de prueba" (con `COLOR_WEBCAM=true` no hace falta placa
+   conectada). El botón **"Vista previa en vivo"** repite el pedido cada 2s
+   para encuadrar y enfocar sin apretarlo una y otra vez — no es streaming
+   real, se apaga sola si la cámara se desconecta.
 3. **Qué mirar**:
    - La **imagen**: si sale al revés o espejada, `CAM_VFLIP` / `CAM_HMIRROR`
      en `config.h`; y que el encuadre sea el del montaje.

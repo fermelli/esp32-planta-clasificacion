@@ -79,6 +79,9 @@ Definidas en `app/config.py` (pydantic-settings), con default si no están en
 | `ROSTRO_MAX_RECHAZOS`            | `3`                                                | Fotos con otra cara antes de cerrar el intento como fallido       |
 | `CAMARA_COLOR`                   | `false`                                            | Versión B: cada caja dispara una foto que clasifica la IA         |
 | `COLOR_RECORTE`                  | `0.6`                                              | Fracción central de la foto que mira el clasificador de color     |
+| `ROSTRO_WEBCAM`                  | `false`                                            | El servidor saca la foto de rostro con una webcam USB local, sin placa |
+| `COLOR_WEBCAM`                   | `false`                                            | Igual que arriba, para la foto de color de cada caja               |
+| `WEBCAM_INDICE`                  | `0`                                                | Índice de `cv2.VideoCapture` de la webcam (ver `camara-rostro.md`) |
 | `CAPTURAS_DIR` / `MODELOS_DIR`   | `capturas` / `modelos`                             | Carpetas (relativas a `server/`) de las fotos y los modelos       |
 
 ## Modelo de datos
@@ -149,11 +152,12 @@ Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <t
 | `GET`    | `/capturas/<ruta>`                                   | Sin auth. Las fotos de la cámara (un `<img>` no puede mandar el JWT)                                                               |
 | `POST`   | `/api/rostro/verificar`, `/muestra`                  | Cámara, con `X-Camara-Token`. Foto JPEG en el cuerpo (ver [`protocolo.md`](./protocolo.md))                                        |
 | `GET`    | `/api/camara/config`                                 | Por versión de cámara: `flag` (activada en el `.env`), `online` (hay placa conectada) y `activo` (las dos)                         |
-| `POST`   | `/api/camara/probar/{version}`                       | Pide una foto de prueba a la placa (`rostro` o `color`); 409 si no está conectada. El resultado llega por WS como `prueba_camara`  |
+| `POST`   | `/api/camara/probar/{version}`                       | Pide una foto de prueba a la placa (`rostro` o `color`); 409 si no está conectada. Con `*_WEBCAM=true` la captura el servidor mismo y 502 si la webcam no responde. El resultado llega por WS como `prueba_camara` |
 | `GET`    | `/api/camara/prueba/{version}`                       | Última foto de prueba con sus métricas (brillo, nitidez, caras o color), o `null`                                                  |
 | `POST`   | `/api/camara/prueba`                                 | Placa, con `X-Camara-Token`. La foto de prueba (`?version=`); guarda `capturas/prueba/<version>.jpg`                               |
 | `GET`    | `/api/rostro/config`, `/usuarios`, `/verificaciones` | Estado del login por rostro, muestras por usuario, verificaciones recientes                                                        |
-| `POST`   | `/api/rostro/enrolar/{usuario_id}`                   | Ordena a la cámara tomar 5 fotos de ese usuario                                                                                    |
+| `POST`   | `/api/rostro/enrolar/{usuario_id}`                   | Ordena a la cámara (o a la webcam local, con `ROSTRO_WEBCAM=true`) tomar 5 fotos de ese usuario                                    |
+| `GET`    | `/api/rostro/muestras/{usuario_id}`                  | Las fotos guardadas al enrolar a ese usuario, más recientes primero                                                                |
 | `DELETE` | `/api/rostro/muestras/{usuario_id}`                  | Borra las muestras de rostro de un usuario                                                                                         |
 | `POST`   | `/api/color/captura`                                 | Cámara, con `X-Camara-Token`. Foto de una caja (`?evento_id=`)                                                                     |
 | `GET`    | `/api/color/capturas`, `/resumen`                    | Fotos con sensor vs. IA; % de acuerdo, dataset por color y métricas del modelo                                                     |
@@ -231,7 +235,11 @@ handlers pueden usar el mismo pool de Postgres y el mismo
   pendiente y le pide la cara a la cámara (ver [`camara-rostro.md`](./camara-rostro.md));
   el resultado sale recién cuando la cara se resolvió. Si **no hay cámara de
   rostro conectada**, el login entra solo con el PIN y queda una alerta
-  `camara_offline`: el teclado nunca se bloquea por una placa caída.
+  `camara_offline`: el teclado nunca se bloquea por una placa caída. Con
+  `ROSTRO_WEBCAM=true` no espera ninguna placa: captura unos pocos frames
+  locales ahí mismo (y si la webcam no responde, el intento se cierra como
+  fallido por rostro, no como "sin cámara" — ver la nota en
+  [`camara-rostro.md`](./camara-rostro.md#con-webcam-usb-en-vez-de-la-esp32-cam)).
 - **`planta/sorter/estado`** — se reenvía tal cual por WebSocket
   (`sorter_estado`) y no se persiste: es estado instantáneo del hardware
   (puerta, cinta), no un evento con historia.
@@ -241,7 +249,8 @@ handlers pueden usar el mismo pool de Postgres y el mismo
   inserta una alerta `lote_completo` y manda un WS `alerta` aparte. Con
   `CAMARA_COLOR=true` **y una cámara de color conectada** publica además
   `planta/camara/capturar` con el `id` de la fila, para que la cámara saque
-  la foto de esa caja.
+  la foto de esa caja. Con `COLOR_WEBCAM=true` no publica nada: captura la
+  foto ahí mismo con la webcam y la procesa directo.
 - **`planta/camara/estado/rostro`** y **`.../color`** — el saludo de cada
   firmware de cámara. El servidor guarda cuáles están conectadas, lo
   retransmite por WS como `camara_estado` y, si una versión activada por flag

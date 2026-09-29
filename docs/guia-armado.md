@@ -161,6 +161,7 @@ y [`camara-color.md`](./camara-color.md).
 - [ ] Ningún componente alimentado desde el pin `5V`/`VIN` del ESP32 salvo el LCD (que sí puede, consume poco)
 - [ ] Cable USB de **datos** (no solo carga) en cada placa
 - [ ] Si usás la cámara: probarla desde el dashboard ("Probar la cámara") antes de dejarla fija; `config.h` con WiFi, IP de la laptop y `CAMARA_TOKEN` igual al de `server/.env`; alimentada por su propio USB de 5 V (nunca la fuente de 6 V); lente apuntando según la versión
+- [ ] Alternativa sin placa de cámara: una webcam USB conectada a la laptop, con `ROSTRO_WEBCAM`/`COLOR_WEBCAM=true` y `WEBCAM_INDICE` en `server/.env` (ver `camara-rostro.md`) — sin `config.h` de cámara
 
 ## Referencia de todos los pines juntos
 

@@ -123,7 +123,8 @@ solo como evidencia para el dashboard.
    `pio run -t upload` con la placa conectada por el puerto USB "UART".
 5. **Enrolar** desde el dashboard, en `/rostro`: botón "Enrolar rostro" del
    usuario, mirar de frente al lente mientras la placa toma 5 fotos. Conviene
-   repetirlo 2 veces con distinta luz (10 muestras).
+   repetirlo 2 veces con distinta luz (10 muestras). El botón **"Ver fotos"**
+   de cada usuario muestra las miniaturas de lo que se guardó.
 6. **Activar**: `LOGIN_ROSTRO=true` en `server/.env` y reiniciar el servidor.
    Si faltan los modelos el servidor se niega a arrancar con esa variable
    activa, para no dejar el teclado sin poder entrar.
@@ -131,6 +132,45 @@ solo como evidencia para el dashboard.
 > Enrolá **antes** de activar (y con la placa conectada). Con `LOGIN_ROSTRO=true` un usuario sin rostro
 > enrolado no puede entrar por el teclado (la web sigue funcionando con su
 > PIN, así que siempre se puede volver a enrolar desde el dashboard).
+
+## Con webcam USB en vez de la ESP32-CAM
+
+La ESP32-S3-CAM resultó poco confiable (cable/puerto flojo, desconexiones
+intermitentes). Con `ROSTRO_WEBCAM=true` en `server/.env` el servidor saca
+la foto **él mismo** con OpenCV desde una webcam USB conectada a la laptop:
+no hace falta placa, WiFi propio de la cámara, MQTT ni `CAMARA_TOKEN` para
+esta versión.
+
+- **Índice de la webcam** (`WEBCAM_INDICE`, default `0`): con la webcam
+  integrada de la laptop y una USB conectadas a la vez, la integrada suele
+  quedar en `0` y la USB en `1`, pero conviene comprobarlo:
+  ```python
+  import cv2
+  for i in range(3):
+      cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+      ok, frame = cap.read()
+      print(i, "abrio" if ok else "no", frame.shape if ok else "")
+  ```
+- **Login**: en vez de esperar hasta 13s a que una placa mande fotos, el
+  servidor toma 3 fotos locales cada 0,6s apenas el PIN es correcto — hay
+  que estar mirando al lente al apretar `#`, la ventana es de ~2s, no 13s.
+- **Enrolar**: 5 fotos, una cada 1,2s (mismo criterio que usaba el
+  firmware). Las fotos guardadas se pueden revisar con el botón **"Ver
+  fotos"** de cada usuario en `/rostro`.
+- La webcam cuenta siempre como "cámara conectada" en el dashboard: no hay
+  saludo MQTT que perder.
+- Medido con la misma escena: nitidez ~1780 con la webcam Philips contra
+  ~27 con la ESP32-S3-CAM (que además estaba desenfocada).
+
+**Diferencia importante con la placa**: si la webcam no abre
+(`cv2.VideoCapture` falla), el intento de login se cierra **como fallido
+por rostro**, no como "sin cámara, entra solo con PIN" (esa gracia es
+específica del *last will* de MQTT que usa la placa, ver arriba). La web
+sigue entrando con PIN igual.
+
+Las dos variables (`ROSTRO_WEBCAM`, `COLOR_WEBCAM`) son independientes de
+`LOGIN_ROSTRO`/`CAMARA_COLOR`, que siguen siendo las que prenden o apagan
+cada flujo.
 
 ## Montaje
 
@@ -161,8 +201,10 @@ andan. No hace falta loguearse ni pasar cajas: el dashboard tiene un botón.
    `platformio.ini`), `Camara OK, sensor PID=0x3660` (es el OV3660; el
    OV2640 sería `0x2642`), `WiFi OK, IP ...` y `MQTT OK`.
 2. **Dashboard**: en la pantalla **Rostro**, tarjeta **"Probar la cámara"** →
-   "Sacar foto de prueba". Necesita la placa conectada (punto verde en el
-   menú); si no lo está, el botón está deshabilitado.
+   "Sacar foto de prueba" (con `ROSTRO_WEBCAM=true` no hace falta placa
+   conectada). El botón **"Vista previa en vivo"** repite el pedido cada 2s
+   para encuadrar y enfocar sin apretarlo una y otra vez — no es streaming
+   real, se apaga sola si la cámara se desconecta.
 3. **Qué mirar**:
    - La **imagen**: si sale al revés o espejada, `CAM_VFLIP` / `CAM_HMIRROR`
      en `config.h`; y que el encuadre sea el del montaje.
