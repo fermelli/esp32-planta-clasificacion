@@ -55,7 +55,7 @@ async def _manejar_login_intento(payload: dict) -> None:
             break
 
     if exito and settings.login_rostro:
-        if camaras_online["rostro"]:
+        if settings.rostro_webcam or camaras_online["rostro"]:
             # Import perezoso: rostro.py importa este módulo.
             from app import rostro
 
@@ -131,9 +131,17 @@ async def _manejar_sorter_evento(payload: dict) -> None:
         color, conteo, lote_completo, r, g, b, c,
     )
 
-    if settings.camara_color and camaras_online["color"]:
-        # La ESP32-S3-CAM saca la foto y la sube a /api/color/captura?evento_id=...
-        publish(TOPIC_CAMARA_CAPTURAR, {"evento_id": evento_id})
+    if settings.camara_color:
+        if settings.color_webcam:
+            from app import webcam
+            from app.routers.color import procesar_captura
+
+            jpeg = await asyncio.to_thread(webcam.capturar_jpeg)
+            if jpeg is not None:
+                await procesar_captura(evento_id, jpeg)
+        elif camaras_online["color"]:
+            # La ESP32-S3-CAM saca la foto y la sube a /api/color/captura?evento_id=...
+            publish(TOPIC_CAMARA_CAPTURAR, {"evento_id": evento_id})
 
     evento = {
         "id": evento_id,

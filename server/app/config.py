@@ -31,5 +31,12 @@ class Settings(BaseSettings):
     camara_color: bool = False
     color_recorte: float = 0.6  # fracción central de la foto que mira el clasificador de color
 
+    # Webcam USB en la laptop, en vez de la ESP32-CAM: se captura la foto
+    # localmente con OpenCV, sin MQTT ni HTTP de por medio. Independiente de
+    # login_rostro/camara_color, que siguen controlando si el flujo esta activo.
+    rostro_webcam: bool = False
+    color_webcam: bool = False
+    webcam_indice: int = 0
+
 
 settings = Settings()

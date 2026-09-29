@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-from app import mqtt_client
+from app import mqtt_client, webcam
 from app.camara import guardar_jpeg, modelos_dir
 from app.config import settings
 from app.db import pool
@@ -18,6 +18,18 @@ logger = logging.getLogger("rostro")
 YUNET = "face_detection_yunet_2023mar.onnx"
 SFACE = "face_recognition_sface_2021dec.onnx"
 TOPIC_CAMARA_ROSTRO = "planta/camara/rostro"
+
+# Con webcam: en vez de esperar hasta rostro_ventana_s a que la placa mande
+# fotos, se capturan unos pocos frames locales con una pausa corta entre
+# cada uno (tiempo para que la persona se acomode frente al lente).
+WEBCAM_INTENTOS = 3
+WEBCAM_ESPERA_S = 0.6
+
+# Enrolamiento con webcam: mismo criterio que usaba el firmware de la
+# ESP32-CAM (5 fotos, una cada 1.2s) para dar tiempo a variar un poco la
+# pose entre foto y foto.
+FOTOS_ENROLAR = 5
+ENTRE_FOTOS_ENROLAR_MS = 1200
 
 _detector = None
 _reconocedor = None
@@ -116,6 +128,18 @@ async def _embeddings_de(usuario_id: int) -> np.ndarray:
     return matriz / np.where(normas == 0, 1, normas)
 
 
+async def enrolar_con_webcam(usuario_id: int) -> None:
+    """Con webcam: captura FOTOS_ENROLAR frames locales, uno cada
+    ENTRE_FOTOS_ENROLAR_MS, en vez de esperarlos de la ESP32-CAM. Se lanza
+    como tarea de fondo (no bloquea la respuesta del endpoint); el dashboard
+    se entera sondeando /api/rostro/usuarios, como ya hacía con la placa."""
+    for _ in range(FOTOS_ENROLAR):
+        jpeg = await asyncio.to_thread(webcam.capturar_jpeg)
+        if jpeg is not None:
+            await enrolar_muestra(usuario_id, jpeg)
+        await asyncio.sleep(ENTRE_FOTOS_ENROLAR_MS / 1000)
+
+
 async def enrolar_muestra(usuario_id: int, jpeg: bytes) -> dict:
     vector = await asyncio.to_thread(embedding, jpeg)
     if vector is None:
@@ -131,19 +155,33 @@ async def enrolar_muestra(usuario_id: int, jpeg: bytes) -> dict:
 
 async def iniciar_login(usuario_id: int, nombre: str, intento: int) -> None:
     """PIN correcto con LOGIN_ROSTRO activo: el login queda pendiente hasta que
-    la cámara confirme la cara o venza la ventana."""
+    la cámara (placa o webcam) confirme la cara o venza la ventana."""
     global _pendiente
     if _pendiente is not None:
         await _cerrar(exito=False, motivo="rostro")
 
     pendiente = LoginPendiente(usuario_id=usuario_id, nombre=nombre, intento=intento)
-    pendiente.temporizador = asyncio.create_task(_vencer(pendiente))
     _pendiente = pendiente
 
     mqtt_client.publish(
         mqtt_client.TOPIC_LOGIN_RESULTADO,
         {"exito": False, "requiere_rostro": True, "nombre": nombre, "bloqueado": False, "intento": intento},
     )
+
+    if settings.rostro_webcam:
+        for _ in range(WEBCAM_INTENTOS):
+            jpeg = await asyncio.to_thread(webcam.capturar_jpeg)
+            if jpeg is None:
+                break  # webcam no responde: se cierra abajo como "sin rostro"
+            resultado = await verificar(usuario_id, jpeg)
+            if resultado.get("listo"):
+                return
+            await asyncio.sleep(WEBCAM_ESPERA_S)
+        if _pendiente is pendiente:
+            await _cerrar(exito=False, motivo="rostro")
+        return
+
+    pendiente.temporizador = asyncio.create_task(_vencer(pendiente))
     mqtt_client.publish(TOPIC_CAMARA_ROSTRO, {"modo": "verificar", "usuario_id": usuario_id})
 
 

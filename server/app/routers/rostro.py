@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app import mqtt_client, rostro
@@ -60,7 +62,12 @@ async def enrolar(usuario_id: int) -> dict:
     existe = await pool().fetchval("SELECT 1 FROM usuarios WHERE id = $1", usuario_id)
     if not existe:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Usuario inexistente")
-    mqtt_client.publish(rostro.TOPIC_CAMARA_ROSTRO, {"modo": "enrolar", "usuario_id": usuario_id})
+    if settings.rostro_webcam:
+        # Tarea de fondo: no bloquea la respuesta, el dashboard se entera
+        # sondeando /usuarios (ver RostroView.vue) igual que con la placa.
+        asyncio.create_task(rostro.enrolar_con_webcam(usuario_id))
+    else:
+        mqtt_client.publish(rostro.TOPIC_CAMARA_ROSTRO, {"modo": "enrolar", "usuario_id": usuario_id})
     return {"ok": True}
 
 

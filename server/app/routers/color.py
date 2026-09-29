@@ -18,9 +18,10 @@ router = APIRouter(prefix="/api/color", tags=["color"], dependencies=[Depends(ge
 _entrenando = asyncio.Lock()
 
 
-@router_camara.post("/captura")
-async def captura(evento_id: int, request: Request) -> dict:
-    jpeg = await request.body()
+async def procesar_captura(evento_id: int, jpeg: bytes) -> dict:
+    """Guarda la foto de una caja, la clasifica y actualiza el evento. Usado
+    tanto por el endpoint HTTP de la placa como por la captura directa desde
+    la webcam (ver mqtt_client._manejar_sorter_evento)."""
     if not jpeg:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cuerpo vacío: se esperaba un JPEG")
     evento = await pool().fetchrow("SELECT color FROM eventos_caja WHERE id = $1", evento_id)
@@ -54,6 +55,11 @@ async def captura(evento_id: int, request: Request) -> dict:
     }
     await manager.broadcast({"type": "clasificacion_camara", **resultado})
     return resultado
+
+
+@router_camara.post("/captura")
+async def captura(evento_id: int, request: Request) -> dict:
+    return await procesar_captura(evento_id, await request.body())
 
 
 @router.get("/capturas", response_model=list[CapturaColorOut])
