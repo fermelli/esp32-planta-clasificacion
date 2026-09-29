@@ -35,6 +35,37 @@ escáner I2C en `setup()` que la reporta por Serial, o usá el sketch aparte
 [`firmware/lcd-test/`](../firmware/lcd-test/) para probar el LCD solo, sin
 esperar a que conecte WiFi/MQTT.
 
+## Uso del teclado
+
+| Tecla   | Hace                                                             |
+| ------- | ----------------------------------------------------------------- |
+| `0`-`9` | Agrega un dígito al PIN (máximo 8)                                 |
+| `D`     | Borra el último dígito escrito                                    |
+| `*`     | Borra todo el PIN y reinicia el conteo de intentos                 |
+| `#`     | Envía el PIN al servidor (`planta/login/intento`)                  |
+| `A B C` | Sin uso                                                            |
+
+Cualquier tecla saca al LCD de un mensaje transitorio (por ejemplo
+"Bloqueado" o el resultado de un login) y vuelve a la pantalla de "Ingrese
+PIN". Mientras arranca (I2C, WiFi, MQTT) el LCD no se actualiza: se queda
+en "Conectando WiFi" durante 10-15 s sin que eso signifique que se colgó.
+
+### Problemas comunes del teclado
+
+- **Una tecla registra dos o más pulsaciones por una sola presionada**:
+  `setup()` sube el antirrebote a 120ms (`teclado.setDebounceTime`, default
+  de la librería Keypad: 10ms). Si con eso alcanza, listo. Si **solo una
+  tecla puntual** sigue duplicando y las demás de su misma fila/columna
+  andan bien, no es el cableado: es el contacto/membrana de esa tecla en
+  particular (probar limpiándola con alcohol isopropílico; si no mejora, es
+  desgaste de fábrica). La tecla `D` sirve para corregir el dígito de más
+  mientras tanto.
+- **Una fila o columna entera no responde**: ahí sí es el cable de ese
+  GPIO (ver tabla de pines arriba) — revisar continuidad y las soldaduras.
+- Para diagnosticar cuál es el caso, el monitor serie (`pio device monitor`,
+  115200) imprime `Tecla detectada: 'x'` por cada pulsación que ve la
+  librería, aunque `manejarTeclado()` la ignore.
+
 ### Problemas comunes del LCD
 
 - **Sin texto, con o sin luz de fondo**: primero el potenciómetro de
