@@ -278,6 +278,13 @@ void setup() {
   Serial.begin(115200);
   delay(500);  // margen para que se abra el monitor y no perderse las primeras lineas
 
+  // Antirrebote mas alto que el default (10ms): con un contacto flojo o
+  // cableado ruidoso (p.ej. columna GPIO33, la que ya dio problemas antes)
+  // una sola pulsacion puede generar varias transiciones seguidas.
+  // Con 50ms seguia marcando 2 veces -> problema de conexion, no de rebote
+  // mecanico normal; se sube igual pero no reemplaza revisar el cable.
+  teclado.setDebounceTime(120);
+
   // --- DIAGNOSTICO TEMPORAL: escaner I2C, antes de tocar el LCD ---
   Serial.println("Escaneando bus I2C (SDA=21, SCL=22)...");
   Wire.begin();
