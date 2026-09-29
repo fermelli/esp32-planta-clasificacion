@@ -92,6 +92,7 @@ void enviarComandoAlSorter(uint8_t cmd, uint8_t arg) {
 }
 
 void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
+  Serial.printf("ESP-NOW: paquete recibido, len=%d (esperado %d)\n", len, sizeof(SorterMsg));  // DIAGNOSTICO TEMPORAL
   if (len != sizeof(SorterMsg)) return;
   SorterMsg msg;
   memcpy(&msg, data, sizeof(msg));
