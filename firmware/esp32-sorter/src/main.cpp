@@ -69,11 +69,17 @@ bool cajaEnCurso = false;
 constexpr uint16_t UMBRAL_PRESENCIA = 400;
 
 // --- Barrido de canal ESP-NOW ---
+// El gateway manda CMD_HELLO cada 1s sin parar; si esta placa deja de
+// recibir CUALQUIER paquete por mas de MS_SIN_SENAL ese tiempo, asume que
+// el gateway cambio de canal (reinicio de una de las dos placas) y vuelve
+// a barrer en vez de quedar sorda para siempre hasta un reset manual.
 constexpr unsigned long MS_POR_CANAL = 400;
+constexpr unsigned long MS_SIN_SENAL = 3000;
 bool canalEncontrado = false;
 int canalActual = 1;
 unsigned long ultimoCambioCanal = 0;
 volatile bool paqueteRecibido = false;
+volatile unsigned long ultimoPaqueteMs = 0;
 
 void aplicarPuerta(bool abrir) {
   puertaAbierta = abrir;
@@ -176,11 +182,17 @@ void leerSensorYClasificar() {
 }
 
 void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
-  paqueteRecibido = true;  // basta con recibir algo para saber que el canal es correcto
+  // Filtra por tamaño y por comando valido antes de dar el canal por bueno:
+  // en el aula hay otros equipos usando ESP-NOW broadcast tambien, y con
+  // solo el tamaño (2 bytes, muy poco para distinguir) igual se enganchaba
+  // con el canal de cualquiera de ellos en vez de esperar al gateway.
   if (len != sizeof(CommandMsg)) return;
-
   CommandMsg cmd;
   memcpy(&cmd, data, sizeof(cmd));
+  if (cmd.cmd > CMD_RESET_COUNTS) return;  // no es un cmd del protocolo: no confiar en el canal
+
+  paqueteRecibido = true;
+  ultimoPaqueteMs = millis();
 
   if (cmd.cmd == CMD_DOOR) {
     aplicarPuerta(cmd.arg == 1);
@@ -217,7 +229,14 @@ void iniciarEspNow() {
 }
 
 void barrerCanalSiHaceFalta() {
-  if (canalEncontrado) return;
+  if (canalEncontrado) {
+    if (millis() - ultimoPaqueteMs < MS_SIN_SENAL) return;
+    // Se corto la señal (el gateway probablemente reinicio en otro canal):
+    // volver a barrer en vez de quedar sordo hasta un reset manual.
+    Serial.println("Se perdio la señal del gateway, rebarriendo canal...");
+    canalEncontrado = false;
+    paqueteRecibido = false;
+  }
 
   if (paqueteRecibido) {
     canalEncontrado = true;
