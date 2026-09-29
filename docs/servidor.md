@@ -94,7 +94,7 @@ Cuatro tablas base, repartidas entre `schema.sql` (Bloque 1) y
 
 | Tabla            | Para qué                       | Quién escribe                                                                                                               |
 | ---------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `usuarios`       | Los 2 operadores de la pizarra | Solo `seed.py` (columna única `password_hash`, ver [`dashboard.md`](./dashboard.md) sobre el mismo secreto en keypad y web) |
+| `usuarios`       | Los operadores del sistema     | `seed.py` (los 2 iniciales) y `POST /api/usuarios` (altas desde el dashboard) — columna única `password_hash` (ver [`dashboard.md`](./dashboard.md) sobre el mismo secreto en keypad y web) |
 | `intentos_login` | Cada login, exitoso o fallido  | `POST /api/auth/login` (origen `web`) y `planta/login/intento` (origen `keypad`)                                            |
 | `alertas`        | Avisos para LCD y dashboard    | Login bloqueado (2º intento fallido), lote de 5 cajas completado y cámara desconectada (`camara_offline`)                   |
 | `eventos_caja`   | Cada caja que pasa el sensor   | `planta/sorter/evento`; es la tabla central, inventario y dataset a la vez                                                  |
@@ -141,6 +141,8 @@ Todos menos `/api/salud` y `/api/auth/login` requieren `Authorization: Bearer <t
 | Método   | Ruta                                                 | Qué hace                                                                                                                           |
 | -------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `POST`   | `/api/auth/login`                                    | `{nombre, password}` → JWT. Registra el intento (origen `web`)                                                                     |
+| `GET`    | `/api/usuarios`                                      | Lista los operadores registrados (id, nombre, fecha de alta)                                                                       |
+| `POST`   | `/api/usuarios`                                      | `{nombre, password}` → registra un operador nuevo. `password` numérico (1-8 dígitos, igual que el teclado); 409 si el nombre ya existe |
 | `GET`    | `/api/intentos?limite=50`                            | Historial de login (`keypad` + `web`)                                                                                              |
 | `GET`    | `/api/alertas?limite=50`                             | Alertas (`login_bloqueado`, `lote_completo`, `camara_offline`)                                                                     |
 | `POST`   | `/api/comandos`                                      | `{cmd, arg}` → publica en `planta/cmd`. `cmd`: `puerta`, `motor`, `reset_counts`                                                   |

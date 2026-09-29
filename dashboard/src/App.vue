@@ -13,6 +13,7 @@ import {
   History,
   KeyRound,
   BellRing,
+  Users,
   ScanFace,
   Palette,
   Sun,
@@ -69,6 +70,7 @@ const NAV = [
   { to: '/historico', label: 'Histórico', icon: History },
   { to: '/intentos', label: 'Accesos', icon: KeyRound },
   { to: '/alertas', label: 'Alertas', icon: BellRing },
+  { to: '/operadores', label: 'Operadores', icon: Users },
   { to: '/rostro', label: 'Rostro', icon: ScanFace, camara: 'rostro' as const },
   { to: '/camara-color', label: 'Cámara', icon: Palette, camara: 'color' as const },
 ]

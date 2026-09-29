@@ -36,6 +36,7 @@ dashboard/
 │       ├── HistoricoView.vue             # cajas por hora (gráfico SVG a mano)
 │       ├── IntentosView.vue
 │       ├── AlertasView.vue
+│       ├── OperadoresView.vue              # alta de operadores (nombre + PIN) y listado
 │       ├── RostroView.vue                 # cámara A: enrolar caras, ver sus fotos, verificaciones
 │       └── CamaraColorView.vue             # cámara B: sensor vs. IA, entrenar
 └── .env.example
@@ -81,11 +82,16 @@ Todas las rutas salvo `/login` están protegidas por el guard de
 | `/historico`    | `HistoricoView`   | `GET /api/produccion/historico?horas=24`           | No se actualiza sola; hay que recargar la página |
 | `/intentos`     | `IntentosView`    | `GET /api/intentos?limite=30`                      | `intento_login`                                  |
 | `/alertas`      | `AlertasView`     | `GET /api/alertas?limite=30`                       | `alerta`                                         |
+| `/operadores`   | `OperadoresView`  | `GET /api/usuarios`                                | No se actualiza sola; hay que recargar la página |
 | `/rostro`       | `RostroView`      | `GET /api/rostro/{config,usuarios,verificaciones}` | `verificacion_rostro`                            |
 | `/camara-color` | `CamaraColorView` | `GET /api/color/{resumen,capturas}`                | `clasificacion_camara`                           |
 
 `RostroView` pide `GET /api/rostro/muestras/{usuario_id}` recién al abrir la
 galería de fotos de un usuario ("Ver fotos"), no de entrada.
+
+`OperadoresView` da de alta operadores nuevos con `POST /api/usuarios`
+(nombre + PIN numérico de hasta 8 dígitos, el mismo formato que acepta el
+teclado del ESP32) y lista los ya registrados.
 
 `ProduccionView` además tiene los controles de planta: botones de cinta
 (apagada/baja/full) y de puerta, y un botón de reset de contadores — los

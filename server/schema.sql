@@ -1,7 +1,9 @@
 -- Esquema del Bloque 1 (Acceso y puerta). Las tablas de los siguientes bloques
 -- viven en server/migrations/ y se aplican cuando toca ese bloque, no antes.
 
--- QUIÉN PUEDE ENTRAR. Solo 2 filas (los 2 usuarios de la pizarra).
+-- QUIÉN PUEDE ENTRAR. seed.py siembra los 2 usuarios iniciales de la
+-- pizarra; POST /api/usuarios (dashboard, con sesión iniciada) registra
+-- operadores nuevos después de eso.
 -- Un solo secreto por usuario (pedido del docente: misma contraseña para
 -- teclado y web) — numérico, porque el teclado 4x4 solo escribe dígitos.
 -- Se teclea igual en el ESP32 y se escribe igual en el formulario web.

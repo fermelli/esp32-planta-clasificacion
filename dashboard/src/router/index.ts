@@ -15,6 +15,11 @@ const router = createRouter({
     { path: '/historico', name: 'historico', component: () => import('@/views/HistoricoView.vue') },
     { path: '/intentos', name: 'intentos', component: () => import('@/views/IntentosView.vue') },
     { path: '/alertas', name: 'alertas', component: () => import('@/views/AlertasView.vue') },
+    {
+      path: '/operadores',
+      name: 'operadores',
+      component: () => import('@/views/OperadoresView.vue'),
+    },
     { path: '/rostro', name: 'rostro', component: () => import('@/views/RostroView.vue') },
     {
       path: '/camara-color',

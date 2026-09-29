@@ -1,11 +1,24 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LoginRequest(BaseModel):
     nombre: str
     password: str
+
+
+class UsuarioCreate(BaseModel):
+    nombre: str = Field(min_length=1, max_length=100)
+    # Numérico: el teclado 4x4 del ESP32 solo escribe dígitos y el buffer
+    # del firmware acepta hasta 8 (ver firmware/esp32-gateway/src/main.cpp).
+    password: str = Field(pattern=r"^\d{1,8}$")
+
+
+class UsuarioOut(BaseModel):
+    id: int
+    nombre: str
+    creado_en: datetime
 
 
 class LoginResponse(BaseModel):

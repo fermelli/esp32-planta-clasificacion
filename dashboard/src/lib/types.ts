@@ -85,6 +85,12 @@ export interface RostroConfig {
   modelos_cargados: boolean
 }
 
+export interface Usuario {
+  id: number
+  nombre: string
+  creado_en: string
+}
+
 export interface RostroUsuario {
   usuario_id: number
   nombre: string

@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app import camara, color_ia, db, mqtt_client, rostro
 from app.config import settings
-from app.routers import auth, comandos, intentos, produccion
+from app.routers import auth, comandos, intentos, produccion, usuarios
 from app.routers import camara as camara_router
 from app.routers import color as color_router
 from app.routers import rostro as rostro_router
@@ -40,6 +40,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(usuarios.router)
 app.include_router(intentos.router)
 app.include_router(comandos.router)
 app.include_router(produccion.router)
