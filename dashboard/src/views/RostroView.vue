@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { API_URL, apiFetch } from '@/lib/api'
 import { useLiveStore } from '@/stores/live'
-import type { RostroConfig, RostroUsuario, VerificacionRostro } from '@/lib/types'
+import type { MuestraRostro, RostroConfig, RostroUsuario, VerificacionRostro } from '@/lib/types'
 import PruebaCamaraCard from '@/components/PruebaCamaraCard.vue'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,7 @@ import {
   CircleX,
   Camera,
   ShieldCheck,
+  Images,
 } from 'lucide-vue-next'
 
 const live = useLiveStore()
@@ -43,8 +44,31 @@ const estado = computed(() => {
 })
 const error = ref('')
 
+// Galería de fotos de enrolamiento por usuario: se carga bajo demanda (al
+// abrir) para no pedir N listas de fotos de una si nadie las va a mirar.
+const fotosAbiertas = ref<Set<number>>(new Set())
+const muestrasPorUsuario = ref<Record<number, MuestraRostro[]>>({})
+
 async function cargarUsuarios() {
   usuarios.value = await apiFetch<RostroUsuario[]>('/api/rostro/usuarios')
+}
+
+async function cargarMuestras(usuarioId: number) {
+  muestrasPorUsuario.value = {
+    ...muestrasPorUsuario.value,
+    [usuarioId]: await apiFetch<MuestraRostro[]>(`/api/rostro/muestras/${usuarioId}`),
+  }
+}
+
+async function alternarFotos(usuarioId: number) {
+  const abiertas = new Set(fotosAbiertas.value)
+  if (abiertas.has(usuarioId)) {
+    abiertas.delete(usuarioId)
+  } else {
+    abiertas.add(usuarioId)
+    await cargarMuestras(usuarioId)
+  }
+  fotosAbiertas.value = abiertas
 }
 
 async function cargarVerificaciones() {
@@ -82,6 +106,7 @@ async function enrolar(u: RostroUsuario) {
     let vueltas = 0
     sondeo = setInterval(async () => {
       await cargarUsuarios()
+      if (fotosAbiertas.value.has(u.usuario_id)) await cargarMuestras(u.usuario_id)
       if (++vueltas >= 8) {
         clearInterval(sondeo)
         enrolando.value = null
@@ -97,6 +122,7 @@ async function borrar(u: RostroUsuario) {
   if (!confirm(`¿Borrar las ${u.muestras} muestras de rostro de ${u.nombre}?`)) return
   await apiFetch(`/api/rostro/muestras/${u.usuario_id}`, { method: 'DELETE' })
   await cargarUsuarios()
+  if (fotosAbiertas.value.has(u.usuario_id)) await cargarMuestras(u.usuario_id)
 }
 </script>
 
@@ -150,27 +176,56 @@ async function borrar(u: RostroUsuario) {
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent class="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            class="gap-1.5"
-            :disabled="enrolando !== null || !camaraOnline"
-            :title="camaraOnline ? '' : 'La cámara de rostro no está conectada'"
-            @click="enrolar(u)"
+        <CardContent class="flex flex-col gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              class="gap-1.5"
+              :disabled="enrolando !== null || !camaraOnline"
+              :title="camaraOnline ? '' : 'La cámara de rostro no está conectada'"
+              @click="enrolar(u)"
+            >
+              <UserPlus class="h-3.5 w-3.5" stroke-width="2" />
+              {{ enrolando === u.usuario_id ? 'Mirá la cámara...' : 'Enrolar rostro' }}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              class="gap-1.5"
+              :disabled="u.muestras === 0"
+              @click="alternarFotos(u.usuario_id)"
+            >
+              <Images class="h-3.5 w-3.5" stroke-width="2" />
+              {{ fotosAbiertas.has(u.usuario_id) ? 'Ocultar fotos' : 'Ver fotos' }}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              class="gap-1.5"
+              :disabled="u.muestras === 0"
+              @click="borrar(u)"
+            >
+              <Trash2 class="h-3.5 w-3.5" stroke-width="2" />
+              Borrar
+            </Button>
+          </div>
+          <div
+            v-if="fotosAbiertas.has(u.usuario_id)"
+            class="flex flex-wrap gap-2 border-t border-border pt-3"
           >
-            <UserPlus class="h-3.5 w-3.5" stroke-width="2" />
-            {{ enrolando === u.usuario_id ? 'Mirá la cámara...' : 'Enrolar rostro' }}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            class="gap-1.5"
-            :disabled="u.muestras === 0"
-            @click="borrar(u)"
-          >
-            <Trash2 class="h-3.5 w-3.5" stroke-width="2" />
-            Borrar
-          </Button>
+            <template v-if="muestrasPorUsuario[u.usuario_id]?.length">
+              <img
+                v-for="m in muestrasPorUsuario[u.usuario_id]"
+                :key="m.id"
+                :src="`${API_URL}/capturas/${m.imagen}`"
+                :title="new Date(m.creado_en).toLocaleString()"
+                alt="muestra de rostro"
+                class="h-16 w-16 rounded border border-border object-cover"
+                loading="lazy"
+              />
+            </template>
+            <p v-else class="text-sm text-muted-foreground">Todavía no hay fotos guardadas.</p>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -91,6 +91,12 @@ export interface RostroUsuario {
   muestras: number
 }
 
+export interface MuestraRostro {
+  id: number
+  imagen: string | null
+  creado_en: string
+}
+
 export interface VerificacionRostro {
   id: number
   usuario_nombre: string
