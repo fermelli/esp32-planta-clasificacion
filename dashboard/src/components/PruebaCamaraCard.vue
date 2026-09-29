@@ -6,17 +6,44 @@ import type { PruebaCamara } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Camera, TriangleAlert } from 'lucide-vue-next'
+import { Camera, TriangleAlert, RotateCw } from 'lucide-vue-next'
 
 const props = defineProps<{ version: 'rostro' | 'color' }>()
 const live = useLiveStore()
 
 const esperando = ref(false)
 const error = ref('')
+const previewActivo = ref(false)
 let plazo: ReturnType<typeof setTimeout> | undefined
+let intervaloPreview: ReturnType<typeof setInterval> | undefined
+const MS_ENTRE_FOTOS_PREVIEW = 2000
 
 const online = computed(() => live.camaras?.[props.version].online ?? false)
 const prueba = computed<PruebaCamara | undefined>(() => live.pruebas[props.version])
+
+// Vista previa "en vivo": no hay streaming real, pide una foto nueva cada
+// pocos segundos reusando el mismo camino de "probar la cámara" -- se ve
+// como una vista previa entrecortada, útil para encuadrar y enfocar sin
+// tener que apretar el botón una y otra vez.
+function alternarPreview() {
+  previewActivo.value = !previewActivo.value
+  if (previewActivo.value) {
+    probar()
+    intervaloPreview = setInterval(() => {
+      if (!esperando.value && online.value) probar()
+    }, MS_ENTRE_FOTOS_PREVIEW)
+  } else {
+    clearInterval(intervaloPreview)
+  }
+}
+
+// Si se desconecta la cámara mientras la vista previa está activa, se apaga sola.
+watch(online, (v) => {
+  if (!v && previewActivo.value) {
+    previewActivo.value = false
+    clearInterval(intervaloPreview)
+  }
+})
 
 onMounted(async () => {
   if (prueba.value) return
@@ -27,7 +54,10 @@ onMounted(async () => {
     // sin foto previa: la tarjeta queda vacía
   }
 })
-onBeforeUnmount(() => clearTimeout(plazo))
+onBeforeUnmount(() => {
+  clearTimeout(plazo)
+  clearInterval(intervaloPreview)
+})
 
 // La foto llega por WebSocket: en cuanto aparece una nueva se corta la espera.
 watch(
@@ -71,14 +101,33 @@ const rgb = (c: number[] | null) => (c ? `rgb(${c[0]}, ${c[1]}, ${c[2]})` : 'tra
           <Camera class="h-4 w-4 text-muted-foreground" stroke-width="2" />
           Probar la cámara
         </span>
-        <Button size="sm" class="gap-1.5" :disabled="!online || esperando" @click="probar">
-          <Camera class="h-3.5 w-3.5" stroke-width="2" />
-          {{ esperando ? 'Esperando la foto...' : 'Sacar foto de prueba' }}
-        </Button>
+        <div class="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            class="gap-1.5"
+            :disabled="!online"
+            @click="alternarPreview"
+          >
+            <RotateCw class="h-3.5 w-3.5" stroke-width="2" :class="{ 'animate-spin': previewActivo }" />
+            {{ previewActivo ? 'Detener vista previa' : 'Vista previa en vivo' }}
+          </Button>
+          <Button
+            size="sm"
+            class="gap-1.5"
+            :disabled="!online || esperando || previewActivo"
+            @click="probar"
+          >
+            <Camera class="h-3.5 w-3.5" stroke-width="2" />
+            {{ esperando ? 'Esperando la foto...' : 'Sacar foto de prueba' }}
+          </Button>
+        </div>
       </CardTitle>
       <CardDescription>
         La placa saca una foto y el servidor la analiza. Sirve para comprobar que el lente funciona,
         hacia dónde apunta y si la luz es buena, sin tener que loguearse ni pasar cajas.
+        "Vista previa en vivo" no es video real: pide una foto nueva cada
+        {{ MS_ENTRE_FOTOS_PREVIEW / 1000 }}s, útil para encuadrar y enfocar sin apretar el botón cada vez.
         <span v-if="!online" class="font-medium text-destructive">
           La cámara de {{ version }} no está conectada.
         </span>
