@@ -50,9 +50,14 @@ struct __attribute__((packed)) CommandMsg {  // #1 -> #2
   uint8_t arg;
 };
 
-// Dirección de broadcast ESP-NOW: ambas placas se registran como peer de esta
-// dirección con channel=0 ("usar el canal activo"), así no hay que conocer ni
-// fijar la MAC de la otra placa de antemano.
+// MACs fijas de cada placa (leídas por esptool --port COMx read_mac). Antes
+// se mandaba todo a broadcast (FF:FF:FF:FF:FF:FF) para no tener que conocer
+// la MAC de la otra placa de antemano, pero un paquete broadcast no tiene ACK
+// ni reintento a nivel de radio: en un salón con muchas redes WiFi encima se
+// perdían cajas enteras sin que ninguna placa se enterara (visto en vivo: el
+// sorter detectaba y mandaba, el gateway no recibía nada). Unicast a la MAC
+// real sí usa el ACK + reintento automático del driver WiFi/ESP-NOW.
 // 'const' a nivel de archivo tiene enlace interno en C++, así que incluir esto
 // en dos .cpp no genera símbolos duplicados (no hace falta 'inline'/C++17).
-const uint8_t ESPNOW_BROADCAST_ADDR[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+const uint8_t MAC_GATEWAY[6] = {0xB0, 0x3F, 0xD3, 0x5A, 0x88, 0xFC};
+const uint8_t MAC_SORTER[6] = {0xB0, 0x3F, 0xD3, 0x5A, 0xCC, 0xD0};

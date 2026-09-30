@@ -117,7 +117,7 @@ void enviarEstado() {
   msg.motor_state = motorState;
   msg.door_open = puertaAbierta ? 1 : 0;
   msg.ts_ms = millis();
-  esp_now_send(ESPNOW_BROADCAST_ADDR, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
+  esp_now_send(MAC_GATEWAY, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
 }
 
 void enviarEventoCaja(uint8_t colorId, uint16_t r, uint16_t g, uint16_t b, uint16_t c,
@@ -135,7 +135,13 @@ void enviarEventoCaja(uint8_t colorId, uint16_t r, uint16_t g, uint16_t b, uint1
   msg.motor_state = motorState;
   msg.door_open = puertaAbierta ? 1 : 0;
   msg.ts_ms = millis();
-  esp_now_send(ESPNOW_BROADCAST_ADDR, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
+  esp_now_send(MAC_GATEWAY, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
+}
+
+// DIAGNOSTICO TEMPORAL: con unicast el driver SI confirma si el paquete llego
+// (ACK de radio), a diferencia del broadcast anterior que se perdia sin aviso.
+void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  if (status != ESP_NOW_SEND_SUCCESS) Serial.println("ESP-NOW: envio al gateway fallo");
 }
 
 uint8_t clasificarColor(uint16_t r, uint16_t g, uint16_t b, uint16_t c) {
@@ -237,9 +243,10 @@ void iniciarEspNow() {
   WiFi.disconnect();
   esp_now_init();
   esp_now_register_recv_cb(onDataRecv);
+  esp_now_register_send_cb(onDataSent);
 
   esp_now_peer_info_t peer{};
-  memcpy(peer.peer_addr, ESPNOW_BROADCAST_ADDR, 6);
+  memcpy(peer.peer_addr, MAC_GATEWAY, 6);
   peer.channel = 0;  // usar el canal activo, sea cual sea
   peer.encrypt = false;
   esp_now_add_peer(&peer);

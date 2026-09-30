@@ -88,7 +88,13 @@ const char *nombreMotor(uint8_t estado) {
 
 void enviarComandoAlSorter(uint8_t cmd, uint8_t arg) {
   CommandMsg msg{cmd, arg};
-  esp_now_send(ESPNOW_BROADCAST_ADDR, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
+  esp_now_send(MAC_SORTER, reinterpret_cast<uint8_t *>(&msg), sizeof(msg));
+}
+
+// DIAGNOSTICO TEMPORAL: con unicast el driver SI confirma si el paquete llego
+// (ACK de radio), a diferencia del broadcast anterior que se perdia sin aviso.
+void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  if (status != ESP_NOW_SEND_SUCCESS) Serial.println("ESP-NOW: envio al sorter fallo");
 }
 
 void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
@@ -137,9 +143,10 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
 void iniciarEspNow() {
   esp_now_init();
   esp_now_register_recv_cb(onDataRecv);
+  esp_now_register_send_cb(onDataSent);
 
   esp_now_peer_info_t peer{};
-  memcpy(peer.peer_addr, ESPNOW_BROADCAST_ADDR, 6);
+  memcpy(peer.peer_addr, MAC_SORTER, 6);
   peer.channel = 0;  // el canal en el que ya quedó el WiFi STA
   peer.encrypt = false;
   esp_now_add_peer(&peer);
