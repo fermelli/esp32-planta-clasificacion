@@ -61,14 +61,6 @@ void lcdMensaje(const String &linea1, const String &linea2, unsigned long duraci
   mensajeExpiraEn = duracionMs ? millis() + duracionMs : 0;
 }
 
-// Igual que lcdMensaje, pero no interrumpe si el usuario está tecleando un
-// PIN o esperando la respuesta del login — un evento de producción no debe
-// robarle la siguiente tecla a alguien a mitad de su clave.
-void lcdMensajeSiLibre(const String &linea1, const String &linea2, unsigned long duracionMs) {
-  if (pinBuffer.length() > 0 || esperandoRespuesta) return;
-  lcdMensaje(linea1, linea2, duracionMs);
-}
-
 const char *nombreColor(uint8_t colorId) {
   switch (colorId) {
     case COLOR_ROJO: return "rojo";
@@ -129,14 +121,6 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int len) {
     char buf[160];
     size_t n = serializeJson(doc, buf);
     mqtt.publish("planta/sorter/evento", reinterpret_cast<const uint8_t *>(buf), n);
-
-    // Color arriba y conteo (1-5) abajo; queda en el LCD hasta la proxima
-    // caja o hasta que alguien toque el teclado.
-    String titulo(color);
-    titulo.setCharAt(0, toupper(titulo.charAt(0)));
-    String detalle(conteo);
-    if (msg.lote_completo) detalle += " Lote completo!";  // "5 Lote completo!" = 16 chars justos
-    lcdMensajeSiLibre(titulo, detalle, 0);
   }
 }
 
